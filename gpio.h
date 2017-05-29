@@ -1,0 +1,89 @@
+#ifndef _GPIO_
+#define _GPIO_
+
+#include "types.h"
+#include "memorymap.h"
+
+/**
+ * @brief GPIO
+ */
+typedef struct
+{
+    HW_RW CRL;  //!< Port configuration register low
+    HW_RW CRH;  //!< Port configuration register high
+    HW_RO IDR;  //!< Port input data register
+    HW_RW ODR;  //!< Port output data register
+    HW_WO BSRR; //!< Port bit set/reset register
+    HW_WO BRR;  //!< Port bit reset register
+    HW_RW LCKR; //!< Port configuration lock register
+} GPIO_Struct;
+
+static volatile GPIO_Struct * const GPIOA = APB2PERIPH_BASE + 0x0800;
+static volatile GPIO_Struct * const GPIOB = APB2PERIPH_BASE + 0x0C00;
+static volatile GPIO_Struct * const GPIOC = APB2PERIPH_BASE + 0x1000;
+
+// Settings for CNF bits in CRL/CRH, input mode
+#define GPIO_Input_CNF_Analog         0b00 //!< Analog mode
+#define GPIO_Input_CNF_Floating       0b01 //!< Floating input
+#define GPIO_Input_CNF_PullupPulldown 0b10 //!< Input with pull-up/pull-down
+#define GPIO_Input_CNF_Reserved       0b11 //!< Reserved
+
+// Settings for CNF bits in CRL/CRH, output mode
+#define GPIO_Output_CNF_GPPushPull    0b00 //!< General purpose output push-pull
+#define GPIO_Output_CNF_GPOpenDrain   0b01 //!< General purpose output open drain
+#define GPIO_Output_CNF_AFPushPull    0b10 //!< Alternate function output push-pull
+#define GPIO_Output_CNF_AFOpenDrain   0b11 //!< Alternate function output push-pull
+
+// Settings for MODE bits in CRL/CRH
+#define GPIO_MODE_Input               0b00 //!< Input mode (reset state)
+#define GPIO_MODE_Output_10MHz        0b01 //!< Output mode, max speed 10 MHz
+#define GPIO_MODE_Output_2MHz         0b10 //!< Output mode, max speed 2 MHz
+#define GPIO_MODE_Output_50MHz        0b11 //!< Output mode, max speed 50 MHz
+
+// TODO: add compile-time & maybe runtime assertions to check validity (compile-time case: Might
+// need to restructure some inline funcs as macros)
+
+/** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
+__attribute__((pure))
+static inline HW_RW *GPIO_getCR(volatile GPIO_Struct * const GPIOx,
+                                const uint8_t pin)
+{
+    return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
+}
+
+static inline void GPIO_setMODE(volatile GPIO_Struct * const GPIOx,
+                                const uint8_t pin,
+                                const uint8_t mode)
+{
+    uint32_t shift = ((pin % 8)*4);
+    uint32_t mask = 0b11 << shift;
+    uint32_t val  = mode << shift;
+    HW_RW *CR = GPIO_getCR(GPIOx, pin);
+    *CR = (*CR & ~mask) | (val & mask);
+}
+
+static inline void GPIO_setCNF(volatile GPIO_Struct * const GPIOx,
+                               const uint8_t pin,
+                               const uint8_t cnf)
+{
+    uint32_t shift = ((pin % 8)*4 + 2);
+    uint32_t mask = 0b11 << shift;
+    uint32_t val  = cnf << shift;
+    HW_RW *CR = GPIO_getCR(GPIOx, pin);
+    *CR = (*CR & ~mask) | (val & mask);
+}
+
+// TODO: enums so you don't mix up cnf & mode
+static inline void GPIO_set(volatile GPIO_Struct * const GPIOx,
+                            const uint8_t pin,
+                            const uint8_t cnf,
+                            const uint8_t mode)
+{
+    uint32_t shift = ((pin % 8)*4);
+    uint32_t mask = 0b1111 << shift;
+    uint32_t val  = (cnf | (mode << 2)) << shift;
+    HW_RW *CR = GPIO_getCR(GPIOx, pin);
+    *CR = (*CR & ~mask) | (val & mask);
+}
+
+#endif /* _GPIO_ */

@@ -71,4 +71,13 @@ static volatile SysTick_Struct * const SysTick = SysTick_BASE;
  */
 bool systick_startSysTick_ms(const uint32_t ms);
 
+/**
+ * @brief Set up systick reload register so that it counts to 0, and triggers
+ *        the interrupt, every us microseconds.
+ *
+ * @return true on success, false on failure
+ */
+bool systick_startSysTick_us(const uint32_t us);
+
+
 #endif /* _SYSTICK_ */

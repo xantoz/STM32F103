@@ -100,21 +100,28 @@ static inline void GPIO_setMODE_setCNF(volatile GPIO_Port * const GPIOx,
     *CR = (*CR & ~mask) | (val & mask);
 }
 
+
+#define __GPIO_define_portPin_alias(NAME) \
+    static inline void NAME##1(const GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
+
 #define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
 static inline void __GPIO_setPin2(volatile GPIO_Port * const port, const uint8_t pin) {
     port->BSRR = (1 << pin);
 }
-static inline void __GPIO_setPin1(const GPIO_PortPin * const portpin) {
-    __GPIO_setPin2(portpin->port, portpin->pin);
-}
+__GPIO_define_portPin_alias(__GPIO_setPin)
 
 #define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
 static inline void __GPIO_resetPin2(volatile GPIO_Port * const port, const uint8_t pin) {
     port->BRR = (1 << pin);
 }
-static inline void __GPIO_resetPin1(const GPIO_PortPin * const portpin) {
-    __GPIO_resetPin2(portpin->port, portpin->pin);
-}
+__GPIO_define_portPin_alias(__GPIO_resetPin)
 
+#define GPIO_read(...) VFUNC(__GPIO_read, __VA_ARGS__)
+static inline bool __GPIO_read2(volatile GPIO_Port * const port, const uint8_t pin) {
+    return (port->IDR >> pin) & 0x1;
+}
+static inline bool __GPIO_read1(const GPIO_PortPin * const portpin) {
+    return __GPIO_read2(portpin->port, portpin->pin);
+}
 
 #endif /* _GPIO_ */

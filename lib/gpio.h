@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "memorymap.h"
+#include "vfunc.h"
 
 /**
  * @brief GPIO
@@ -18,9 +19,13 @@ typedef struct
     HW_RW LCKR; //!< Port configuration lock register
 } GPIO_Port;
 
-static volatile GPIO_Port * const GPIOA = APB2PERIPH_BASE + 0x0800;
-static volatile GPIO_Port * const GPIOB = APB2PERIPH_BASE + 0x0C00;
-static volatile GPIO_Port * const GPIOC = APB2PERIPH_BASE + 0x1000;
+#define GPIOA_BASE (APB2PERIPH_BASE + 0x0800)
+#define GPIOB_BASE (APB2PERIPH_BASE + 0x0C00)
+#define GPIOC_BASE (APB2PERIPH_BASE + 0x1000)
+
+static volatile GPIO_Port * const GPIOA = GPIOA_BASE;
+static volatile GPIO_Port * const GPIOB = GPIOB_BASE;
+static volatile GPIO_Port * const GPIOC = GPIOC_BASE;
 
 /**
  * @brief Simple tuple that can be used to refer to a specific pin on a specific port.
@@ -94,5 +99,22 @@ static inline void GPIO_setMODE_setCNF(volatile GPIO_Port * const GPIOx,
     HW_RW *CR = GPIO_getCR(GPIOx, pin);
     *CR = (*CR & ~mask) | (val & mask);
 }
+
+#define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
+static inline void __GPIO_setPin2(volatile GPIO_Port * const port, const uint8_t pin) {
+    port->BSRR = (1 << pin);
+}
+static inline void __GPIO_setPin1(const GPIO_PortPin * const portpin) {
+    __GPIO_setPin2(portpin->port, portpin->pin);
+}
+
+#define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
+static inline void __GPIO_resetPin2(volatile GPIO_Port * const port, const uint8_t pin) {
+    port->BRR = (1 << pin);
+}
+static inline void __GPIO_resetPin1(const GPIO_PortPin * const portpin) {
+    __GPIO_resetPin2(portpin->port, portpin->pin);
+}
+
 
 #endif /* _GPIO_ */

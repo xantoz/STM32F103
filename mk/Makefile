@@ -8,7 +8,7 @@ OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 CC       = arm-none-eabi-gcc
 LD       = arm-none-eabi-ld
 OC       = arm-none-eabi-objcopy
-CCFLAGS  = -g -Os -std=c11 '-mcpu=cortex-m3' '-mthumb' -Wall -Winline -Wno-main
+CCFLAGS  = -g -O2 -std=c11 '-mcpu=cortex-m3' '-mthumb' -Wall -Winline -Wno-main
 LDFLAGS  = '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs
 OCFLAGS  = -Obinary --strip-unneeded
 

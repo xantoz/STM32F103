@@ -280,6 +280,7 @@ void clock_setSysClockHSI()
 
 void clock_setSysTick_HCLK()
 {
+    SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE;
     SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_HCLK;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR
@@ -288,6 +289,7 @@ void clock_setSysTick_HCLK()
 
 void clock_setSysTick_HCLK_Div8()
 {
+    SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE;
     SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_HCLK_Div8;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR

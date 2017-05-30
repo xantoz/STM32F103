@@ -19,6 +19,8 @@ clock_t g_clock = {
 
 static const uint32_t MHz = 1000000; // Convert from Hz to MHz
 
+/// Macro to check at compile time that frequency is not out of range
+// TODO: Backwards compatible definition so we compile without C11 ?
 #define CASSERT_FREQUENCY(f) \
     _Static_assert(0 < (f) && (f) < 72*MHz, "Frequency out of range")
 

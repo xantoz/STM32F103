@@ -1,5 +1,6 @@
 #include "debug.h"
 
+#include "utils.h"
 #include "string.h"
 
 // Semihosting commands
@@ -111,6 +112,7 @@ void die(const char *s)
     print_hex((uint32_t)__builtin_return_address(0));
 #endif
     print(s);
+    put_char('\n');
     while (1)
-        __asm__("BKPT");
+        BKPT();
 }

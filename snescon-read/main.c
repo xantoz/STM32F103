@@ -11,10 +11,10 @@ static const uint8_t pollFreq = 60;  //!< How often to poll the controller [Hz]
 
 static snesCon_btn_t buttonState;
 
-static const snesCon_read_t snesCon_def = 
+static const snesCon_read_t snesCon_def =
 {
     // TODO: switch to register locations defined in link script instead so that we can just go: &GPIOA here
-    .clock = {GPIOA_BASE, 0}, 
+    .clock = {GPIOA_BASE, 0},
     .latch = {GPIOA_BASE, 1},
     .data  = {GPIOA_BASE, 2}
 };
@@ -36,5 +36,6 @@ void main(void)
 
 void systick_handler(void)
 {
-    snesCon_read_tick(&snesCon_def, &buttonState);
+    buttonState = snesCon_read_tick(&snesCon_def);
+    print_hex(buttonState);
 }

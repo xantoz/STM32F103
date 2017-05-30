@@ -39,9 +39,10 @@ bool snesCon_read_init(const snesCon_read_t * const def);
  *
  * @param def         [in]  Definition of GPIO ports & pins. snesCon_read_init must have been called for this
  *                          pin definition beforehand.
- * @param buttonState [out] Pointer to place to store the state of buttons read out
+ *
+ * @return SNES controller button state
  *
  */
-void snesCon_read_tick(const snesCon_read_t * const def, snesCon_btn_t * const buttonState);
+snesCon_btn_t snesCon_read_tick(const snesCon_read_t * const def);
 
 #endif

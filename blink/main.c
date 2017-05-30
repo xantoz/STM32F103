@@ -25,10 +25,10 @@ void main(void)
     print("GPIOC->CRL before: ");
     print_hex(GPIOC->CRL);
 
-    // GPIO_set(GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    GPIO_setMODE(GPIOC, 13, GPIO_MODE_Output_10MHz);
-    GPIO_setCNF(GPIOC, 13, GPIO_Output_CNF_GPPushPull);
+    // GPIO_setMODE(GPIOC, 13, GPIO_MODE_Output_10MHz);
+    // GPIO_setCNF(GPIOC, 13, GPIO_Output_CNF_GPPushPull);
 
     put_char('h');
     put_char('e');

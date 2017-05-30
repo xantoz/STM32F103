@@ -83,11 +83,10 @@ static inline void GPIO_setCNF(volatile GPIO_Port * const GPIOx,
     *CR = (*CR & ~mask) | (val & mask);
 }
 
-// TODO: enums so you don't mix up cnf & mode
-static inline void GPIO_set(volatile GPIO_Port * const GPIOx,
-                            const uint8_t pin,
-                            const uint8_t cnf,
-                            const uint8_t mode)
+static inline void GPIO_setMODE_setCNF(volatile GPIO_Port * const GPIOx,
+                                       const uint8_t pin,
+                                       const uint8_t cnf,
+                                       const uint8_t mode)
 {
     uint32_t shift = ((pin % 8)*4);
     uint32_t mask = 0b1111 << shift;

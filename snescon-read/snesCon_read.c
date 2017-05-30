@@ -72,7 +72,7 @@ snesCon_btn_t snesCon_read_tick(const snesCon_read_t * const def)
     {
         GPIO_setPin(&def->clock);
         snesCon_delay();
-        btn |= GPIO_read(&def->data);
+        btn |= (!!GPIO_read(&def->data)) << i;
         GPIO_resetPin(&def->clock);
         snesCon_delay();
     }

@@ -16,11 +16,21 @@ typedef struct
     HW_WO BSRR; //!< Port bit set/reset register
     HW_WO BRR;  //!< Port bit reset register
     HW_RW LCKR; //!< Port configuration lock register
-} GPIO_Struct;
+} GPIO_Port;
 
-static volatile GPIO_Struct * const GPIOA = APB2PERIPH_BASE + 0x0800;
-static volatile GPIO_Struct * const GPIOB = APB2PERIPH_BASE + 0x0C00;
-static volatile GPIO_Struct * const GPIOC = APB2PERIPH_BASE + 0x1000;
+static volatile GPIO_Port * const GPIOA = APB2PERIPH_BASE + 0x0800;
+static volatile GPIO_Port * const GPIOB = APB2PERIPH_BASE + 0x0C00;
+static volatile GPIO_Port * const GPIOC = APB2PERIPH_BASE + 0x1000;
+
+/**
+ * @brief Simple tuple that can be used to refer to a specific pin on a specific port.
+ * Defined here as a convenience.
+ */
+typedef struct
+{
+    GPIO_Port *port;
+    uint8_t pin;
+} GPIO_PortPin;
 
 // Settings for CNF bits in CRL/CRH, input mode
 #define GPIO_Input_CNF_Analog         0b00 //!< Analog mode
@@ -45,13 +55,13 @@ static volatile GPIO_Struct * const GPIOC = APB2PERIPH_BASE + 0x1000;
 
 /** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
 __attribute__((pure))
-static inline HW_RW *GPIO_getCR(volatile GPIO_Struct * const GPIOx,
+static inline HW_RW *GPIO_getCR(volatile GPIO_Port * const GPIOx,
                                 const uint8_t pin)
 {
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
 }
 
-static inline void GPIO_setMODE(volatile GPIO_Struct * const GPIOx,
+static inline void GPIO_setMODE(volatile GPIO_Port * const GPIOx,
                                 const uint8_t pin,
                                 const uint8_t mode)
 {
@@ -62,7 +72,7 @@ static inline void GPIO_setMODE(volatile GPIO_Struct * const GPIOx,
     *CR = (*CR & ~mask) | (val & mask);
 }
 
-static inline void GPIO_setCNF(volatile GPIO_Struct * const GPIOx,
+static inline void GPIO_setCNF(volatile GPIO_Port * const GPIOx,
                                const uint8_t pin,
                                const uint8_t cnf)
 {
@@ -74,7 +84,7 @@ static inline void GPIO_setCNF(volatile GPIO_Struct * const GPIOx,
 }
 
 // TODO: enums so you don't mix up cnf & mode
-static inline void GPIO_set(volatile GPIO_Struct * const GPIOx,
+static inline void GPIO_set(volatile GPIO_Port * const GPIOx,
                             const uint8_t pin,
                             const uint8_t cnf,
                             const uint8_t mode)

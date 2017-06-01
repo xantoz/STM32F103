@@ -19,13 +19,9 @@ typedef struct
     HW_RW LCKR; //!< Port configuration lock register
 } GPIO_Port;
 
-#define GPIOA_BASE (APB2PERIPH_BASE + 0x0800)
-#define GPIOB_BASE (APB2PERIPH_BASE + 0x0C00)
-#define GPIOC_BASE (APB2PERIPH_BASE + 0x1000)
-
-static volatile GPIO_Port * const GPIOA = GPIOA_BASE;
-static volatile GPIO_Port * const GPIOB = GPIOB_BASE;
-static volatile GPIO_Port * const GPIOC = GPIOC_BASE;
+extern volatile GPIO_Port GPIOA;
+extern volatile GPIO_Port GPIOB;
+extern volatile GPIO_Port GPIOC;
 
 /**
  * @brief Simple tuple that can be used to refer to a specific pin on a specific port.
@@ -33,7 +29,7 @@ static volatile GPIO_Port * const GPIOC = GPIOC_BASE;
  */
 typedef struct
 {
-    GPIO_Port *port;
+    volatile GPIO_Port *port;
     uint8_t pin;
 } GPIO_PortPin;
 

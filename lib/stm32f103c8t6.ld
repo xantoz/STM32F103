@@ -11,6 +11,44 @@ MEMORY {
 /* _LD_STACK_TOP = 0x20001ff0;  */
 _LD_STACK_TOP = 0x20005000;
 
+/*
+** Peripherals
+*/
+SRAM_BASE      = ORIGIN(ram); /*!< SRAM base address in the alias region */
+PERIPH_BASE    = 0x40000000;  /*!< Peripheral base address in the alias region */
+
+SRAM_BB_BASE   = 0x22000000; /*!< SRAM base address in the bit-band region */
+PERIPH_BB_BASE = 0x42000000; /*!< Peripheral base address in the bit-band region */
+
+FSMC_R_BASE    = 0xA0000000;    /*!< FSMC registers base address */
+
+/*!< Memory mapping of Cortex-M3 Hardware */
+SCS_BASE  = 0xE000E000;           /*!< System Control Space Base Address */
+ITM_BASE  = 0xE0000000;           /*!< ITM Base Address */
+CoreDebug = 0xE000EDF0;           /*!< Core Debug Base Address */
+SysTick   = (SCS_BASE +  0x0010); /*!< SysTick Base Address */
+NVIC      = (SCS_BASE +  0x0100); /*!< NVIC Base Address */
+SCB       = (SCS_BASE +  0x0D00); /*!< System Control Block Base Address */
+
+/*!< Peripheral memory map */
+APB1PERIPH_BASE = (PERIPH_BASE);
+APB2PERIPH_BASE = (PERIPH_BASE + 0x10000);
+AHBPERIPH_BASE  = (PERIPH_BASE + 0x20000);
+
+AFIO_BASE = (APB2PERIPH_BASE + 0x0000);
+EXTI_BASE = (APB2PERIPH_BASE + 0x0400);
+
+FLASH_R_BASE = (AHBPERIPH_BASE + 0x2000); /*!< Flash registers base address */
+FLASH        = FLASH_R_BASE;              /*!< Flash registers */
+OB_BASE      = 0x1FFFF800;                /*!< Flash Option Bytes base address */
+OB           = 0x1FFFF800;                /*!< Flash Option Bytes */
+
+GPIOA = (APB2PERIPH_BASE + 0x0800);
+GPIOB = (APB2PERIPH_BASE + 0x0C00);
+GPIOC = (APB2PERIPH_BASE + 0x1000);
+
+RCC = AHBPERIPH_BASE + 0x1000;
+
 /* SECTIONS lists where various parts data and code should go.
    Since they all just relate to the addressed defined above,
    porting code to other MCUs usually does not requre changes. */

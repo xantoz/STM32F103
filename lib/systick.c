@@ -12,11 +12,11 @@ static bool systick_startSysTick_impl(const uint32_t multiplicand, const uint32_
     if ((reload == 0) || (reload & 0xff000000))
         return false;
 
-    SysTick->CTRL &= ~(SysTick_CTRL_TICKINT | SysTick_CTRL_ENABLE);
-    SysTick->LOAD = reload;
-    SysTick->VAL = 0;
-    SysTick->CTRL &= ~(SysTick_CTRL_COUNTFLAG);
-    SysTick->CTRL |= SysTick_CTRL_TICKINT | SysTick_CTRL_ENABLE;
+    SysTick.CTRL &= ~(SysTick_CTRL_TICKINT | SysTick_CTRL_ENABLE);
+    SysTick.LOAD = reload;
+    SysTick.VAL = 0;
+    SysTick.CTRL &= ~(SysTick_CTRL_COUNTFLAG);
+    SysTick.CTRL |= SysTick_CTRL_TICKINT | SysTick_CTRL_ENABLE;
 
     return true;
 }

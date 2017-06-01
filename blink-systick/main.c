@@ -12,10 +12,10 @@ void main(void)
     clock_setSysClockHSE();
 
     // Enable clock to GPIOC
-    RCC->APB2ENR |= RCC_APB2Periph_GPIOC;
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOC;
 
-    GPIO_setMODE(GPIOC, 13, GPIO_MODE_Output_10MHz);
-    GPIO_setCNF(GPIOC, 13, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE(&GPIOC, 13, GPIO_MODE_Output_10MHz);
+    GPIO_setCNF(&GPIOC, 13, GPIO_Output_CNF_GPPushPull);
 
     if (!systick_startSysTick_ms(1000))
         die("Could not set up systick");
@@ -24,7 +24,7 @@ void main(void)
     while (true)
     {
         if (asdf & 512)
-            print_hex(SysTick->VAL);
+            print_hex(SysTick.VAL);
         ++asdf;
     }
 }
@@ -37,10 +37,10 @@ void systick_handler(void)
     switch (counter & 1)
     {
         case 0:
-            GPIOC->BSRR = 1 << 13;
+            GPIOC.BSRR = 1 << 13;
             break;
         case 1:
-            GPIOC->BRR  = 1 << 13;
+            GPIOC.BRR  = 1 << 13;
             break;
     }
     ++counter;

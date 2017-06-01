@@ -28,7 +28,7 @@ typedef struct
 #endif /* STM32F10X_XL */
 } FLASH_Struct;
 
-static volatile FLASH_Struct * const FLASH = FLASH_R_BASE;
+extern volatile FLASH_Struct FLASH;
 
 /**
   * @brief Option Bytes Registers
@@ -46,7 +46,7 @@ typedef struct
     __IO uint16_t WRP3;
 } OB_Struct;
 
-static volatile OB_Struct * const OB = OB_BASE;
+extern volatile OB_Struct OB;
 
 /*******************  Bit definition for FLASH_ACR register  ******************/
 #define  FLASH_ACR_LATENCY                   ((uint8_t)0x03)               /*!< LATENCY[2:0] bits (Latency) */

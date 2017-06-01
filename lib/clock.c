@@ -61,7 +61,7 @@ static uint32_t getPLLFreq(uint32_t cfgr)
 // Updates the values in g_clock by reading back register settings
 static void updateClockFreqs()
 {
-    uint32_t cfgr = RCC->CFGR; // Take a snapshot of the register, get rid of volatile accesses
+    uint32_t cfgr = RCC.CFGR; // Take a snapshot of the register, get rid of volatile accesses
 
     // Get SYSCLK frequency
     uint32_t sws = cfgr & RCC_CFGR_SWS;
@@ -113,7 +113,7 @@ static void updateClockFreqs()
     g_clock.pclk1Freq = g_clock.hclkFreq/ppre1_div;
 
     // Get SysTick frequency
-    uint32_t systick_clksource = SysTick->CTRL & SysTick_CTRL_CLKSOURCE;
+    uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;
     g_clock.sysTickFreq = g_clock.hclkFreq;
     if (systick_clksource == SysTick_CTRL_CLKSOURCE_HCLK_Div8)
         g_clock.sysTickFreq /= 8;
@@ -124,16 +124,16 @@ static void startHSE()
 {
     static const uint16_t HSE_STARTUP_TIMEOUT = 0x0500; //!< Time out for HSE start up
 
-    RCC->CR |= RCC_CR_HSEON;
+    RCC.CR |= RCC_CR_HSEON;
     volatile uint16_t StartUpCounter = 0;
     volatile uint32_t HSEStatus = 0;
     do
     {
-        HSEStatus = RCC->CR & RCC_CR_HSERDY;
+        HSEStatus = RCC.CR & RCC_CR_HSERDY;
         StartUpCounter++;
     } while ((HSEStatus == 0) && (StartUpCounter != HSE_STARTUP_TIMEOUT));
 
-    if (StartUpCounter >= HSE_STARTUP_TIMEOUT || !(RCC->CR & RCC_CR_HSERDY))
+    if (StartUpCounter >= HSE_STARTUP_TIMEOUT || !(RCC.CR & RCC_CR_HSERDY))
         die("HSE WILL NOT COME UP");
 }
 
@@ -142,16 +142,16 @@ static void startHSI()
 {
     static const uint16_t HSI_STARTUP_TIMEOUT = 0x0500;  //!< Time out for HSE start up
 
-    RCC->CR |= RCC_CR_HSION;
+    RCC.CR |= RCC_CR_HSION;
     volatile uint16_t StartUpCounter = 0;
     volatile uint32_t HSIStatus = 0;
     do
     {
-        HSIStatus = RCC->CR & RCC_CR_HSIRDY;
+        HSIStatus = RCC.CR & RCC_CR_HSIRDY;
         StartUpCounter++;
     } while ((HSIStatus == 0) && (StartUpCounter != HSI_STARTUP_TIMEOUT));
 
-    if (StartUpCounter >= HSI_STARTUP_TIMEOUT || !(RCC->CR & RCC_CR_HSIRDY))
+    if (StartUpCounter >= HSI_STARTUP_TIMEOUT || !(RCC.CR & RCC_CR_HSIRDY))
         die("HSI WILL NOT COME UP");
 }
 
@@ -161,21 +161,21 @@ void clock_setSysClockHSE()
 
     startHSE();
 
-    FLASH->ACR |= FLASH_ACR_PRFTBE; // Enable prefetch buffer
-    FLASH->ACR &= ~FLASH_ACR_LATENCY;
-    FLASH->ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSE_Hz);
+    FLASH.ACR |= FLASH_ACR_PRFTBE; // Enable prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSE_Hz);
 
-    RCC->CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
-    RCC->CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
 
     // Select HSE as system clock source
-    RCC->CFGR &= ~RCC_CFGR_SW;
-    RCC->CFGR |= RCC_CFGR_SW_HSE;
+    RCC.CFGR &= ~RCC_CFGR_SW;
+    RCC.CFGR |= RCC_CFGR_SW_HSE;
 
     // Wait till HSE is used as system clock source
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE);
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
@@ -187,33 +187,33 @@ void clock_setSysClockHSE_24MHz()
 
     startHSE();
 
-    FLASH->ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
-    FLASH->ACR &= ~FLASH_ACR_LATENCY;
-    FLASH->ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSE_Hz/2)*6);
+    FLASH.ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSE_Hz/2)*6);
 
-    RCC->CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
-    RCC->CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
 
     // TODO: slow ADC down below 14 MHz
 
     // PLL configuration: (HSE / 2) * 6 = 24 MHz
-    RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
-    RCC->CFGR |= (RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLXTPRE_HSE_Div2 | RCC_CFGR_PLLMUL6);
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
+    RCC.CFGR |= (RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLXTPRE_HSE_Div2 | RCC_CFGR_PLLMUL6);
 
     // Enable PLL
-    RCC->CR |= RCC_CR_PLLON;
+    RCC.CR |= RCC_CR_PLLON;
 
     // Wait till PLL is ready
-    while ((RCC->CR & RCC_CR_PLLRDY) == 0);
+    while ((RCC.CR & RCC_CR_PLLRDY) == 0);
 
     // Select PLL as system clock source
-    RCC->CFGR &= ~(RCC_CFGR_SW);
-    RCC->CFGR |= RCC_CFGR_SW_PLL;
+    RCC.CFGR &= ~(RCC_CFGR_SW);
+    RCC.CFGR |= RCC_CFGR_SW_PLL;
 
     // Wait till PLL is used as system clock source
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
@@ -225,33 +225,33 @@ void clock_setSysClockHSI_24MHz()
 
     startHSI();
 
-    FLASH->ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
-    FLASH->ACR &= ~FLASH_ACR_LATENCY;  // Flash 0 wait state
-    FLASH->ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSI_Hz/2)*6);
+    FLASH.ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;  // Flash 0 wait state
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSI_Hz/2)*6);
 
-    RCC->CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
-    RCC->CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
-    RCC->CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
 
     // PLL configuration: (HSI / 2) * 6 = 24 MHz
-    RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
-    RCC->CFGR |= (RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMUL6);
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
+    RCC.CFGR |= (RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMUL6);
 
     // TODO: slow ADC down below 14 MHz
 
     // Enable PLL
-    RCC->CR |= RCC_CR_PLLON;
+    RCC.CR |= RCC_CR_PLLON;
 
     // Wait till PLL is ready
-    while ((RCC->CR & RCC_CR_PLLRDY) == 0);
+    while ((RCC.CR & RCC_CR_PLLRDY) == 0);
 
     // Select PLL as system clock source
-    RCC->CFGR &= ~(RCC_CFGR_SW);
-    RCC->CFGR |= RCC_CFGR_SW_PLL;
+    RCC.CFGR &= ~(RCC_CFGR_SW);
+    RCC.CFGR |= RCC_CFGR_SW_PLL;
 
     // Wait till PLL is used as system clock source
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
@@ -263,18 +263,18 @@ void clock_setSysClockHSI()
 
     startHSI();
 
-    FLASH->ACR |= FLASH_ACR_PRFTBE; // Enable flash prefetch buffer
-    FLASH->ACR &= ~FLASH_ACR_LATENCY;
-    FLASH->ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSE_Hz);
+    FLASH.ACR |= FLASH_ACR_PRFTBE; // Enable flash prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSE_Hz);
 
     // HCLK = SYSCLK, PCLK2 = HCLK, PCLK1 = HCLK
-    RCC->CFGR &= (RCC->CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1)) | (RCC_CFGR_HPRE_SYSCLK_Div1 | RCC_CFGR_PPRE2_HCLK_Div1 | RCC_CFGR_PPRE1_HCLK_Div1);
+    RCC.CFGR &= (RCC.CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1)) | (RCC_CFGR_HPRE_SYSCLK_Div1 | RCC_CFGR_PPRE2_HCLK_Div1 | RCC_CFGR_PPRE1_HCLK_Div1);
 
     // Select HSI as system clock source
-    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI;
+    RCC.CFGR = (RCC.CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI;
 
     // Wait till HSI is used as system clock source
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
@@ -282,8 +282,8 @@ void clock_setSysClockHSI()
 
 void clock_setSysTick_HCLK()
 {
-    SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE;
-    SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_HCLK;
+    SysTick.CTRL &= ~SysTick_CTRL_CLKSOURCE;
+    SysTick.CTRL |= SysTick_CTRL_CLKSOURCE_HCLK;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR
     g_clock.sysTickFreq = g_clock.hclkFreq;
@@ -291,8 +291,8 @@ void clock_setSysTick_HCLK()
 
 void clock_setSysTick_HCLK_Div8()
 {
-    SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE;
-    SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_HCLK_Div8;
+    SysTick.CTRL &= ~SysTick_CTRL_CLKSOURCE;
+    SysTick.CTRL |= SysTick_CTRL_CLKSOURCE_HCLK_Div8;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR
     g_clock.sysTickFreq = g_clock.hclkFreq/8;

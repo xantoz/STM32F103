@@ -23,7 +23,7 @@ typedef struct
 
 // TODO: Use enums instead of defines?
 
-static volatile RCC_Struct * const RCC = AHBPERIPH_BASE + 0x1000;
+extern volatile RCC_Struct RCC;
 
 #define RCC_APB1Periph_TIM2              ((uint32_t)0x00000001)
 #define RCC_APB1Periph_TIM3              ((uint32_t)0x00000002)

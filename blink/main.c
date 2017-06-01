@@ -18,14 +18,14 @@ void main(void)
     clock_setSysClockHSI_24MHz();
 
     // Enable clock to GPIOC
-    RCC->APB2ENR |= RCC_APB2Periph_GPIOC;
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOC;
 
-    print("GPIOC->CRH before: ");
-    print_hex(GPIOC->CRH);
-    print("GPIOC->CRL before: ");
-    print_hex(GPIOC->CRL);
+    print("GPIOC.CRH before: ");
+    print_hex(GPIOC.CRH);
+    print("GPIOC.CRL before: ");
+    print_hex(GPIOC.CRL);
 
-    GPIO_setMODE_setCNF(GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
     // GPIO_setMODE(GPIOC, 13, GPIO_MODE_Output_10MHz);
     // GPIO_setCNF(GPIOC, 13, GPIO_Output_CNF_GPPushPull);
@@ -35,10 +35,10 @@ void main(void)
     put_char('j');
     put_char('\n');
 
-    print("GPIOC->CRH after: ");
-    print_hex(GPIOC->CRH);
-    print("GPIOC->CRL after: ");
-    print_hex(GPIOC->CRL);
+    print("GPIOC.CRH after: ");
+    print_hex(GPIOC.CRH);
+    print("GPIOC.CRL after: ");
+    print_hex(GPIOC.CRL);
 
     print("Hello world\n");
     print_hex(time());
@@ -69,12 +69,12 @@ void main(void)
         }
         ++cnt;
 
-        GPIOC->BSRR = 1 << 13;
-        // GPIOC->ODR = 0;
+        GPIOC.BSRR = 1 << 13;
+        // GPIOC.ODR = 0;
         delay(0xAFFFF);
         // delay(0xAFFFF/2);
-        GPIOC->BRR  = 1 << 13;
-        // GPIOC->ODR = ~0;
+        GPIOC.BRR  = 1 << 13;
+        // GPIOC.ODR = ~0;
         delay(0xAFFFF);
         // delay(0xAFFFF/2);
     }

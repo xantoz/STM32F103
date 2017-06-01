@@ -30,6 +30,6 @@ void disableInterrupts();
 /** re-enable interrupts */
 void enableInterrupts();
 
-#define SET(peripheral, reg, field, value) ((peripheral)->(reg) = ((peripheral)->(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
+#define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 
 #endif

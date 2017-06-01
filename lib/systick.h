@@ -15,7 +15,7 @@ typedef struct
     HW_WO CALIB;     //!< Offset: 0x0C  SysTick Calibration Register
 } SysTick_Struct;
 
-static volatile SysTick_Struct * const SysTick = SysTick_BASE;
+extern volatile SysTick_Struct SysTick;
 
 /* SysTick Control / Status Register Definitions */
 #define SysTick_CTRL_COUNTFLAG ((uint32_t)(1 << 16)) //!< Returns 1 if timer counted to 0 since last time this was read.

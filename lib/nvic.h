@@ -24,4 +24,6 @@ typedef struct
   __O  uint32_t STIR;                         /*!< Offset: 0xE00  Software Trigger Interrupt Register     */
 }  NVIC_Struct;
 
+extern volatile NVIC_Struct NVIC;
+
 #endif

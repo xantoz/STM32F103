@@ -25,22 +25,11 @@ extern uint8_t _LD_END_OF_BSS;
 
 void main(void);// DEFAULTS_TO(deadend);
 void systick_handler(void) DEFAULTS_TO(deadend);
-// void usb_fiq_handler(void) DEFAULTS_TO(deadend);
-// void usb_irq_handler(void) DEFAULTS_TO(deadend);
-// void ct16b0_handler(void) DEFAULTS_TO(deadend);
-// void ct16b1_handler(void) DEFAULTS_TO(deadend);
-// void ct32b0_handler(void) DEFAULTS_TO(deadend);
-// void ct32b1_handler(void) DEFAULTS_TO(deadend);
-// void gpioA_handler(void) DEFAULTS_TO(deadend);
-// void gpioB_handler(void) DEFAULTS_TO(deadend);
-// void gpioC_handler(void) DEFAULTS_TO(deadend);
-// void i2c_handler(void) DEFAULTS_TO(deadend);
-// void uart_handler(void) DEFAULTS_TO(deadend);
+// TODO: define more interrupt handlers here
 
 /* The vector table - contains the initial stack pointer and pointers to boot code as well as
    interrupt and fault handler pointers. The processor will expect this to be located at address
    0x0, so we put it into a separate linker section. */
-// TODO: insert pointer to various peripheral handlers here
 __attribute__ ((section(".vectors")))
 const void* vtable[] = {
     &_LD_STACK_TOP,          //Stack top
@@ -139,11 +128,6 @@ static void systemInit()
     RCC.CR &= (uint32_t)0xFFFBFFFF;        // Reset HSEBYP bit
     RCC.CFGR &= (uint32_t)0xFF80FFFF;      // Reset PLLSRC, PLLXTPRE, PLLMUL and USBPRE/OTGFSPRE bits
     RCC.CIR = 0x009F0000;                  // Disable all interrupts and clear pending bits
-
-    /* Configure the System clock frequency, HCLK, PCLK2 and PCLK1 prescalers */
-    /* Configure the Flash Latency cycles and enable prefetch buffer */
-    // setSysClockHSE();
-    // setSysClock();
 }
 
 void bootstrap(void)

@@ -33,7 +33,7 @@ static volatile GPIO_Port * const GPIOC = GPIOC_BASE;
  */
 typedef struct
 {
-    GPIO_Port *port;
+    volatile GPIO_Port *port;
     uint8_t pin;
 } GPIO_PortPin;
 

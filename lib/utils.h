@@ -30,6 +30,20 @@ void disableInterrupts();
 /** re-enable interrupts */
 void enableInterrupts();
 
+/**
+ * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
+ *        frequency, by virtue of using g_clock.sysclkFreq for scaling (see clock.h).
+ *
+ * @note The lower the SYSCLK frequency is, the lower the minimum possible delay becomes. So do not
+ *       expect it to be able to delay for as short as 1 us. The overhead is at least 16 cycles
+ *       long, which translates to a minimum delay of 2 us at 8 MHz. So do not expect this to be
+ *       accurate for small values of us, or very accurate overall, but it should be usable enough
+ *       for things where the exactness of the delay is not very important.
+ *
+ * @param us [in]   Delay in microseconds
+ */
+extern void delay_us(int32_t us);
+
 #define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 
 #endif

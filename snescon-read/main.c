@@ -27,7 +27,7 @@ void main(void)
     // Enable clock to GPIOC
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA;
 
-    if (!systick_startSysTick_us(1667))
+    if (!systick_startSysTick_us(16667))
         die("Could not set up systick");
 
     snesCon_read_init(&snesCon_def);

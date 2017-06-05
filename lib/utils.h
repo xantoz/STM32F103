@@ -41,7 +41,7 @@ void enableInterrupts();
  *       be usable enough for things where the exactness of the delay is not very important. It
  *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop.
  *
- * @note Interruptions are disabled while this function is executing
+ * @note Interrupts are disabled while this function is executing
  *
  * @param us [in]   Delay in microseconds
  */

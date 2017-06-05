@@ -2,6 +2,8 @@
 
 // TODO: copy this function to RAM on startup for more predictable execution? (need to add section for functions like this to linkscript)
 
+// Source for the cycle counts of instructions: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0337h/CHDDIGAC.html
+
 delay_us:                 // Cycle count (dumb: ignore potential pipeline effects, assume branches always take 2 cycles when taken)
     cpsie i               // 1 [disable irq]
 

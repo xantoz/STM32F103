@@ -40,6 +40,8 @@ void enableInterrupts();
  *       accurate for small values of us, or very accurate overall, but it should be usable enough
  *       for things where the exactness of the delay is not very important.
  *
+ * @note Interruptions are disabled while this function is executing
+ *
  * @param us [in]   Delay in microseconds
  */
 extern void delay_us(int32_t us);

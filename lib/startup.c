@@ -27,6 +27,8 @@ void main(void);// DEFAULTS_TO(deadend);
 void systick_handler(void) DEFAULTS_TO(deadend);
 // TODO: define more interrupt handlers here
 
+// TODO: use WDOG or define a default interrupt/exception handler that resets the system
+
 /* The vector table - contains the initial stack pointer and pointers to boot code as well as
    interrupt and fault handler pointers. The processor will expect this to be located at address
    0x0, so we put it into a separate linker section. */

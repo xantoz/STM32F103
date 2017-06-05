@@ -40,7 +40,7 @@ void systick_handler(void)
     if (cntr == 59)
     {
         print_hex(buttonState);
-        cntr = 0
+        cntr = 0;
     }
     ++cntr;
 }

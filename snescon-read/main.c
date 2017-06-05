@@ -27,7 +27,7 @@ void main(void)
     // Enable clock to GPIOC
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA;
 
-    if (!systick_startSysTick_ms(1000))
+    if (!systick_startSysTick_us(1667))
         die("Could not set up systick");
 
     snesCon_read_init(&snesCon_def);
@@ -36,5 +36,11 @@ void main(void)
 void systick_handler(void)
 {
     buttonState = snesCon_read_tick(&snesCon_def);
-    print_hex(buttonState);
+    static volatile uint8_t cntr = 0;
+    if (cntr == 59)
+    {
+        print_hex(buttonState);
+        cntr = 0
+    }
+    ++cntr;
 }

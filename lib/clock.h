@@ -20,6 +20,7 @@ typedef struct
     uint32_t pclk2Freq;    //!< Current PCLK2 speed in Hz
     uint32_t pclk1Freq;    //!< Currentl PCLK1 speed in Hz
     uint32_t sysTickFreq;  //!< Currentl SysTick speed in Hz
+    uint32_t timerFreq;    //!< Current TIMxCLK speed in Hz
 } clock_t;
 
 /**

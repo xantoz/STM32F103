@@ -14,7 +14,8 @@ clock_t g_clock = {
     .hclkFreq = CLOCK_HSI_Hz,           // HCLK == SYSCLK == HSI by default
     .pclk2Freq = CLOCK_HSI_Hz,          // PCLK2 == HCLK == HSI by default
     .pclk1Freq = CLOCK_HSI_Hz,          // PCLK1 == HCLK == HSI by default
-    .sysTickFreq = CLOCK_HSI_Hz/8       // SysTick FREQ == SYSCLK/8 == HSI/8 by default
+    .sysTickFreq = CLOCK_HSI_Hz/8,      // SysTick FREQ == SYSCLK/8 == HSI/8 by default
+    .timerFreq = CLOCK_HSI_Hz,          // TIMxCLK == PCLK2*1 if APB2 prescaler == 1 else TIMxCLK == PCLK2*2
 };
 
 static const uint32_t MHz = 1000000; // Convert from Hz to MHz
@@ -99,6 +100,8 @@ static void updateClockFreqs()
     if (ppre2_div == 0)
         die("ERROR: Invalid PPRE2 setting in RCC_CFGR");
     g_clock.pclk2Freq = g_clock.hclkFreq/ppre2_div;
+    // Set timer frequency (depends on ppre2)
+    g_clock.timerFreq = (ppre2_div == 1) ? g_clock.pclk2Freq : g_clock.pclk2Freq*2;
 
     // Get PCLK1 (APB1) frequency
     uint32_t ppre1 = cfgr & RCC_CFGR_PPRE1;

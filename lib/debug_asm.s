@@ -7,6 +7,6 @@ send_command:
      ldr r2, [r2]               // Load the contents of DHCSR
      mov r3, #0x01              // Thumb16 doesn't support TST with immediate
      tst r2, r3                 // Check the lowest bit (C_DEBUGEN)
-     beq ret                    // Return if it wasn't set (ALU flag Z == 0)
+     beq 1f                     // Return if it wasn't set (ALU flag Z == 0)
      bkpt #0xAB
-ret: bx lr
+1:   bx lr

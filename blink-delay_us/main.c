@@ -6,11 +6,6 @@
 
 #include "lib/debug.h"
 
-void delay(volatile uint32_t delay)
-{
-    for(; delay; --delay );
-}
-
 void main(void)
 {
     clock_setSysClockHSI_24MHz();

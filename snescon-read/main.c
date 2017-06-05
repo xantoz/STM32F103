@@ -13,9 +13,9 @@ static snesCon_btn_t buttonState;
 
 static const snesCon_read_t snesCon_def =
 {
-    .clock = {&GPIOA, 0},
-    .latch = {&GPIOA, 1},
-    .data  = {&GPIOA, 2}
+    .clock = {&GPIOA, 6},
+    .latch = {&GPIOA, 7},
+    .data  = {&GPIOB, 0}
 };
 
 // static volatile const GPIO_Port * const asdf = GPIOA;
@@ -24,8 +24,10 @@ void main(void)
 {
     clock_setSysClockHSE_24MHz();
 
-    // Enable clock to GPIOC
+    // Enable clock to GPIOA & GPIOB & GPIOC
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA;
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOB;
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOC;
 
     if (!systick_startSysTick_us(16667))
         die("Could not set up systick");

@@ -20,10 +20,12 @@ void main(void)
     if (!systick_startSysTick_ms(1000))
         die("Could not set up systick");
 
-    uint32_t asdf = 0;
+    __enable_irq();
+
+    volatile uint32_t asdf = 0;
     while (true)
     {
-        if (asdf & 512)
+        if ((asdf % 123409) == 0)
             print_hex(SysTick.VAL);
         ++asdf;
     }
@@ -33,7 +35,7 @@ void systick_handler(void)
 {
     static uint32_t counter = 0;
     // BKPT();
-    // print("systick\n");
+    print("systick\n");
     switch (counter & 1)
     {
         case 0:

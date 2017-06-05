@@ -5,7 +5,7 @@
 // Source for the cycle counts of instructions: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0337h/CHDDIGAC.html
 
 delay_us:                 // Cycle count (dumb: ignore potential pipeline effects, assume branches always take 2 cycles when taken)
-    cpsie i               // 1 [disable irq]
+    cpsid i               // 1 [disable irq]
 
     // Load g_clock.sysclkFreq to r1
     ldr r1,=g_clock       // 2
@@ -32,5 +32,5 @@ delay_us:                 // Cycle count (dumb: ignore potential pipeline effect
     cmp r0, #0            // 1
     bne 1b                // 2<usu> (2-4), 1 when not taken
 2:
-    cpsid i               // 1 [enable irq]
+    cpsie i               // 1 [enable irq]
     bx lr                 // 2<usu> (2 to 4)

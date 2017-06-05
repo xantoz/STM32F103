@@ -23,6 +23,7 @@ bool snesCon_read_init(const snesCon_read_t * const def)
  */
 static void snesCon_delay()
 {
+    __disable_irq();
     for (volatile uint8_t i = 0; i < 12; ++i)
     {
         // 8 NOPs at 8 MHz == 1 us
@@ -35,6 +36,7 @@ static void snesCon_delay()
         NOP();
         NOP();
     }
+    __enable_irq();
 }
 
 /**
@@ -45,6 +47,7 @@ static void snesCon_delay()
  */
 static void snesCon_halfDelay()
 {
+    __disable_irq();
     for (volatile uint8_t i = 0; i < 6; ++i)
     {
         // 8 NOPs at 8 MHz == 1 us
@@ -57,6 +60,7 @@ static void snesCon_halfDelay()
         NOP();
         NOP();
     }
+    __enable_irq();
 }
 
 snesCon_btn_t snesCon_read_tick(const snesCon_read_t * const def)

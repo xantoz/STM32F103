@@ -47,6 +47,14 @@ void enableInterrupts();
  */
 extern void delay_us(int32_t us);
 
+/**
+ * @brief Same as delay_us, but interruptible
+ *
+ * @param us [in]   Delay in microseconds
+ */
+extern void delay_us_int(int32_t us);
+
+
 #define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 
 #endif

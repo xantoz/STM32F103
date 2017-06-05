@@ -4,6 +4,7 @@
 #include "lib/rcc.h"
 #include "lib/clock.h"
 #include "lib/systick.h"
+#include "lib/utils.h"
 
 #include "lib/debug.h"
 
@@ -29,20 +30,30 @@ void main(void)
     RCC.APB2ENR |= RCC_APB2Periph_GPIOB;
     RCC.APB2ENR |= RCC_APB2Periph_GPIOC;
 
+    GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+
     if (!systick_startSysTick_us(16667))
         die("Could not set up systick");
 
     snesCon_read_init(&snesCon_def);
+
+    while (true)
+    {
+        GPIO_resetPin(&GPIOC, 13);
+        delay_us_int(3000000);
+        GPIO_setPin(&GPIOC, 13);
+        delay_us_int(3000000);
+    }
 }
 
 void systick_handler(void)
 {
     buttonState = snesCon_read_tick(&snesCon_def);
     static volatile uint8_t cntr = 0;
-    if (cntr == 59)
+    ++cntr;
+    if (cntr == 30)
     {
         print_hex(buttonState);
         cntr = 0;
     }
-    ++cntr;
 }

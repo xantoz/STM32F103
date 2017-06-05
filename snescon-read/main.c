@@ -22,7 +22,7 @@ static const snesCon_read_t snesCon_def =
 
 void main(void)
 {
-    clock_setSysClockHSE();
+    clock_setSysClockHSE_24MHz();
 
     // Enable clock to GPIOC
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA;

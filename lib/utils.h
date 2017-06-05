@@ -37,8 +37,9 @@ void enableInterrupts();
  * @note The lower the SYSCLK frequency is, the lower the minimum possible delay becomes. So do not
  *       expect it to be able to delay for as short as 1 us. The overhead is at least 16 cycles
  *       long, which translates to a minimum delay of 2 us at 8 MHz. So do not expect this to be
- *       accurate for small values of us, or very accurate overall, but it should be usable enough
- *       for things where the exactness of the delay is not very important.
+ *       accurate for small values of us relative to SYSCLK, or very accurate overall, but it should
+ *       be usable enough for things where the exactness of the delay is not very important. It
+ *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop.
  *
  * @note Interruptions are disabled while this function is executing
  *

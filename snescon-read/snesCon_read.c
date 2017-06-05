@@ -10,7 +10,7 @@ bool snesCon_read_init(const snesCon_read_t * const def)
     GPIO_setPin(&def->clock);                               // Clock is active low
 
     GPIO_setMODE_setCNF(def->data.port, def->data.pin, GPIO_MODE_Input, GPIO_Input_CNF_PullupPulldown);
-    GPIO_resetPin(&def->data); // Set pull-down
+    GPIO_setPin(&def->data); // Set pull-up
 
     return true;
 }

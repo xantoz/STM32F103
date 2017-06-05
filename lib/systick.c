@@ -5,9 +5,8 @@
 static bool systick_startSysTick_impl(const uint32_t multiplicand, const uint32_t dividend)
 {
     // SysTick RELOAD should be loaded with N-1 to fire every N clock pulses
-    // TODO: consider calculating this at higher precision, or doing the division first. (risk for overflow)
-    const uint32_t reload = (multiplicand*g_clock.sysTickFreq)/dividend - 1;
-    // TODO: fail when overflow?
+    // Use 64-bit multiplication and division to decrease risk of overflowing in the multiplication
+    const uint32_t reload = (uint32_t)(((uint64_t)multiplicand*g_clock.sysTickFreq)/dividend - 1); 
 
     // Fail when reload == 0 or when the value will not fit into the 24-bit wide register
     if ((reload == 0) || (reload & 0xff000000))

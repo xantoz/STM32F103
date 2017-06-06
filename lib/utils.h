@@ -47,7 +47,7 @@ extern void delay_us_int(int32_t us);
 
 #define __DIV_ROUND_CLOSEST_INT(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
-#define __DIV_ROUND_CLOSEST_UINT(n, d) (((n) - (d)/2)/(d))
+#define __DIV_ROUND_CLOSEST_UINT(n, d) (((n) + (d)/2)/(d))
 #define _DIV_ROUND_CLOSEST_UINT(n,d)                                    \
     _Generic((d),                                                       \
              unsigned char:  __DIV_ROUND_CLOSEST_UINT((n),(d)),         \

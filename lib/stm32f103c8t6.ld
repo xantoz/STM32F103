@@ -11,7 +11,7 @@ MEMORY {
 
 /* Start of stack (TODO: how much SRAM do we have, actually?) */
 /* _LD_STACK_TOP = 0x20001ff0;  */
-_LD_STACK_TOP = 0x20005000;
+_estack = 0x20005000;
 
 /*
 ** Peripherals
@@ -61,15 +61,24 @@ SECTIONS {
      * so we assign it to a separate linker section.
      * It contains stack top address, start code and
      * interrupt handler pointers.  */
-    vectors : {
-        *(.vectors)
+    .isr_vector : {
+        . = ALIGN(4);
+        KEEP(*(.isr_vector))
+        . = ALIGN(4);
     } >flash
 
     /* .text section contains code and readonly (const) globals */
     text : {
+         . = ALIGN(4);
         *(.text)
-        *(.rodata)
-    _LD_END_OF_TEXT = .;     /* Remember position (=start of RAM mirror in FLASH) */
+        *(.text.*)    
+        *(.rodata)                 /* read-only data (constants) */
+        *(.rodata*)
+        *(.glue_7)
+        *(.glue_7t)
+        . = ALIGN(4);
+        _etext = .;
+		_sidata = _etext; /* Start of initial values of .data stored in flash*/
     } >flash
 
     /* data section contains read-write (non-const) globals and static variables
@@ -78,19 +87,22 @@ SECTIONS {
      * in FLASH (because we need to have the values at startup). Bootstrap code
      * will copy the values from FLASH to RAM. Note that bootstrap code wants this
      * section to follow the text section directly. */
-    data : {
-        _LD_START_OF_DATA = .;   /* Remember position (=start of initialized RAM) */
-        *(.data);
-        _LD_END_OF_DATA = .;     /* Remember position (=end of initialized RAM) */
-    } >ram AT >flash
+    .data : AT(_sidata) {
+         . = ALIGN(4);
+        _sdata = .;     /* Remember position (=start of initialized RAM) */
+        KEEP(*(.data))
+        KEEP(*(.data.*))
+        . = ALIGN(4);
+        _edata = .;     /* Remember position (=end of initialized RAM) */
+    } >ram
 
     /* bss section contains globals and static variables either initialized to zero
      * or not initialized at all. These are not mirrored in FLASH. Their memory
      * needs to be zeroed at startup. We'll clear it in the bootstrap code. Note that
      * bootstrap code wants this section to follow the data section directly. */
     bss : {
-        _LD_START_OF_BSS = .;   /* Remember position (=start of uninitialized RAM) */
+        _sbss = .;     /* Remember position (=start of uninitialized RAM) */
         *(.bss)
-        _LD_END_OF_BSS = .;     /* Remember position (=end of uninitialized RAM) */
-    } > ram
+        _ebss = .;     /* Remember position (=end of uninitialized RAM) */
+    } >ram
 }

@@ -8,8 +8,6 @@
 // TODO: Code for setting ADC clock, setting SysTick clock source.
 // TODO: early exits if we detect that settings are what we are going to set them to
 
-// FIXME: These default values do not seem to take effect. Problem with the startup code copying
-// data section from FLASH to RAM?
 clock_t g_clock = {
     // Default values on bootup, if the clock speeds haven't been changed
     .sysclkFreq = CLOCK_HSI_Hz,         // SYSCLK == HSI == 8 MHz on bootup

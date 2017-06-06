@@ -11,11 +11,13 @@ void bootstrap(void);	//bootstrap that will call main later
 void deadend(void);	//neverending handler
 
 /* These variables are used to pass memory locations from the linker script to our code. */
-extern uint8_t _LD_STACK_TOP;
-extern uint8_t _LD_END_OF_TEXT;
-extern uint8_t _LD_START_OF_DATA;
-extern uint8_t _LD_END_OF_DATA;
-extern uint8_t _LD_END_OF_BSS;
+extern uint8_t _estack[];
+extern uint8_t _etext[];
+extern uint8_t _sidata[];
+extern uint8_t _sdata[];
+extern uint8_t _edata[];
+extern uint8_t _sbss[];
+extern uint8_t _ebss[];
 
 /* we define some standard handler names here - they all default to deadend but may be changed by
  * implementing a real function with that name. So if they are triggered but undefined, we'll just
@@ -32,9 +34,9 @@ void systick_handler(void) DEFAULTS_TO(deadend);
 /* The vector table - contains the initial stack pointer and pointers to boot code as well as
    interrupt and fault handler pointers. The processor will expect this to be located at address
    0x0, so we put it into a separate linker section. */
-__attribute__ ((section(".vectors")))
+__attribute__ ((section(".isr_vector")))
 const void* vtable[] = {
-    &_LD_STACK_TOP,          //Stack top
+    &_estack,          //Stack top
     bootstrap,               //Reset
     deadend,                 //NMI
     deadend,                 //Hard fault
@@ -134,13 +136,14 @@ static void systemInit()
 
 void bootstrap(void)
 {
-    //copy initial values of variables (non-const globals and static variables) from FLASH to RAM
-    uint8_t* mirror = &_LD_END_OF_TEXT; //copy from here
-    uint8_t* ram = &_LD_START_OF_DATA;	//copy to here
-    while (ram < (&_LD_END_OF_DATA)) *(ram++) = *(mirror++);
+    // copy initial values of variables (non-const globals and static variables) from FLASH to RAM
+    uint8_t *mirror = _sidata;                             //copy from here
+    uint8_t *ram = _sdata;                                 //copy to here
+    while (ram < _edata) *(ram++) = *(mirror++);
 
-    //set uninitialized globals (and globals initialized to zero) to zero
-    while (ram < (&_LD_END_OF_BSS)) *(ram++) = 0;
+    // set uninitialized globals (and globals initialized to zero) to zero
+    ram = _sbss;
+    while (ram < _ebss) *(ram++) = 0;
 
     systemInit();
 

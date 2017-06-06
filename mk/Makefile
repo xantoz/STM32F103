@@ -5,10 +5,13 @@ INCLUDES   = $(shell find -L . -type f -name '*.h')
 DEPENDS    = $(SOURCES:%.c=%.dep)
 OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 
+AS       = arm-none-eabi-as
 CC       = arm-none-eabi-gcc
 LD       = arm-none-eabi-ld
 OC       = arm-none-eabi-objcopy
-CCFLAGS  = -g -Os -std=c11 '-mcpu=cortex-m3' '-mthumb' -Wall -Winline -Wno-main
+CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
+ASFLAGS  = -g $(CPUFLAGS)
+CCFLAGS  = -g -Os -std=c11 $(CPUFLAGS) -Wall -Winline -Wno-main
 LDFLAGS  = '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs
 OCFLAGS  = -Obinary --strip-unneeded
 
@@ -24,7 +27,7 @@ $(NAME).elf: $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.s
-	$(CC) $(CCFLAGS) -MD -o $@ -c $<
+	$(AS) $(ASFLAGS) -o $@ $<
 
 # compile .c to .o files. Generate .dep files on the fly.
 %.o: %.c

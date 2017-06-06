@@ -45,6 +45,29 @@ extern void delay_us(int32_t us);
  */
 extern void delay_us_int(int32_t us);
 
+#define __DIV_ROUND_CLOSEST_INT(n, d) \
+    ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
+#define __DIV_ROUND_CLOSEST_UINT(n, d) (((n) - (d)/2)/(d))
+#define DIV_ROUND_CLOSEST(n,d)                                                      \
+    _Generic((n),                                                                   \
+             uint8_t:  _Generic((d), uint8_t:  __DIV_ROUND_CLOSEST_UINT((n),(d))),  \
+             uint8_t: _Generic((d), uint16_t: __DIV_ROUND_CLOSEST_UINT((n),(d))),   \
+             uint8_t: _Generic((d), uint32_t: __DIV_ROUND_CLOSEST_UINT((n),(d))),   \
+             uint16_t:  _Generic((d), uint8_t:  __DIV_ROUND_CLOSEST_UINT((n),(d))), \
+             uint16_t: _Generic((d), uint16_t: __DIV_ROUND_CLOSEST_UINT((n),(d))),  \
+             uint16_t: _Generic((d), uint32_t: __DIV_ROUND_CLOSEST_UINT((n),(d))),  \
+             int32_t:  _Generic((d), int8_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),    \
+             int32_t: _Generic((d), int16_t: __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int32_t: _Generic((d), int32_t: __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int8_t:  _Generic((d), int8_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int8_t: _Generic((d), int16_t: __DIV_ROUND_CLOSEST_INT((n),(d))),      \
+             int8_t: _Generic((d), int32_t: __DIV_ROUND_CLOSEST_INT((n),(d))),      \
+             int16_t:  _Generic((d), int8_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),    \
+             int16_t: _Generic((d), int16_t: __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int16_t: _Generic((d), int32_t: __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int32_t:  _Generic((d), int8_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),    \
+             int32_t: _Generic((d), int16_t: __DIV_ROUND_CLOSEST_INT((n),(d))),     \
+             int32_t: _Generic((d), int32_t: __DIV_ROUND_CLOSEST_INT((n),(d))))
 
 #define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 

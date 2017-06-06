@@ -26,7 +26,7 @@ char read_char();
  *         s [in]: Pointer to memory
  *         len [in]: Length of string
  */
-void write(uint32_t fhandle, const void *s, size_t len);
+void write(uint32_t fhandle, void const * const s, size_t len);
 
 /**
  * @brief Print a string to the debug console.

@@ -35,7 +35,7 @@ char read_char()
     return (char)send_command(SYS_READC, 0);
 }
 
-void write(uint32_t fhandle, const void *s, size_t len)
+void write(uint32_t fhandle, void const * const s, size_t len)
 {
     uint32_t m[] = { fhandle, (uint32_t)s, len/sizeof(char) };
     send_command(SYS_WRITE, m);
@@ -75,7 +75,7 @@ void print_hex(const uint32_t val)
 
 void print_hex(const uint32_t val)
 {
-    static const char *hexLut = "0123456789ABCDEF";
+    static char const * const hexLut = "0123456789ABCDEF";
     static const size_t nibbles = 2*sizeof(uint32_t); // = 8
     char str[2 + nibbles + 1]; // '0x' + 8 nibbles + newline
     str[0] = '0'; str[1] = 'x';

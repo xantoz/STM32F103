@@ -21,15 +21,6 @@ static inline void __CLREX()                    { __asm volatile ("clrex"); }
 
 #include "types.h"
 
-/** puts the CPU to sleep until an interrupt occurs */
-void waitForInterrupt();
-
-/** temporarily disable interrupts (for atomic access - only do this for a short time) */
-void disableInterrupts();
-
-/** re-enable interrupts */
-void enableInterrupts();
-
 /**
  * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
  *        frequency, by virtue of using g_clock.sysclkFreq for scaling (see clock.h).

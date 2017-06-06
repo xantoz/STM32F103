@@ -149,7 +149,7 @@ void bootstrap(void)
 
     //after main, sleep until an interrupt occurs
     while (true) {
-        waitForInterrupt();
+        __WFI();
     }
 }
 

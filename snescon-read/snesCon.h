@@ -10,7 +10,7 @@
 #include "lib/types.h"
 
 /**
- * @brief An unsigned integer large enough to store the state of all buttons on a SNES controller.
+ * @brief An unsigned integer large enough to store the state of all buttons on an SNES controller.
  */
 typedef uint16_t snesCon_btn_t;
 

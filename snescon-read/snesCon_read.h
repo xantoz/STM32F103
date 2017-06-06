@@ -37,8 +37,8 @@ bool snesCon_read_init(const snesCon_read_t * const def);
 /**
  * @brief Read controller state. Meant to be run periodically on a timer tick.
  *
- * @param def         [in]  Definition of GPIO ports & pins. snesCon_read_init must have been called for this
- *                          pin definition beforehand.
+ * @param def  [in]  Definition of GPIO ports & pins. snesCon_read_init must have been called for this
+ *                   pin definition beforehand.
  *
  * @return SNES controller button state
  *

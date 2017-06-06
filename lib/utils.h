@@ -32,18 +32,12 @@ static inline void __CLREX()                    { __asm volatile ("clrex"); }
  *       be usable enough for things where the exactness of the delay is not very important. It
  *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop.
  *
- * @note Interrupts are disabled while this function is executing
+ * @note If you do not wish to have the delay prolonged by interrupts, make sure to disable them
+ *       before calling.
  *
  * @param us [in]   Delay in microseconds
  */
 extern void delay_us(int32_t us);
-
-/**
- * @brief Same as delay_us, but interruptible
- *
- * @param us [in]   Delay in microseconds
- */
-extern void delay_us_int(int32_t us);
 
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))

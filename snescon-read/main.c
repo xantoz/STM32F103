@@ -40,9 +40,9 @@ void main(void)
     while (true)
     {
         GPIO_resetPin(&GPIOC, 13);
-        delay_us_int(3000000);
+        delay_us(3000000);
         GPIO_setPin(&GPIOC, 13);
-        delay_us_int(3000000);
+        delay_us(3000000);
     }
 }
 

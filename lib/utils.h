@@ -59,15 +59,19 @@ extern void delay_us_int(int32_t us);
              uint32_t: _Generic((d), uint8_t:  __DIV_ROUND_CLOSEST_UINT((n),(d)),   \
                                      uint16_t: __DIV_ROUND_CLOSEST_UINT((n),(d)),   \
                                      uint32_t: __DIV_ROUND_CLOSEST_UINT((n),(d))),  \
-             int8_t:   _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),   \
-             int16_t:  _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),   \
-             int32_t:  _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \
-                                     int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d))))
+             unsigned: _Generic((d), uint8_t:  __DIV_ROUND_CLOSEST_UINT((n),(d)),   \
+                                     uint16_t: __DIV_ROUND_CLOSEST_UINT((n),(d)),   \
+                                     uint32_t: __DIV_ROUND_CLOSEST_UINT((n),(d))))  \
+
+             /* int8_t:   _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),   \ */
+             /* int16_t:  _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d))),   \ */
+             /* int32_t:  _Generic((d), int8_t:   __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int16_t:  __DIV_ROUND_CLOSEST_INT((n),(d)),    \ */
+             /*                         int32_t:  __DIV_ROUND_CLOSEST_INT((n),(d)))) */
 
 #define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 

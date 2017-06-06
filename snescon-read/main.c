@@ -37,6 +37,8 @@ void main(void)
 
     snesCon_read_init(&snesCon_def);
 
+    __enable_irq();
+
     while (true)
     {
         GPIO_resetPin(&GPIOC, 13);

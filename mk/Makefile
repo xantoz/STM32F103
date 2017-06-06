@@ -2,7 +2,7 @@ NAME       = firmware
 SOURCES    = $(shell find -L . -type f -name '*.c')
 ASMSOURCES = $(shell find -L . -type f -name '*.s')
 INCLUDES   = $(shell find -L . -type f -name '*.h')
-DEPENDS    = $(SOURCES:%.c=%.dep)
+DEPENDS    = $(SOURCES:%.c=%.dep) $(ASMSOURCES:%.s=%.dep)
 OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 
 AS       = arm-none-eabi-as
@@ -27,15 +27,11 @@ $(NAME).elf: $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.s
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) --MD $*.dep -o $@ $<
 
 # compile .c to .o files. Generate .dep files on the fly.
 %.o: %.c
-	$(CC) $(CCFLAGS) -MD -o $@ -c $<
-	@cp $*.d $*.dep; \
-	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-		-e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.dep; \
-	rm -f $*.d
+	$(CC) $(CCFLAGS) -MD -MF $*.dep -o $@ -c $<
 
 # include depencies are defined in .dep files. Include them as rules here.
 -include $(DEPENDS)

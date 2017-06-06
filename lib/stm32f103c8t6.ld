@@ -71,14 +71,14 @@ SECTIONS {
     text : {
          . = ALIGN(4);
         *(.text)
-        *(.text.*)    
+        *(.text.*)
         *(.rodata)                 /* read-only data (constants) */
         *(.rodata*)
         *(.glue_7)
         *(.glue_7t)
         . = ALIGN(4);
         _etext = .;
-		_sidata = _etext; /* Start of initial values of .data stored in flash*/
+        _sidata = _etext; /* Start of initial values of .data stored in flash*/
     } >flash
 
     /* data section contains read-write (non-const) globals and static variables

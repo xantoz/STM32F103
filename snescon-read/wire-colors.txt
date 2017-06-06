@@ -1,0 +1,8 @@
+This is the wire colour to pin mapping for the cheap knock-off SNES
+controllers I am using for testing:
+
+  white = 5V
+  blue = CLK
+  yellow = LATCH
+  red = DATA
+  brown = GND

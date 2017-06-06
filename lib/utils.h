@@ -45,6 +45,8 @@ extern void delay_us(int32_t us);
  */
 extern void delay_us_int(int32_t us);
 
+#define DIV_ROUND_CLOSEST(n, d) \
+    ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
 
 #define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 

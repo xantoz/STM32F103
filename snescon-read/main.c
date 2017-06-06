@@ -32,7 +32,7 @@ void main(void)
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    if (!systick_startSysTick_us(16667))
+    if (!systick_startSysTick_us(DIV_ROUND_CLOSEST(1000000u, pollFreq)))
         die("Could not set up systick");
 
     snesCon_read_init(&snesCon_def);

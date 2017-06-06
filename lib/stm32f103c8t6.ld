@@ -68,7 +68,7 @@ SECTIONS {
     } >flash
 
     /* .text section contains code and readonly (const) globals */
-    text : {
+    .text : {
          . = ALIGN(4);
         *(.text)
         *(.text.*)
@@ -100,7 +100,7 @@ SECTIONS {
      * or not initialized at all. These are not mirrored in FLASH. Their memory
      * needs to be zeroed at startup. We'll clear it in the bootstrap code. Note that
      * bootstrap code wants this section to follow the data section directly. */
-    bss : {
+    .bss : {
         _sbss = .;     /* Remember position (=start of uninitialized RAM) */
         *(.bss)
         _ebss = .;     /* Remember position (=end of uninitialized RAM) */

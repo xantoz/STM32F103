@@ -3,6 +3,7 @@
 .equ DHCSR, 0xE000EDF0          // Debug Halting and Control Register
 
 // ASM stub to the semihosting interface
+.section .text
 .global send_command
 send_command:
      ldr r2, =DHCSR             // Load the address to DHCSR

@@ -5,7 +5,7 @@
 #include "flash.h"
 #include "debug.h"
 
-// TODO: Code for setting ADC clock, setting SysTick clock source.
+// TODO: Code for setting ADC clock
 // TODO: early exits if we detect that settings are what we are going to set them to
 
 clock_t g_clock = {

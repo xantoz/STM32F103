@@ -6,8 +6,8 @@
 extern volatile uint32_t SRAM_BASE[];
 extern volatile uint32_t PERIPH_BASE[];
 
-extern volatile uint32_t SRAM_BB_BASE[];
-extern volatile uint32_t PERIPH_BB_BASE[];
+extern volatile uint8_t SRAM_BB_BASE[];
+extern volatile uint8_t PERIPH_BB_BASE[];
 
 extern volatile uint32_t FSMC_R_BASE[];
 

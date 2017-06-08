@@ -30,7 +30,8 @@ static inline void __CLREX()                    { __asm volatile ("clrex"); }
  *       long, which translates to a minimum delay of 2 us at 8 MHz. So do not expect this to be
  *       accurate for small values of us relative to SYSCLK, or very accurate overall, but it should
  *       be usable enough for things where the exactness of the delay is not very important. It
- *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop.
+ *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop,
+ *       relative to the overhead.
  *
  * @note If you do not wish to have the delay prolonged by interrupts, make sure to disable them
  *       before calling.

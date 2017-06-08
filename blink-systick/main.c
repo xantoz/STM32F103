@@ -31,7 +31,7 @@ void main(void)
     }
 }
 
-void systick_handler(void)
+void Systick_Handler(void)
 {
     static uint32_t counter = 0;
     // BKPT();

@@ -48,7 +48,7 @@ void main(void)
     }
 }
 
-void systick_handler(void)
+void Systick_Handler(void)
 {
     buttonState = snesCon_read_tick(&snesCon_def);
     static volatile uint8_t cntr = 0;

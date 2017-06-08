@@ -26,7 +26,7 @@ extern uint8_t _ebss[];
 #define DEFAULTS_TO(func) __attribute__ ((weak, alias (#func)))
 
 void main(void);// DEFAULTS_TO(deadend);
-void systick_handler(void) DEFAULTS_TO(deadend);
+void Systick_Handler(void) DEFAULTS_TO(deadend);
 // TODO: define more interrupt handlers here
 
 // TODO: use WDOG or define a default interrupt/exception handler that resets the system
@@ -36,8 +36,8 @@ void systick_handler(void) DEFAULTS_TO(deadend);
    0x0, so we put it into a separate linker section. */
 __attribute__ ((section(".isr_vector")))
 const void* vtable[] = {
-    &_estack,          //Stack top
-    bootstrap,               //Reset
+    &_estack,                //Stack top
+    Reset_Handler,           //Reset
     deadend,                 //NMI
     deadend,                 //Hard fault
     deadend,                 //Memory management fault
@@ -51,7 +51,7 @@ const void* vtable[] = {
     deadend,                 //Reserved for Debug
     NULL,                    //RESERVED
     deadend,                 //PendSV handler
-    systick_handler,         //The SysTick handler
+    Systick_Handler,         //The SysTick handler
     deadend,                 //IRQ0
     deadend,                 //IRQ1
     deadend,                 //IRQ2
@@ -134,7 +134,7 @@ static void systemInit()
     RCC.CIR = 0x009F0000;                  // Disable all interrupts and clear pending bits
 }
 
-void bootstrap(void)
+void Reset_Handler(void)
 {
     // copy initial values of variables (non-const globals and static variables) from FLASH to RAM
     uint8_t *mirror = _sidata;                             //copy from here

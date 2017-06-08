@@ -28,9 +28,9 @@ FSMC_R_BASE    = 0xA0000000;    /*!< FSMC registers base address */
 SCS_BASE  = 0xE000E000;           /*!< System Control Space Base Address */
 ITM_BASE  = 0xE0000000;           /*!< ITM Base Address */
 CoreDebug = 0xE000EDF0;           /*!< Core Debug Base Address */
-SysTick   = (SCS_BASE +  0x0010); /*!< SysTick Base Address */
-NVIC      = (SCS_BASE +  0x0100); /*!< NVIC Base Address */
-SCB       = (SCS_BASE +  0x0D00); /*!< System Control Block Base Address */
+SysTick   = (SCS_BASE + 0x0010);  /*!< SysTick Base Address */
+NVIC      = (SCS_BASE + 0x0100);  /*!< NVIC Base Address */
+SCB       = (SCS_BASE + 0x0D00);  /*!< System Control Block Base Address */
 
 /*!< Peripheral memory map */
 APB1PERIPH_BASE = (PERIPH_BASE);
@@ -48,6 +48,10 @@ OB           = 0x1FFFF800;                /*!< Flash Option Bytes */
 GPIOA = (APB2PERIPH_BASE + 0x0800);
 GPIOB = (APB2PERIPH_BASE + 0x0C00);
 GPIOC = (APB2PERIPH_BASE + 0x1000);
+
+SPI1 = (APB2PERIPH_BASE + 0x3000);
+SPI2 = (APB1PERIPH_BASE + 0x3800);
+SPI3 = (APB1PERIPH_BASE + 0x3C00);
 
 RCC = AHBPERIPH_BASE + 0x1000;
 

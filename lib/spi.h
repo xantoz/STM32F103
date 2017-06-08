@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+/**
+ * @brief Register definitions for SPI peripheral
+ */
 typedef struct
 {
     __IO uint16_t CR1;      //!< SPI control register 1
@@ -31,23 +34,88 @@ extern volatile SPI_Struct SPI1;
 extern volatile SPI_Struct SPI2;
 extern volatile SPI_Struct SPI3;
 
+/**
+ * @brief Bit definitions for SPI_CR1 register
+ */
 enum SPI_CR1_Flg
 {
+    SPI_CR1_BIDIMODE          = 1 << 15,    //!< Bidirectional data mode enable
+    SPI_CR1_BIDIOE            = 1 << 14,    //!< Output enable in bidirectional mode
+    SPI_CR1_CRCEN             = 1 << 13,    //!< Hardware CRC calculation enable
+    SPI_CR1_CRCNEXT           = 1 << 12,    //!< CRC transfer next
 
+    SPI_CR1_DFF               = 1 << 11,    //!< Data frame format
+    SPI_CR1_DFF_8bit          = 0 << 11,    //!< 8-bit data frame format for TX/RF
+    SPI_CR1_DFF_16bit         = 1 << 11,    //!< 16-bit data frame format for TX/RF
+    // Note: This bit should only be written when SPE == 0
+
+    SPI_CR1_RXONLY            = 1 << 10,    //!< Receive only
+    SPI_CR1_SSM               = 1 << 9,     //!< Software slave management enable/disable
+    SPI_CR1_SSI               = 1 << 8,     //!< Interal slave select
+
+    SPI_CR1_LSBFIRST          = 1 << 7,     //!< Frame format.
+    SPI_CR1_LSBFIRST_MSBFIRST = 0 << 7,     //!< MSB transmitted first
+    SPI_CR1_LSBFIRST_LSBFIRST = 1 << 7,     //!< LSB transmitted first
+    // Note: This bit should not be changed when communication is ongoing
+
+    SPI_CR1_SPE               = 1 << 6,     //!< SPI enable
+
+    SPI_CR1_BR                = 0b111 << 3, //!< Bits [5:3] Baud rate control
+    SPI_CR1_BR_PCLK_Div2      = 0b000 << 3, //!< f_{PCLK}/2
+    SPI_CR1_BR_PCLK_Div4      = 0b001 << 3, //!< f_{PCLK}/4
+    SPI_CR1_BR_PCLK_Div8      = 0b010 << 3, //!< f_{PCLK}/8
+    SPI_CR1_BR_PCLK_Div16     = 0b011 << 3, //!< f_{PCLK}/16
+    SPI_CR1_BR_PCLK_Div32     = 0b100 << 3, //!< f_{PCLK}/32
+    SPI_CR1_BR_PCLK_Div64     = 0b101 << 3, //!< f_{PCLK}/64
+    SPI_CR1_BR_PCLK_Div128    = 0b110 << 3, //!< f_{PCLK}/128
+    SPI_CR1_BR_PCLK_Div256    = 0b111 << 3, //!< f_{PCLK}/256
+    // Note: These bits should not be changed when communication is ongoing
+    //       Not used in I2S mode
+
+    SPI_CR1_MSTR              = 1 << 2,     //!< Master selection
+    SPI_CR1_MSTR_Slave        = 0 << 2,     //!< Slave configuration
+    SPI_CR1_MSTR_Master       = 1 << 2,     //!< Master configuration
+    // Note: this bit should not be changed when communication is ongoing
+    //       Not used in I2S mode
+
+    SPI_CR1_CPOL              = 1 << 1,     //!< Clock polarity. O == CK to 0 when idle, 1 == CK to 1 when idle
+
+    SPI_CR1_CPHA              = 1 << 0,     //!< Clock phase.
+    // 0 == The first clock transition is the first data capture edge
+    // 1 == The second clock transition is the first data capture edge
 };
 
+/**
+ * @brief Bit definitions for SPI_CR2 register
+ */
 enum SPI_CR2_Flg
 {
+    SPI_CR2_TXEIE      = 1 << 7,   //!< Tx buffer empty interrupt enable
+    SPI_CR2_RXNEIE     = 1 << 6,   //!< Rx buffer not empty interrupt enable
+    SPI_CR2_ERRIE      = 1 << 5,   //!< Error interrupt enable
+    SPI_CR2_SSOE       = 1 << 2,   //!< SS output enable
+    SPI_CR2_TXDMAEN    = 1 << 1,   //!< Tx buffer DMA enable
+    SPI_CR2_RXDMAEN    = 1 << 0,   //!< Rx buffer DMA enable
 };
 
+/**
+ * @brief Bit definitions for SPI_SR register
+ */
 enum SPI_SR_Flg
 {
+    SPI_SR_BSY        = 1 << 7,    //!< Busy flag
+    SPI_SR_OVR        = 1 << 6,    //!< Overrun flag
+    SPI_SR_MODF       = 1 << 5,    //!< Mode fault
+    SPI_SR_CRCERR     = 1 << 4,    //!< CRC error flag
+    SPI_SR_UDR        = 1 << 3,    //!< Underrun flag (Note: Not used in SPI mode)
+    SPI_SR_CHSIDE     = 1 << 2,    //!< Channel side  (Note: Not used in SPI mode)
+    SPI_SR_TXE        = 1 << 1,    //!< Transmit buffer empty
+    SPI_SR_RXNE       = 1 << 0,    //!< Receive buffer not empty
 };
 
-enum SPI_CRCRPR_Flg { SPI_CRCPR_CRCPOLY  = 0x00007fff; /*!< CRC polynomial bitmask */ };
-enum SPI_RXCRCR_Flg { SPI_RXCRCR_CRCPOLY = 0x00007fff; /*!< RX CRC bitmask */ };
-enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x00007fff; /*!< TX CRC bitmask */ };
-
+enum SPI_CRCRPR_Flg { SPI_CRCPR_CRCPOLY  = 0x7fff /*!< CRC polynomial bitmask */ };
+enum SPI_RXCRCR_Flg { SPI_RXCRCR_CRCPOLY = 0x7fff /*!< RX CRC bitmask */ };
+enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
 
 
 #endif

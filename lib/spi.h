@@ -144,6 +144,13 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
 bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);
 
+enum SPI_NSSManagement
+{
+    SPI_SoftwareNSS,       // SSM = 1
+    SPI_HardwareNSSOutput, // SSM = 0, SSOE = 1
+    SPI_HardwareNSSInput,  // SSM = 0, SSOE = 0 (master mode == become slave if NSS pulled low)
+};
+
 enum SPI_OutputMode
 {
     SPI_PushPull,

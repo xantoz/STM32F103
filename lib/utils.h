@@ -44,10 +44,10 @@ extern void delay_us(int32_t us);
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
 
-#define __SET4(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
-#define __SET3(peripheral, reg, field) ((peripheral).(reg) |= (peripheral##_##reg##_##field))
+#define __SET4(peripheral, reg, field, value) ((peripheral).reg = ((peripheral).reg & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
+#define __SET3(peripheral, reg, field) ((peripheral).reg |= (peripheral##_##reg##_##field))
 #define SET(...) VFUNC(__SET, __VA_ARGS__)
 
-#define RESET(peripheral, reg, field) ((peripheral).(reg) &= ~(peripheral##_##reg##_##field))
+#define RESET(peripheral, reg, field) ((peripheral).reg &= ~(peripheral##_##reg##_##field))
 
 #endif

@@ -78,15 +78,8 @@ extern volatile RCC_Struct RCC;
 #define RCC_AHBPeriph_SRAM               ((uint32_t)0x00000004)
 #define RCC_AHBPeriph_FLITF              ((uint32_t)0x00000010)
 #define RCC_AHBPeriph_CRC                ((uint32_t)0x00000040)
-#ifndef STM32F10X_CL
- #define RCC_AHBPeriph_FSMC              ((uint32_t)0x00000100)
- #define RCC_AHBPeriph_SDIO              ((uint32_t)0x00000400)
-#else
- #define RCC_AHBPeriph_OTG_FS            ((uint32_t)0x00001000)
- #define RCC_AHBPeriph_ETH_MAC           ((uint32_t)0x00004000)
- #define RCC_AHBPeriph_ETH_MAC_Tx        ((uint32_t)0x00008000)
- #define RCC_AHBPeriph_ETH_MAC_Rx        ((uint32_t)0x00010000)
-#endif /* STM32F10X_CL */
+#define RCC_AHBPeriph_FSMC              ((uint32_t)0x00000100)
+#define RCC_AHBPeriph_SDIO              ((uint32_t)0x00000400)
 
 // TODO: redo above with bitfield names also (like CMSIS, but from reference manual) TODO: Use
 // x-macros to avoid unneccesary repetition (while x-macroing: figure out a way to define _Pos &
@@ -103,13 +96,6 @@ extern volatile RCC_Struct RCC;
 #define RCC_CR_CSSON   ((uint32_t)0x00080000)       /*!< Clock Security System enable */
 #define RCC_CR_PLLON   ((uint32_t)0x01000000)       /*!< PLL enable */
 #define RCC_CR_PLLRDY  ((uint32_t)0x02000000)       /*!< PLL clock ready flag */
-
-#ifdef STM32F10X_CL // For STM32F10X_CL only
- #define RCC_CR_PLL2ON  ((uint32_t)0x04000000)       /*!< PLL2 enable */
- #define RCC_CR_PLL2RDY ((uint32_t)0x08000000)       /*!< PLL2 clock ready flag */
- #define RCC_CR_PLL3ON  ((uint32_t)0x10000000)       /*!< PLL3 enable */
- #define RCC_CR_PLL3RDY ((uint32_t)0x20000000)       /*!< PLL3 clock ready flag */
-#endif
 
 /*!<******************  Bit definition for RCC_CIR register  ********************/
 #define RCC_CIR_LSIRDYF    ((uint32_t)0x00000001)     /*!< LSI Ready Interrupt flag */
@@ -129,15 +115,6 @@ extern volatile RCC_Struct RCC;
 #define RCC_CIR_HSERDYC    ((uint32_t)0x00080000)     /*!< HSE Ready Interrupt Clear */
 #define RCC_CIR_PLLRDYC    ((uint32_t)0x00100000)     /*!< PLL Ready Interrupt Clear */
 #define RCC_CIR_CSSC       ((uint32_t)0x00800000)     /*!< Clock Security System Interrupt Clear */
-
-#ifdef STM32F10X_CL // For STM32F10X_CL only
- #define RCC_CIR_PLL2RDYF   ((uint32_t)0x00000020)     /*!< PLL2 Ready Interrupt flag */
- #define RCC_CIR_PLL3RDYF   ((uint32_t)0x00000040)     /*!< PLL3 Ready Interrupt flag */
- #define RCC_CIR_PLL2RDYIE  ((uint32_t)0x00002000)     /*!< PLL2 Ready Interrupt Enable */
- #define RCC_CIR_PLL3RDYIE  ((uint32_t)0x00004000)     /*!< PLL3 Ready Interrupt Enable */
- #define RCC_CIR_PLL2RDYC   ((uint32_t)0x00200000)     /*!< PLL2 Ready Interrupt Clear */
- #define RCC_CIR_PLL3RDYC   ((uint32_t)0x00400000)     /*!< PLL3 Ready Interrupt Clear */
-#endif
 
 //!< ****************** Bit definition for RCC_CFGR register  ********************
 #define RCC_CFGR_MCO          ((uint32_t)(0b111 << 24)) //!< MCO[2:0] (Bits 26:24) Microcontroller clock output

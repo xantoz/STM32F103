@@ -25,6 +25,8 @@ void main(void)
 {
     clock_setSysClockHSE_24MHz();
 
+    __disable_irq();
+
     // Enable clock to GPIOA & GPIOB & GPIOC
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA;
     RCC.APB2ENR |= RCC_APB2Periph_GPIOB;
@@ -32,10 +34,10 @@ void main(void)
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
+    snesCon_read_init(&snesCon_def);
+
     if (!systick_startSysTick_us(DIV_ROUND_CLOSEST(1000000u, pollFreq)))
         die("Could not set up systick");
-
-    snesCon_read_init(&snesCon_def);
 
     __enable_irq();
 

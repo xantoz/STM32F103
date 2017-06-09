@@ -2,6 +2,8 @@
 #define _SPI_
 
 #include "types.h"
+#include "gpio.h"
+#include "afio.h"
 
 /**
  * @brief Register definitions for SPI peripheral
@@ -141,5 +143,23 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  */
 bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);
+
+enum SPI_OutputMode
+{
+    SPI_PushPull,
+    SPI_OpenDrain
+};
+
+enum SPI_InputMode
+{
+    SPI_Floating,
+    SPI_PullUp,
+    SPI_PullDown
+};
+
+/**
+ * @brief Write me
+ */
+void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode);
 
 #endif

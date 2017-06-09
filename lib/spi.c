@@ -85,10 +85,10 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
 void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
     static const SPI_Pins SPI2_Mapping = {
-        .NSS  = {&GPIOA, 4},
-        .SCK  = {&GPIOA, 5},
-        .MISO = {&GPIOA, 6},
-        .MOSI = {&GPIOA, 7},
+        .NSS  = {&GPIOB, 12},
+        .SCK  = {&GPIOB, 13},
+        .MISO = {&GPIOB, 14},
+        .MOSI = {&GPIOB, 15},
     };
 
     spi_setupGpioHelper(outputMode, inputMode, &SPI2_Mapping);

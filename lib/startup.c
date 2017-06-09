@@ -132,6 +132,8 @@ static void systemInit()
     RCC.CR &= (uint32_t)0xFFFBFFFF;        // Reset HSEBYP bit
     RCC.CFGR &= (uint32_t)0xFF80FFFF;      // Reset PLLSRC, PLLXTPRE, PLLMUL and USBPRE/OTGFSPRE bits
     RCC.CIR = 0x009F0000;                  // Disable all interrupts and clear pending bits
+
+    RCC.APB2ENR |= RCC_APB2Periph_AFIO;    // Enable AFIO (not really much point in ever shutting it down)
 }
 
 void Reset_Handler(void)

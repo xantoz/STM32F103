@@ -51,7 +51,7 @@ enum SPI_CR1_Flg
 
     SPI_CR1_RXONLY            = 1 << 10,    //!< Receive only
     SPI_CR1_SSM               = 1 << 9,     //!< Software slave management enable/disable
-    SPI_CR1_SSI               = 1 << 8,     //!< Interal slave select
+    SPI_CR1_SSI               = 1 << 8,     //!< Internal slave select
 
     SPI_CR1_LSBFIRST          = 1 << 7,     //!< Frame format.
     SPI_CR1_LSBFIRST_MSBFIRST = 0 << 7,     //!< MSB transmitted first

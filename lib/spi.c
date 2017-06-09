@@ -32,7 +32,9 @@ bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t ma
     return false;
 }
 
-void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
+// TODO: mold this into a more fully encompassing SPI init function (handle freq, clock phase &c.,
+// do not set up port bits for NSS when not applicable)
+void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
     uint8_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
     uint8_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
@@ -53,6 +55,7 @@ void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum 
     GPIO_setMODE_setCNF(&SCK,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
     GPIO_setMODE_setCNF(&MOSI, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
 
+    // TODO: consider having a gpio init function which also boxes pullup/pulldown (this would've then been a one-liner)
     GPIO_setMODE_setCNF(&MISO, GPIO_MODE_Input, inputCNF);         // MISO
     if (inputMode == SPI_PullUp)
         GPIO_setPin(&MISO);

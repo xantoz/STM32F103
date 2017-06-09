@@ -24,9 +24,6 @@ extern volatile uint32_t APB1PERIPH_BASE[];
 extern volatile uint32_t APB2PERIPH_BASE[];
 extern volatile uint32_t AHBPERIPH_BASE[];
 
-extern volatile uint32_t AFIO_BASE[];
-extern volatile uint32_t EXTI_BASE[];
-
 extern volatile uint32_t FLASH_R_BASE[];
 extern volatile uint32_t OB_BASE[];
 

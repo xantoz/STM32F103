@@ -49,11 +49,11 @@ void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum 
     else
         die("SPI1_MapGpio: Invalid parameter");
 
-    GPIO_setMODE_setCNF(NSS.port,  NSS.pin,  GPIO_MODE_Output_50MHz, outputCNF); // NSS
-    GPIO_setMODE_setCNF(SCK.port,  SCK.pin,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
-    GPIO_setMODE_setCNF(MOSI.port, MOSI.pin, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
+    GPIO_setMODE_setCNF(&NSS,  GPIO_MODE_Output_50MHz, outputCNF); // NSS
+    GPIO_setMODE_setCNF(&SCK,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
+    GPIO_setMODE_setCNF(&MOSI, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
 
-    GPIO_setMODE_setCNF(MISO.port, MISO.pin, GPIO_MODE_Input, inputCNF);         // MISO
+    GPIO_setMODE_setCNF(&MISO, GPIO_MODE_Input, inputCNF);         // MISO
     if (inputMode == SPI_PullUp)
         GPIO_setPin(&MISO);
     else if (inputMode == SPI_PullDown)

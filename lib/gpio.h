@@ -62,18 +62,27 @@ static inline HW_RW *GPIO_getCR(volatile GPIO_Port * const GPIOx,
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
 }
 
-void GPIO_setMODE(volatile GPIO_Port * const GPIOx,
-                  const uint8_t pin,
-                  const uint8_t mode);
-
-void GPIO_setCNF(volatile GPIO_Port * const GPIOx,
-                 const uint8_t pin,
-                 const uint8_t cnf);
-
-void GPIO_setMODE_setCNF(volatile GPIO_Port * const GPIOx,
+void __GPIO_setMODE_impl(volatile GPIO_Port * const GPIOx,
                          const uint8_t pin,
-                         const uint8_t cnf,
                          const uint8_t mode);
+#define _GPIO_setMODE3(GPIOx, pin, mode) __GPIO_setMODE_impl((GPIOx), (pin), (mode))
+#define _GPIO_setMODE2(portpin, mode)    __GPIO_setMODE_impl((portpin)->port, (portpin)->pin, (mode))
+#define GPIO_setMODE(...) VFUNC(_GPIO_setMODE, __VA_ARGS__)
+
+void __GPIO_setCNF_impl(volatile GPIO_Port * const GPIOx,
+                        const uint8_t pin,
+                        const uint8_t cnf);
+#define _GPIO_setCNF3(GPIOx, pin, cnf) __GPIO_setCNF_impl((GPIOx), (pin), (cnf))
+#define _GPIO_setCNF2(portpin, cnf)    __GPIO_setCNF_impl((portpin)->port, (portpin)->pin, (cnf))
+#define GPIO_setCNF(...) VFUNC(_GPIO_setCNF, __VA_ARGS__)
+
+void __GPIO_setMODE_setCNF_impl(volatile GPIO_Port * const GPIOx,
+                                const uint8_t pin,
+                                const uint8_t cnf,
+                                const uint8_t mode);
+#define _GPIO_setMODE_setCNF4(GPIOx, pin, mode, cnf) __GPIO_setMODE_setCNF_impl((GPIOx), (pin), (mode), (cnf))
+#define _GPIO_setMODE_setCNF3(portpin, mode, cnf)    __GPIO_setMODE_setCNF_impl((portpin)->port, (portpin)->pin, (mode), (cnf))
+#define GPIO_setMODE_setCNF(...) VFUNC(_GPIO_setMODE_setCNF, __VA_ARGS__)
 
 #define __GPIO_define_portPin_alias(NAME) \
     static inline void NAME##1(const GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }

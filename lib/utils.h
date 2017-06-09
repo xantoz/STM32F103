@@ -41,6 +41,13 @@ static inline void __CLREX()                    { __asm volatile ("clrex"); }
  */
 extern void delay_us(int32_t us);
 
+#define BITBAND_SRAM_REF 0x20000000
+#define BITBAND_SRAM_BASE 0x22000000
+#define BITBAND_SRAM(a,b) ((BITBAND_SRAM_BASE + (a-BITBAND_SRAM_REF)*32 + (b*4))) // Convert SRAM address
+#define BITBAND_PERI_REF 0x40000000
+#define BITBAND_PERI_BASE 0x42000000
+#define BITBAND_PERI(a,b) ((BITBAND_PERI_BASE + (a-BITBAND_PERI_REF)*32 + (b*4))) // Convert PERI address
+
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
 

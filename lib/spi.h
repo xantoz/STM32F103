@@ -162,4 +162,9 @@ enum SPI_InputMode
  */
 void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode);
 
+/**
+ * @brief Write me
+ */
+void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode);
+
 #endif

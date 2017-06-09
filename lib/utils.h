@@ -20,6 +20,7 @@ static inline void __DMB()                      { __asm volatile ("dmb"); }
 static inline void __CLREX()                    { __asm volatile ("clrex"); }
 
 #include "types.h"
+#include "vfunc.h"
 
 /**
  * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
@@ -43,6 +44,10 @@ extern void delay_us(int32_t us);
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
 
-#define SET(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
+#define __SET4(peripheral, reg, field, value) ((peripheral).(reg) = ((peripheral).(reg) & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
+#define __SET3(peripheral, reg, field) ((peripheral).(reg) |= (peripheral##_##reg##_##field))
+#define SET(...) VFUNC(__SET, __VA_ARGS__)
+
+#define RESET(peripheral, reg, field) ((peripheral).(reg) &= ~(peripheral##_##reg##_##field))
 
 #endif

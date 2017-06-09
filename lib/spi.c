@@ -18,7 +18,7 @@ bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t ma
         SPI_CR1_BR_PCLK_Div256,
     };
 
-    uint32_t baseFreq = (spi == &SPI1) ? g_clock.pclk2Freq : g_clock.pclk1Freq;
+    const uint32_t baseFreq = (spi == &SPI1) ? g_clock.pclk2Freq : g_clock.pclk1Freq;
     for (uint8_t i = 1; i <= 8; ++i)
     {
         uint32_t freq = (baseFreq >> i);
@@ -41,8 +41,8 @@ static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
                                 enum SPI_InputMode inputMode,
                                 SPI_Pins const * const pins)
 {
-    uint8_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
-    uint8_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
+    const uint8_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
+    const uint8_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
 
     GPIO_setMODE_setCNF(&pins->NSS,  GPIO_MODE_Output_50MHz, outputCNF); // NSS
     GPIO_setMODE_setCNF(&pins->SCK,  GPIO_MODE_Output_50MHz, outputCNF); // SCK

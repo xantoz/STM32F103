@@ -7,8 +7,8 @@
 #include "debug.h"
 #include "systick.h"
 
-void bootstrap(void);	//bootstrap that will call main later
-void deadend(void);	//neverending handler
+void Reset_Handler(void);    // bootstrap that will call main later
+void deadend(void);          // neverending handler
 
 /* These variables are used to pass memory locations from the linker script to our code. */
 extern uint8_t _estack[];

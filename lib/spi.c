@@ -1,6 +1,8 @@
 #include "spi.h"
 
 #include "clock.h"
+#include "utils.h"
+#include "debug.h"
 
 bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq)
@@ -35,33 +37,25 @@ void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum 
     uint32_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
     uint32_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
 
-    // TODO: Rewrite using GPIO_PortPin structs instead, for clearer, less repeated code?
+    GPIO_PortPin NSS  = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 4} : (GPIO_PortPin){&GPIOA, 15};
+    GPIO_PortPin SCK  = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 5} : (GPIO_PortPin){&GPIOB, 3};
+    GPIO_PortPin MISO = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 6} : (GPIO_PortPin){&GPIOB, 4};
+    GPIO_PortPin MOSI = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 7} : (GPIO_PortPin){&GPIOB, 5};
+
     if (mapping == DEFAULT)
-    {
-        GPIO_setMODE_setCNF(&GPIOA, 4, GPIO_MODE_Output_50MHz, outputCNF); // NSS
-        GPIO_setMODE_setCNF(&GPIOA, 5, GPIO_MODE_Output_50MHz, outputCNF); // SCK
-        GPIO_setMODE_setCNF(&GPIOA, 7, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
-
-        GPIO_setMODE_setCNF(&GPIOA, 6, GPIO_MODE_Input, inputCNF);         // MISO
-        if (inputMode == SPI_PullUp)
-            GPIO_setPin(&GPIOA, 6);
-        else if (inputMode == SPI_PullDown)
-            GPIO_resetPin(&GPIOA, 6);
-
-        AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
-    }
+        RESET(AFIO, MAPR, SPI1_REMAP);
     else if (mapping == ALTERNATE)
-    {
-        GPIO_setMODE_setCNF(&GPIOA, 15, GPIO_MODE_Output_50MHz, outputCNF); // NSS
-        GPIO_setMODE_setCNF(&GPIOB, 3,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
-        GPIO_setMODE_setCNF(&GPIOB, 5,  GPIO_MODE_Output_50MHz, outputCNF); // MOSI
+        SET(AFIO, MAPR, SPI1_REMAP);
+    else
+        die("SPI1_MapGpio: Invalid parameter");
 
-        GPIO_setMODE_setCNF(&GPIOB, 4,  GPIO_MODE_Input, inputCNF);         // MISO
-        if (inputMode == SPI_PullUp)
-            GPIO_setPin(&GPIOB, 4);
-        else if (inputMode == SPI_PullDown)
-            GPIO_resetPin(&GPIOB, 4);
+    GPIO_setMODE_setCNF(NSS.port,  NSS.pin,  GPIO_MODE_Output_50MHz, outputCNF); // NSS
+    GPIO_setMODE_setCNF(SCK.port,  SCK.pin,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
+    GPIO_setMODE_setCNF(MOSI.port, MOSI.pin, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
 
-        AFIO.MAPR |= AFIO_MAPR_SPI1_REMAP;
-    }
+    GPIO_setMODE_setCNF(MISO.port, MISO.pin, GPIO_MODE_Input, inputCNF);         // MISO
+    if (inputMode == SPI_PullUp)
+        GPIO_setPin(&MISO);
+    else if (inputMode == SPI_PullDown)
+        GPIO_resetPin(&MISO);
 }

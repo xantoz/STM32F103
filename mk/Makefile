@@ -11,7 +11,7 @@ LD       = arm-none-eabi-ld
 OC       = arm-none-eabi-objcopy
 CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
 ASFLAGS  = -g $(CPUFLAGS)
-CCFLAGS  = -g -Os -std=c11 $(CPUFLAGS) -Wall -Winline -Wno-main
+CCFLAGS  = -g -Os -std=c11 $(CPUFLAGS) -fshort-enums -Wall -Winline -Wno-main
 LDFLAGS  = '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs
 OCFLAGS  = -Obinary --strip-unneeded
 

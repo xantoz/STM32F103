@@ -117,5 +117,29 @@ enum SPI_CRCRPR_Flg { SPI_CRCPR_CRCPOLY  = 0x7fff /*!< CRC polynomial bitmask */
 enum SPI_RXCRCR_Flg { SPI_RXCRCR_CRCPOLY = 0x7fff /*!< RX CRC bitmask */ };
 enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
 
+/**
+ * @brief Helper function that stores to flag of the first SPI_CR1_BR_DivX flag that will result in a baud
+ * rate below or equal to maxFreq, when running at the current PCLK2 or PCLK1.
+ *
+ * @note  Uses g_clock to get the base frequency
+ *
+ * @param [in]   spi         For which SPI peripheral (determines whether we use g_clock.pclk2Freq or g_clock.pclk1freq)
+ * @param [in]   maxFreq     Maximum frequency/baud rate in Hz
+ * @param [out]  flag        Set to the SPI_CR1_BR_DivX flag, unless NULL
+ * @param [out]  actualFreq  Set to the actual baud rate this will give, unless NULL
+ *
+ * @return true if a divisor was found, false if no baud rate below maxFreq available
+ *
+ * Example usage:
+ *   uint16_t flag;
+ *   uint32_t actualFreq;
+ *   if (!spi_getBaudRateDivisorFromMaxFreq(&SPI1, 1000000, &flag, &actualFreq))
+ *       die("Could not get suitable SPI baud rate");
+ *   SPI1.CR1 &= ~SPI_CR1_BR;
+ *   SPI1.CR1 |= flag;
+ *   // actualFreq now contains the actual baud rate
+ */
+bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t maxFreq,
+                                       uint16_t *flag, uint32_t *actualFreq);
 
 #endif

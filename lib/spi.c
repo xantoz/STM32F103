@@ -34,8 +34,8 @@ bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t ma
 
 void SPI1_MapGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
-    uint32_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
-    uint32_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
+    uint8_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
+    uint8_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
 
     GPIO_PortPin NSS  = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 4} : (GPIO_PortPin){&GPIOA, 15};
     GPIO_PortPin SCK  = (mapping == DEFAULT) ? (GPIO_PortPin){&GPIOA, 5} : (GPIO_PortPin){&GPIOB, 3};

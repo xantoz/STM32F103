@@ -1,8 +1,9 @@
 #include "snesCon_read.h"
 
 #include "lib/utils.h"
+#include "lib/gpio.h"
 
-bool snesCon_read_init(const struct snesCon_read * const def)
+bool snesCon_read_init(const struct snesCon_pins * const def)
 {
     GPIO_setMODE_setCNF(&def->clock, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&def->latch, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
@@ -15,7 +16,7 @@ bool snesCon_read_init(const struct snesCon_read * const def)
     return true;
 }
 
-snesCon_btn_t snesCon_read_tick(const struct snesCon_read * const def)
+snesCon_btn_t snesCon_read_tick(const struct snesCon_pins * const def)
 {
     __disable_irq();
 

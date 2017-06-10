@@ -12,7 +12,7 @@ static const uint8_t pollFreq = 60;  //!< How often to poll the controller [Hz]
 
 static snesCon_btn_t buttonState;
 
-static const struct snesCon_read snesCon_def =
+static const struct snesCon_pins snesCon_def =
 {
     .clock = {&GPIOA, 6},
     .latch = {&GPIOA, 7},

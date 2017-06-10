@@ -8,6 +8,17 @@
 #define _SNESCON_
 
 #include "lib/types.h"
+#include "lib/gpio.h"
+
+/**
+ * @brief SNES Controller GPIO pin definition structure.
+ */
+struct snesCon_pins
+{
+    struct GPIO_PortPin clock; //!< Data clock (controller pin 2)
+    struct GPIO_PortPin latch; //!< Data latch (controller pin 3)
+    struct GPIO_PortPin data;  //!< Serial data (controller pin 4)
+};
 
 /**
  * @brief An unsigned integer large enough to store the state of all buttons on an SNES controller.
@@ -45,7 +56,5 @@ enum snesCon_buttons
     snesCon_BUTTON_L_Msk      = (1 << snesCon_BUTTON_L_Pos),
     snesCon_BUTTON_R_Msk      = (1 << snesCon_BUTTON_R_Pos)
 };
-    
-
-
+ 
 #endif

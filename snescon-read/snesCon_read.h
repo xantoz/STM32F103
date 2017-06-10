@@ -10,17 +10,6 @@
 #include "snesCon.h"
 
 #include "lib/types.h"
-#include "lib/gpio.h"
-
-/**
- * @brief SNES Controller (read) definition structure.
- */
-struct snesCon_read
-{
-    struct GPIO_PortPin clock; //!< Data clock (controller pin 2)
-    struct GPIO_PortPin latch; //!< Data latch (controller pin 3)
-    struct GPIO_PortPin data;  //!< Serial data (controller pin 4)
-};
 
 /**
  * @brief Initialize hardware for the pin&port definition in def.
@@ -32,7 +21,7 @@ struct snesCon_read
  *
  * @return Status: true on success, false on failure
  */
-bool snesCon_read_init(const struct snesCon_read * const def);
+bool snesCon_read_init(const struct snesCon_pins * const def);
 
 /**
  * @brief Read controller state. Meant to be run periodically on a timer tick.
@@ -43,6 +32,6 @@ bool snesCon_read_init(const struct snesCon_read * const def);
  * @return SNES controller button state
  *
  */
-snesCon_btn_t snesCon_read_tick(const struct snesCon_read * const def);
+snesCon_btn_t snesCon_read_tick(const struct snesCon_pins * const def);
 
 #endif

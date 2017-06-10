@@ -26,13 +26,12 @@ static inline void __CLREX()                    { __asm volatile ("clrex"); }
  * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
  *        frequency, by virtue of using g_clock.sysclkFreq for scaling (see clock.h).
  *
- * @note The lower the SYSCLK frequency is, the lower the minimum possible delay becomes. So do not
- *       expect it to be able to delay for as short as 1 us. The overhead is at least 16 cycles
- *       long, which translates to a minimum delay of 2 us at 8 MHz. So do not expect this to be
- *       accurate for small values of us relative to SYSCLK, or very accurate overall, but it should
- *       be usable enough for things where the exactness of the delay is not very important. It
- *       becomes more accurate for larger SYSCLK as more time is spent inside the tight loop,
- *       relative to the overhead.
+ * @note The lower the SYSCLK frequency is, the longer the minimum possible delay becomes. The
+ *       overhead, while accounted for, is at least 12 cycles long, which translates to a minimum
+ *       delay of 1.5 us at 8 MHz SYSCLK. So do not expect this to be accurate for small values of
+ *       us relative to SYSCLK, or very accurate overall. However it should be usable enough when
+ *       precise timings are not needed. It becomes more accurate for larger SYSCLK as more time is
+ *       spent inside the tight loop, relative to on the overhead.
  *
  * @note If you do not wish to have the delay prolonged by interrupts, make sure to disable them
  *       before calling.

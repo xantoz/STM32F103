@@ -1,19 +1,20 @@
-NAME       = firmware
+NAME      := firmware
 SOURCES    = $(shell find -L . -type f -name '*.c')
 ASMSOURCES = $(shell find -L . -type f -name '*.s')
 INCLUDES   = $(shell find -L . -type f -name '*.h')
 DEPENDS    = $(SOURCES:%.c=%.dep) $(ASMSOURCES:%.s=%.dep)
 OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 
-AS       = arm-none-eabi-as
-CC       = arm-none-eabi-gcc
-LD       = arm-none-eabi-ld
-OC       = arm-none-eabi-objcopy
-CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
-ASFLAGS  = -g $(CPUFLAGS)
-CCFLAGS  = -g -Os -std=c11 $(CPUFLAGS) -fshort-enums -Wall -Winline -Wno-main
-LDFLAGS  = '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs
-OCFLAGS  = -Obinary --strip-unneeded
+AS       := arm-none-eabi-as
+CC       := arm-none-eabi-gcc
+LD       := arm-none-eabi-ld
+OC       := arm-none-eabi-objcopy
+CPUFLAGS := -mcpu=cortex-m3 -march=armv7-m -mthumb
+DEBUG    ?= -g
+ASFLAGS  := $(DEBUG) $(CPUFLAGS)
+CCFLAGS  := $(DEBUG) -Os -std=c11 $(CPUFLAGS) -fshort-enums -Wall -Winline -Wno-main
+LDFLAGS  := '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
+OCFLAGS  := -Obinary --strip-unneeded
 
 # all generates our target bin
 all: $(NAME).bin
@@ -39,4 +40,4 @@ $(NAME).elf: $(OBJS)
 # clean all generated files
 .PHONY: clean
 clean:
-	-rm -f $(NAME).bin $(NAME).hex $(NAME).elf $(OBJS) $(DEPENDS)
+	-rm -f $(NAME).bin $(NAME).hex $(NAME).elf $(NAME).map $(OBJS) $(DEPENDS)

@@ -7,7 +7,7 @@
   * @brief FLASH Registers
   */
 
-typedef struct
+struct FLASH_Regs
 {
     HW_RW ACR;
     HW_RW KEYR;
@@ -26,15 +26,15 @@ typedef struct
     HW_RW CR2;
     HW_RW AR2;
 #endif /* STM32F10X_XL */
-} FLASH_Struct;
+};
 
-extern volatile FLASH_Struct FLASH;
+extern volatile struct FLASH_Regs FLASH;
 
 /**
   * @brief Option Bytes Registers
   */
 
-typedef struct
+struct OB_Regs
 {
     __IO uint16_t RDP;
     __IO uint16_t USER;
@@ -44,9 +44,9 @@ typedef struct
     __IO uint16_t WRP1;
     __IO uint16_t WRP2;
     __IO uint16_t WRP3;
-} OB_Struct;
+};
 
-extern volatile OB_Struct OB;
+extern volatile struct OB_Regs OB;
 
 /*******************  Bit definition for FLASH_ACR register  ******************/
 #define  FLASH_ACR_LATENCY                   ((uint8_t)0x03)               /*!< LATENCY[2:0] bits (Latency) */

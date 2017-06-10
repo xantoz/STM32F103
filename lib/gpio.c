@@ -1,6 +1,6 @@
 #include "gpio.h"
 
-void __GPIO_setMODE_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setMODE_impl(volatile struct GPIO_Port * const GPIOx,
                          const uint8_t pin,
                          const uint8_t mode)
 {
@@ -11,7 +11,7 @@ void __GPIO_setMODE_impl(volatile GPIO_Port * const GPIOx,
     *CR = (*CR & ~mask) | (val & mask);
 }
 
-void __GPIO_setCNF_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                         const uint8_t pin,
                         const uint8_t cnf)
 {
@@ -22,7 +22,7 @@ void __GPIO_setCNF_impl(volatile GPIO_Port * const GPIOx,
     *CR = (*CR & ~mask) | (val & mask);
 }
 
-void __GPIO_setMODE_setCNF_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin,
                                 const uint8_t cnf,
                                 const uint8_t mode)

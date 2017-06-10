@@ -7,7 +7,7 @@
 /**
  * memory mapped structure for Nested Vectored Interrupt Controller (NVIC)
  */
-typedef struct
+struct NVIC_Regs
 {
   __IO uint32_t ISER[8];                      /*!< Offset: 0x000  Interrupt Set Enable Register           */
        uint32_t RESERVED0[24];
@@ -22,8 +22,8 @@ typedef struct
   __IO uint8_t  IP[240];                      /*!< Offset: 0x300  Interrupt Priority Register (8Bit wide) */
        uint32_t RESERVED5[644];
   __O  uint32_t STIR;                         /*!< Offset: 0xE00  Software Trigger Interrupt Register     */
-}  NVIC_Struct;
+};
 
-extern volatile NVIC_Struct NVIC;
+extern volatile struct NVIC_Regs NVIC;
 
 #endif

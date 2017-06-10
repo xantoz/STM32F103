@@ -13,7 +13,7 @@
 /**
  * \brief Clock frequencies struct
  */
-typedef struct
+struct clocks
 {
     uint32_t sysclkFreq;   //!< Current SYSCLK speed in Hz
     uint32_t hclkFreq;     //!< Current HCLK speed in Hz
@@ -21,12 +21,12 @@ typedef struct
     uint32_t pclk1Freq;    //!< Currentl PCLK1 speed in Hz
     uint32_t sysTickFreq;  //!< Currentl SysTick speed in Hz
     uint32_t timerFreq;    //!< Current TIMxCLK speed in Hz
-} clock_t;
+};
 
 /**
  * \brief Clock frequencies global variable
  */
-extern clock_t g_clock;
+extern struct clocks g_clock;
 
 /**
  * @brief Set SYSCLK to HSE, and adjust FLASH parameters.

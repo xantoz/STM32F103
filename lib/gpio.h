@@ -8,7 +8,7 @@
 /**
  * @brief GPIO
  */
-typedef struct
+struct GPIO_Port
 {
     HW_RW CRL;  //!< Port configuration register low
     HW_RW CRH;  //!< Port configuration register high
@@ -17,21 +17,21 @@ typedef struct
     HW_WO BSRR; //!< Port bit set/reset register
     HW_WO BRR;  //!< Port bit reset register
     HW_RW LCKR; //!< Port configuration lock register
-} GPIO_Port;
+};
 
-extern volatile GPIO_Port GPIOA;
-extern volatile GPIO_Port GPIOB;
-extern volatile GPIO_Port GPIOC;
+extern volatile struct GPIO_Port GPIOA;
+extern volatile struct GPIO_Port GPIOB;
+extern volatile struct GPIO_Port GPIOC;
 
 /**
  * @brief Simple tuple that can be used to refer to a specific pin on a specific port.
  * Defined here as a convenience.
  */
-typedef struct
+struct GPIO_PortPin
 {
-    volatile GPIO_Port *port;
+    volatile struct GPIO_Port *port;
     uint8_t pin;
-} GPIO_PortPin;
+};
 
 // Settings for CNF bits in CRL/CRH, input mode
 #define GPIO_Input_CNF_Analog         0b00 //!< Analog mode
@@ -56,27 +56,27 @@ typedef struct
 
 /** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
 __attribute__((pure))
-static inline HW_RW *GPIO_getCR(volatile GPIO_Port * const GPIOx,
+static inline HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin)
 {
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
 }
 
-void __GPIO_setMODE_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setMODE_impl(volatile struct GPIO_Port * const GPIOx,
                          const uint8_t pin,
                          const uint8_t mode);
 #define _GPIO_setMODE3(GPIOx, pin, mode) __GPIO_setMODE_impl((GPIOx), (pin), (mode))
 #define _GPIO_setMODE2(portpin, mode)    __GPIO_setMODE_impl((portpin)->port, (portpin)->pin, (mode))
 #define GPIO_setMODE(...) VFUNC(_GPIO_setMODE, __VA_ARGS__)
 
-void __GPIO_setCNF_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                         const uint8_t pin,
                         const uint8_t cnf);
 #define _GPIO_setCNF3(GPIOx, pin, cnf) __GPIO_setCNF_impl((GPIOx), (pin), (cnf))
 #define _GPIO_setCNF2(portpin, cnf)    __GPIO_setCNF_impl((portpin)->port, (portpin)->pin, (cnf))
 #define GPIO_setCNF(...) VFUNC(_GPIO_setCNF, __VA_ARGS__)
 
-void __GPIO_setMODE_setCNF_impl(volatile GPIO_Port * const GPIOx,
+void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin,
                                 const uint8_t cnf,
                                 const uint8_t mode);
@@ -85,25 +85,25 @@ void __GPIO_setMODE_setCNF_impl(volatile GPIO_Port * const GPIOx,
 #define GPIO_setMODE_setCNF(...) VFUNC(_GPIO_setMODE_setCNF, __VA_ARGS__)
 
 #define __GPIO_define_portPin_alias(NAME) \
-    static inline void NAME##1(const GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
+    static inline void NAME##1(const struct GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
 
 #define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
-static inline void __GPIO_setPin2(volatile GPIO_Port * const port, const uint8_t pin) {
+static inline void __GPIO_setPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
     port->BSRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_setPin)
 
 #define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
-static inline void __GPIO_resetPin2(volatile GPIO_Port * const port, const uint8_t pin) {
+static inline void __GPIO_resetPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
     port->BRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_resetPin)
 
 #define GPIO_read(...) VFUNC(__GPIO_read, __VA_ARGS__)
-static inline bool __GPIO_read2(volatile GPIO_Port * const port, const uint8_t pin) {
+static inline bool __GPIO_read2(volatile struct GPIO_Port * const port, const uint8_t pin) {
     return (port->IDR >> pin) & 0x1;
 }
-static inline bool __GPIO_read1(const GPIO_PortPin * const portpin) {
+static inline bool __GPIO_read1(const struct GPIO_PortPin * const portpin) {
     return __GPIO_read2(portpin->port, portpin->pin);
 }
 

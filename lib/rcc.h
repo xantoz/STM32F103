@@ -7,7 +7,7 @@
 /**
  * @brief Reset and Clock Control
  */
-typedef struct
+struct RCC_Regs
 {
     HW_RW CR;       //!< Clock control register
     HW_RW CFGR;     //!< Clock confguration register
@@ -19,11 +19,11 @@ typedef struct
     HW_RW APB1ENR;  //!< APB1 peripheral clock enable register
     HW_RW BDCR;     //!< Backup domain control register
     HW_RW CSR;      //!< Control/status register
-} RCC_Struct;
+};
 
 // TODO: Use enums instead of defines?
 
-extern volatile RCC_Struct RCC;
+extern volatile struct RCC_Regs RCC;
 
 #define RCC_APB1Periph_TIM2              ((uint32_t)0x00000001)
 #define RCC_APB1Periph_TIM3              ((uint32_t)0x00000002)

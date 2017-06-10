@@ -7,15 +7,15 @@
 /**
  * @brief memory mapped structure for SysTick
  */
-typedef struct
+struct SysTick_Regs
 {
     HW_RW CTRL;      //!< Offset: 0x00  SysTick Control and Status Register
     HW_RW LOAD;      //!< Offset: 0x04  SysTick Reload Value Register
     HW_RW VAL;       //!< Offset: 0x08  SysTick Current Value Register
     HW_WO CALIB;     //!< Offset: 0x0C  SysTick Calibration Register
-} SysTick_Struct;
+};
 
-extern volatile SysTick_Struct SysTick;
+extern volatile struct SysTick_Regs SysTick;
 
 /* SysTick Control / Status Register Definitions */
 #define SysTick_CTRL_COUNTFLAG ((uint32_t)(1 << 16)) //!< Returns 1 if timer counted to 0 since last time this was read.

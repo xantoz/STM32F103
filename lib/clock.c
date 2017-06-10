@@ -8,7 +8,7 @@
 // TODO: Code for setting ADC clock
 // TODO: early exits if we detect that settings are what we are going to set them to
 
-clock_t g_clock = {
+struct clocks g_clock = {
     // Default values on bootup, if the clock speeds haven't been changed
     .sysclkFreq = CLOCK_HSI_Hz,         // SYSCLK == HSI == 8 MHz on bootup
     .hclkFreq = CLOCK_HSI_Hz,           // HCLK == SYSCLK == HSI by default

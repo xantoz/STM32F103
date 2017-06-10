@@ -30,11 +30,11 @@ typedef struct
     __IO uint16_t I2SPR;    //!< I2S prescaler register
     uint16_t reserved9;
 #endif
-} SPI_Struct;
+} SPI_Regs;
 
-extern volatile SPI_Struct SPI1;
-extern volatile SPI_Struct SPI2;
-extern volatile SPI_Struct SPI3;
+extern volatile SPI_Regs SPI1;
+extern volatile SPI_Regs SPI2;
+extern volatile SPI_Regs SPI3;
 
 /**
  * @brief Bit definitions for SPI_CR1 register
@@ -141,7 +141,7 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  *   SPI1.CR1 |= flag;
  *   // actualFreq now contains the actual baud rate
  */
-bool spi_getBaudRateDivisorFromMaxFreq(SPI_Struct const * const spi, uint32_t maxFreq,
+bool spi_getBaudRateDivisorFromMaxFreq(SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);
 
 enum SPI_NSSManagement

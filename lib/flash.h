@@ -26,9 +26,9 @@ typedef struct
     HW_RW CR2;
     HW_RW AR2;
 #endif /* STM32F10X_XL */
-} FLASH_Struct;
+} FLASH_Regs;
 
-extern volatile FLASH_Struct FLASH;
+extern volatile FLASH_Regs FLASH;
 
 /**
   * @brief Option Bytes Registers
@@ -44,9 +44,9 @@ typedef struct
     __IO uint16_t WRP1;
     __IO uint16_t WRP2;
     __IO uint16_t WRP3;
-} OB_Struct;
+} OB_Regs;
 
-extern volatile OB_Struct OB;
+extern volatile OB_Regs OB;
 
 /*******************  Bit definition for FLASH_ACR register  ******************/
 #define  FLASH_ACR_LATENCY                   ((uint8_t)0x03)               /*!< LATENCY[2:0] bits (Latency) */

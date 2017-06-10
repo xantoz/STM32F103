@@ -22,8 +22,8 @@ typedef struct
   __IO uint8_t  IP[240];                      /*!< Offset: 0x300  Interrupt Priority Register (8Bit wide) */
        uint32_t RESERVED5[644];
   __O  uint32_t STIR;                         /*!< Offset: 0xE00  Software Trigger Interrupt Register     */
-}  NVIC_Struct;
+}  NVIC_Regs;
 
-extern volatile NVIC_Struct NVIC;
+extern volatile NVIC_Regs NVIC;
 
 #endif

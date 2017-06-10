@@ -24,7 +24,7 @@ typedef struct
     uint16_t reserved6;
     __IO uint16_t TXCRCR;   //!< SPI RX crc register
     uint16_t reserved7;
-#if defined(STM32F10X_HD) || defined(STM32F10X_XL)
+#if defined(STM32F10X_HD) || defined(STM32F10X_XL) // TODO: perhaps include these anyway as writing here (to disable I2S) won't hurt?
     __IO uint16_t I2SCFGR;  //!< I2S configuration register
     uint16_t reserved8;
     __IO uint16_t I2SPR;    //!< I2S prescaler register

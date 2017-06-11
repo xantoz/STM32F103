@@ -36,6 +36,11 @@ struct SPI_Pins
     struct GPIO_PortPin NSS, SCK, MISO, MOSI;
 };
 
+// TODO: Assumes master mode (SCK is an output, so is NSS), but might work in slave mode as well, as
+//       SCK might as well be a bi-directional pin from the view of GPIO w.r.t. different
+//       configurations of the peripheral, but this will of course not let us do pull-ups or
+//       pull-downs on a SCK input, for instance.
+// TODO: NSS pin is always configured as an AF output, this might not be what we always want
 static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
                                 enum SPI_InputMode inputMode,
                                 struct SPI_Pins const * const pins)

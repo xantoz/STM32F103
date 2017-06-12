@@ -3,6 +3,7 @@
 .equ DHCSR, 0xE000EDF0          // Debug Halting and Control Register
 
 // ASM stub to the semihosting interface
+// Returns without doing anything, unless in debug mode (C_DEBUGEN bit set in DHCSR)
 .section .text
 .global send_command
 send_command:

@@ -65,11 +65,13 @@ extern void delay_us(int32_t us);
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
-// TODO: Fix bug, only works for singleton peripherals, must be like set(SPI1, SPI_CR1, DFF, 8bit)
-#define __SET4(peripheral, reg, field, value) ((peripheral).reg = ((peripheral).reg & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
-#define __SET3(peripheral, reg, field) ((peripheral).reg |= (peripheral##_##reg##_##field))
+// Usage examples: SET(SPI1, SPI_CR1, BR, PCLK_Div64)
+//                 SET(SPI1, SPI_CR1, LSBFIRST)
+//                 RESET(SPI1, SPI_CR1, LSBFIRST)
+#define __SET4(peripheral, reg, field, value) ((peripheral).reg = ((peripheral).reg & ~(reg##_##field)) | reg##_##field##_##value)
+#define __SET3(peripheral, reg, field) ((peripheral).reg |= (reg##_##field))
 #define SET(...) VFUNC(__SET, __VA_ARGS__)
 
-#define RESET(peripheral, reg, field) ((peripheral).reg &= ~(peripheral##_##reg##_##field))
+#define RESET(peripheral, reg, field) ((peripheral).reg &= ~(reg##_##field))
 
 #endif

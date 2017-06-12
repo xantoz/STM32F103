@@ -65,9 +65,9 @@ static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
 void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
     if (mapping == ALTERNATE)
-        SET(AFIO, MAPR, SPI1_REMAP);
+        AFIO.MAPR |= AFIO_MAPR_SPI1_REMAP;
     else
-        RESET(AFIO, MAPR, SPI1_REMAP);
+        AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
 
     static const struct SPI_Pins SPI1_Default_Mapping = {
         .NSS  = {&GPIOA, 4},

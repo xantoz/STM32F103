@@ -3,7 +3,7 @@
 #include "clock.h"
 #include "utils.h"
 
-bool spi_getBaudRateDivisorFromMaxFreq(struct SPI_Regs const * const spi, uint32_t maxFreq,
+bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq)
 {
     static const uint16_t flags[8] = {

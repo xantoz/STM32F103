@@ -141,7 +141,7 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  *   SPI1.CR1 |= flag;
  *   // actualFreq now contains the actual baud rate
  */
-bool spi_getBaudRateDivisorFromMaxFreq(struct SPI_Regs const * const spi, uint32_t maxFreq,
+bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);
 
 enum SPI_NSSManagement

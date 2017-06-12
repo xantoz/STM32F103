@@ -106,11 +106,11 @@ static void updateClockFreqs()
     // Get PCLK1 (APB1) frequency
     uint32_t ppre1 = cfgr & RCC_CFGR_PPRE1;
     uint32_t ppre1_div =
-        (ppre1 == RCC_CFGR_PPRE2_HCLK_Div1)  ? 1 :
-        (ppre1 == RCC_CFGR_PPRE2_HCLK_Div2)  ? 2 :
-        (ppre1 == RCC_CFGR_PPRE2_HCLK_Div4)  ? 4 :
-        (ppre1 == RCC_CFGR_PPRE2_HCLK_Div8)  ? 8 :
-        (ppre1 == RCC_CFGR_PPRE2_HCLK_Div16) ? 16 : 0;
+        (ppre1 == RCC_CFGR_PPRE1_HCLK_Div1)  ? 1 :
+        (ppre1 == RCC_CFGR_PPRE1_HCLK_Div2)  ? 2 :
+        (ppre1 == RCC_CFGR_PPRE1_HCLK_Div4)  ? 4 :
+        (ppre1 == RCC_CFGR_PPRE1_HCLK_Div8)  ? 8 :
+        (ppre1 == RCC_CFGR_PPRE1_HCLK_Div16) ? 16 : 0;
     if (ppre1_div == 0)
         die("ERROR: Invalid PPRE1 setting in RCC_CFGR");
     g_clock.pclk1Freq = g_clock.hclkFreq/ppre1_div;

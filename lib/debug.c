@@ -48,31 +48,6 @@ void print(const char *s)
     write(2/*stderr*/, s, strlen(s));
 }
 
-#if 0
-// assumes dst to be >= (1 + 2 * len)
-static void hexDump(char * dst, const void *ptr, const size_t len)
-{
-    static const char * hexLut = "0123456789ABCDEF";
-    for(uint32_t i = 0; i < len; i++)
-    {
-        uint8_t b = ((uint8_t*)ptr)[i];
-        *dst++ = hexLut[(b >> 4) & 0x0F];
-        *dst++ = hexLut[(b >> 0) & 0x0F];
-    }
-    *dst = '\0';
-}
-
-void print_hex(const uint32_t val)
-{
-    char str[(1 + 2*sizeof(uint32_t)) + 1];
-    hexDump(str, &val, sizeof(uint32_t));
-    size_t len = strlen(str);
-    str[len]   = '\n'; // We allocated space for this (extra + 1)
-    str[len+1] = '\0';
-    print(str);
-}
-#endif
-
 void print_hex(const uint32_t val)
 {
     static char const * const hexLut = "0123456789ABCDEF";
@@ -105,6 +80,9 @@ int32_t clock()
     return *((int32_t*)(&result));
 }
 
+// TODO: cause hardfault (or other exception) instead to let an overridable handler dcide what to
+// do? Or perhaps just a custom handler Die_Handler?
+// TODO: do we need to enable debug before we BKPT, or indeed before we BKPT 0xAB?
 void die(const char *s)
 {
 #ifdef __GNUC__

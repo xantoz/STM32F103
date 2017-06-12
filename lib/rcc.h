@@ -78,8 +78,8 @@ extern volatile struct RCC_Regs RCC;
 #define RCC_AHBPeriph_SRAM               ((uint32_t)0x00000004)
 #define RCC_AHBPeriph_FLITF              ((uint32_t)0x00000010)
 #define RCC_AHBPeriph_CRC                ((uint32_t)0x00000040)
-#define RCC_AHBPeriph_FSMC              ((uint32_t)0x00000100)
-#define RCC_AHBPeriph_SDIO              ((uint32_t)0x00000400)
+#define RCC_AHBPeriph_FSMC               ((uint32_t)0x00000100)
+#define RCC_AHBPeriph_SDIO               ((uint32_t)0x00000400)
 
 // TODO: redo above with bitfield names also (like CMSIS, but from reference manual) TODO: Use
 // x-macros to avoid unneccesary repetition (while x-macroing: figure out a way to define _Pos &

@@ -61,6 +61,11 @@ extern void delay_us(int32_t us);
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
+
+// TODO: Fix bug, only works for singleton peripherals, must be like set(SPI1, SPI_CR1, DFF, 8bit)
 #define __SET4(peripheral, reg, field, value) ((peripheral).reg = ((peripheral).reg & ~(peripheral##_##reg##_##field)) | peripheral##_##reg##_##field##_##value)
 #define __SET3(peripheral, reg, field) ((peripheral).reg |= (peripheral##_##reg##_##field))
 #define SET(...) VFUNC(__SET, __VA_ARGS__)

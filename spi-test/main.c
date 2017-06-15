@@ -94,8 +94,8 @@ void main(void)
     // Enable clock to all GPIO:s
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
 
-    // Enable clock to SPI2
-    RCC.APB1ENR |= RCC_APB1Periph_SPI2;
+    RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
+    RCC.APB1ENR |= RCC_APB1Periph_SPI2;    // Enable clock to SPI2
 
     spi_setup();
 

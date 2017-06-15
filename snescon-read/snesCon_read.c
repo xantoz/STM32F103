@@ -18,7 +18,8 @@ bool snesCon_read_init(const struct snesCon_pins * const def)
 
 snesCon_btn_t snesCon_read_tick(const struct snesCon_pins * const def)
 {
-    __disable_irq();
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
     GPIO_setPin(&def->latch);
     delay_us(12);
@@ -38,7 +39,7 @@ snesCon_btn_t snesCon_read_tick(const struct snesCon_pins * const def)
         delay_us(12);
     }
 
-    __enable_irq();
+    UNLOCK_IRQ(lock);
 
     return btn;
 }

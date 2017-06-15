@@ -138,6 +138,8 @@ static void systemInit()
 
 void Reset_Handler(void)
 {
+    __disable_irq();
+
     // copy initial values of variables (non-const globals and static variables) from FLASH to RAM
     uint8_t *mirror = _sidata;                             //copy from here
     uint8_t *ram = _sdata;                                 //copy to here
@@ -148,6 +150,8 @@ void Reset_Handler(void)
     while (ram < _ebss) *(ram++) = 0;
 
     systemInit();
+
+    __enable_irq();
 
     //jump into main user code (which should setup needed timers and interrupts or not return at all)
     main();

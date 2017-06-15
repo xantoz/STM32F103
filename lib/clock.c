@@ -1,5 +1,6 @@
 #include "clock.h"
 
+#include "utils.h"
 #include "rcc.h"
 #include "systick.h"
 #include "flash.h"
@@ -162,6 +163,9 @@ void clock_setSysClockHSE()
 {
     CASSERT_FREQUENCY(CLOCK_HSE_Hz);
 
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
     startHSE();
 
     FLASH.ACR |= FLASH_ACR_PRFTBE; // Enable prefetch buffer
@@ -182,11 +186,16 @@ void clock_setSysClockHSE()
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
 }
 
 void clock_setSysClockHSE_24MHz()
 {
     CASSERT_FREQUENCY((CLOCK_HSE_Hz/2)*6);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
     startHSE();
 
@@ -220,11 +229,16 @@ void clock_setSysClockHSE_24MHz()
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
 }
 
 void clock_setSysClockHSI_24MHz()
 {
     CASSERT_FREQUENCY((CLOCK_HSI_Hz/2)*6);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
     startHSI();
 
@@ -258,11 +272,16 @@ void clock_setSysClockHSI_24MHz()
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
 }
 
 void clock_setSysClockHSI()
 {
     CASSERT_FREQUENCY(CLOCK_HSI_Hz);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
     startHSI();
 
@@ -281,22 +300,34 @@ void clock_setSysClockHSI()
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
 }
 
 void clock_setSysTick_HCLK()
 {
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
     SysTick.CTRL &= ~SysTick_CTRL_CLKSOURCE;
     SysTick.CTRL |= SysTick_CTRL_CLKSOURCE_HCLK;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR
     g_clock.sysTickFreq = g_clock.hclkFreq;
+
+    UNLOCK_IRQ(lock);
 }
 
 void clock_setSysTick_HCLK_Div8()
 {
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
     SysTick.CTRL &= ~SysTick_CTRL_CLKSOURCE;
     SysTick.CTRL |= SysTick_CTRL_CLKSOURCE_HCLK_Div8;
 
     // Just update g_clock directly, since we haven't changed RCC_CFGR
     g_clock.sysTickFreq = g_clock.hclkFreq/8;
+
+    UNLOCK_IRQ(lock);
 }

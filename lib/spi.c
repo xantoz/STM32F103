@@ -64,6 +64,9 @@ static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
 // and do not set up port bits for NSS when not applicable)
 void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
     if (mapping == ALTERNATE)
         AFIO.MAPR |= AFIO_MAPR_SPI1_REMAP;
     else
@@ -84,10 +87,15 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
 
     const struct SPI_Pins *pinMap = (mapping == ALTERNATE) ? &SPI1_Alternate_Mapping : &SPI1_Default_Mapping;
     spi_setupGpioHelper(outputMode, inputMode, pinMap);
+
+    UNLOCK_IRQ(lock);
 }
 
 void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
 {
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
     static const struct SPI_Pins SPI2_Mapping = {
         .NSS  = {&GPIOB, 12},
         .SCK  = {&GPIOB, 13},
@@ -96,4 +104,6 @@ void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode
     };
 
     spi_setupGpioHelper(outputMode, inputMode, &SPI2_Mapping);
+
+    UNLOCK_IRQ(lock);
 }

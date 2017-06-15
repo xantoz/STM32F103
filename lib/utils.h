@@ -1,8 +1,8 @@
 #ifndef _UTILS_
 #define _UTILS_
 
-#define NOP()  { __asm volatile ("NOP\n"); }
-#define BKPT() { __asm volatile ("BKPT\n"); }
+#define NOP()  do { __asm volatile ("NOP\n"); } while (0)
+#define BKPT() do { __asm volatile ("BKPT\n"); } while (0)
 
 static inline void __enable_irq()               { __asm volatile ("cpsie i"); }
 static inline void __disable_irq()              { __asm volatile ("cpsid i"); }

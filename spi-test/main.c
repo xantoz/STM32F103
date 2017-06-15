@@ -7,7 +7,7 @@
 #include "lib/debug.h"
 
 // Allow to easily change which SPI peripheral is used in this code
-#define mySPI (SPI2)
+#define mySPI (SPI1)
 #define MAX_BAUDRATE 8000000
 
 void spi_setup()
@@ -43,9 +43,15 @@ void spi_setup()
     mySPI.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
 
     // Setup GPIO pins for SPI
+#if mySPI == SPI1
+    print("SPI2_SetupGpio\n");
+    SPI1_SetupGpio(DEFAULT, SPI_PushPull, SPI_PullDown);
+#elif mySPI == SPI2
     print("SPI2_SetupGpio\n");
     SPI2_SetupGpio(SPI_PushPull, SPI_PullDown);
-
+#else
+#error "No such SPI: mySPI"
+#endif
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
     print("spi_getBaudRateDivisorFromMaxFreq\n");
     uint16_t flag;
@@ -98,7 +104,6 @@ void main(void)
     RCC.APB1ENR |= RCC_APB1Periph_SPI2;    // Enable clock to SPI2
 
     spi_setup();
-
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 

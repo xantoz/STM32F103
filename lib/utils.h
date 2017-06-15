@@ -1,6 +1,9 @@
 #ifndef _UTILS_
 #define _UTILS_
 
+#include "types.h"
+#include "vfunc.h"
+
 #define NOP()  do { __asm volatile ("NOP\n"); } while (0)
 #define BKPT() do { __asm volatile ("BKPT\n"); } while (0)
 
@@ -19,8 +22,16 @@ static inline void __DSB()                      { __asm volatile ("dsb"); }
 static inline void __DMB()                      { __asm volatile ("dmb"); }
 static inline void __CLREX()                    { __asm volatile ("clrex"); }
 
-#include "types.h"
-#include "vfunc.h"
+extern uint32_t __get_PRIMASK();
+extern void  __set_PRIMASK(uint32_t primask);
+
+/**
+ * @brief Re-entrant IRQ lock functions
+ */
+typedef uint32_t irq_lock_t;
+#define LOCK_IRQ(lock) do { (lock) = __get_PRIMASK(); __disable_irq(); } while (0)
+#define UNLOCK_IRQ(lock) do { __set_PRIMASK((lock)); } while (0)
+
 
 /**
  * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK

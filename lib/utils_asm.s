@@ -30,3 +30,13 @@ delay_us:                   // Cycle count (dumb: ignore potential pipeline effe
     bgt 1b                  // 2<usu> (2-4), 1 when not taken
 2:
     bx lr                   // 2<usu> (2 to 4)
+
+.global __get_PRIMASK
+__get_PRIMASK:
+    mrs r0, PRIMASK
+    bx lr
+
+.global __set_PRIMASK
+__set_PRIMASK:
+    msr PRIMASK, r0
+    bx lr

@@ -1,11 +1,12 @@
 .syntax unified
+.section .text
 
 // TODO: copy this function to RAM on startup for more predictable execution? (need to add section for functions like this to linkscript)
 // TODO: profile the overhead (can use DWT) to see how close my calculations are (my guess is that it is taking a few cycles more, because of pipeline stalls due to dependent instructions)
 
 // Source for the cycle counts of instructions: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0337h/CHDDIGAC.html
-.section .text
 .global delay_us
+.balign 4
 delay_us:                   // Cycle count (dumb: ignore potential pipeline effects, assume branches always take 2 cycles when taken)
     // Load g_clock.sysclkFreq to r1
     ldr r1,=g_clock         // 2
@@ -32,11 +33,13 @@ delay_us:                   // Cycle count (dumb: ignore potential pipeline effe
     bx lr                   // 2<usu> (2 to 4)
 
 .global __get_PRIMASK
+.balign 4
 __get_PRIMASK:
     mrs r0, PRIMASK
     bx lr
 
 .global __set_PRIMASK
+.balign 4
 __set_PRIMASK:
     msr PRIMASK, r0
     bx lr

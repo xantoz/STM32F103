@@ -51,7 +51,7 @@ typedef uint32_t irq_lock_t;
  * @brief Microsecond delay function
  *
  * @details NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
- *          frequency, by virtue of using g_clock.sysclkFreq for scaling (@see clock.h).
+ *          frequency, by virtue of using g_clock.sysclkFreq for scaling (see clock.h).
  *
  * @note Reads g_clock.sysclkFreq
  *

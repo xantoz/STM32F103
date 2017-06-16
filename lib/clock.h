@@ -1,4 +1,6 @@
 /**
+ * @file  clock.h
+ *
  * @brief High-level interface to set the various clocks, etc.
  */
 
@@ -11,10 +13,11 @@
 #define CLOCK_HSI_Hz ((uint32_t)8000000) //!< Speed of the HSI (internal) clock in Hz
 
 /**
- * \brief Clock frequencies struct
+ * @brief Clock frequencies struct
  */
 struct clocks
 {
+/** @privatesection */
     uint32_t sysclkFreq;   //!< Current SYSCLK speed in Hz
     uint32_t hclkFreq;     //!< Current HCLK speed in Hz
     uint32_t pclk2Freq;    //!< Current PCLK2 speed in Hz
@@ -24,38 +27,46 @@ struct clocks
 };
 
 /**
- * \brief Clock frequencies global variable
+ * @brief   Clock frequencies global variable
+ * @details This variable is automatically updated by the functions in this module.
  */
 extern struct clocks g_clock;
 
 /**
- * @brief Set SYSCLK to HSE, and adjust FLASH parameters.
- *        set HCLK = SYSCLK/1, PCLK2 = HCLK/1, PCLK1 = HCLK/1
+ * @brief   Set SYSCLK to HSE.
  *
- * @note  Updates g_clock
+ * @details Sets HCLK = SYSCLK/1, PCLK2 = HCLK/1, PCLK1 = HCLK/1, and adjusts FLASH parameters.
+ *
+ * @note    Updates g_clock
  */
 void clock_setSysClockHSE();
 
 /**
- * @brief Set SYSCLK to 24 MHz via PLLCLK and HSE
- *        set SYSCLK = (HSE/2)*6, HCLK = SYSCLK/1, PCLK1 = HCLK/1, PCLK2 = HCLK/1
+ * @brief   Set SYSCLK to 24 MHz via PLLCLK and HSE.
  *
- * @note  Updates g_clock
+ * @details Sets SYSCLK = (HSE/2)*6, HCLK = SYSCLK/1, PCLK1 = HCLK/1, PCLK2 = HCLK/1,
+ *          and adjusts FLASH parameters.
+ *
+ * @note    Updates g_clock
  */
 void clock_setSysClockHSE_24MHz();
 
 /**
- * @brief Set SYSCLK to 24 MHz via PLLCLK and HSI.
- *        set SYSCLK = (HSI/2)*6, HCLK = SYSCLK/1, PCLK1 = HCLK/1, PCLK2 = HCLK/1
+ * @brief   Set SYSCLK to 24 MHz via PLLCLK and HSI.
  *
- * @note  Updates g_clock
+ * @details Sets SYSCLK = (HSI/2)*6, HCLK = SYSCLK/1, PCLK1 = HCLK/1, PCLK2 = HCLK/1,
+ *          and adjusts FLASH parameters.
+ *
+ * @note    Updates g_clock
  */
 void clock_setSysClockHSI_24MHz();
 
 /**
- * @brief set SYSCLK to HSI
+ * @brief   Set SYSCLK to HSI
  *
- * @note  Updates g_clock
+ * @details Sets HCLK = SYSCLK/1, PCLK2 = HCLK/1, PCLK1 = HCLK/1, and adjusts FLASH parameters.
+ *
+ * @note    Updates g_clock
  */
 void clock_setSysClockHSI();
 
@@ -72,6 +83,5 @@ void clock_setSysTick_HCLK();
  * @note  Updates g_clock
  */
 void clock_setSysTick_HCLK_Div8();
-
 
 #endif

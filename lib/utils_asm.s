@@ -7,6 +7,7 @@
 // Source for the cycle counts of instructions: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0337h/CHDDIGAC.html
 .global delay_us
 .balign 4
+.thumb_func
 delay_us:                   // Cycle count (dumb: ignore potential pipeline effects, assume branches always take 2 cycles when taken)
     // Load g_clock.sysclkFreq to r1
     ldr r1,=g_clock         // 2
@@ -34,12 +35,14 @@ delay_us:                   // Cycle count (dumb: ignore potential pipeline effe
 
 .global __get_PRIMASK
 .balign 4
+.thumb_func
 __get_PRIMASK:
     mrs r0, PRIMASK
     bx lr
 
 .global __set_PRIMASK
 .balign 4
+.thumb_func
 __set_PRIMASK:
     msr PRIMASK, r0
     bx lr

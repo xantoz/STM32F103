@@ -1,12 +1,15 @@
 .syntax unified
+.thumb
 
 .equ DHCSR, 0xE000EDF0          // Debug Halting and Control Register
 
+.section .text
+
 // ASM stub to the semihosting interface
 // Returns without doing anything, unless in debug mode (C_DEBUGEN bit set in DHCSR)
-.section .text
 .global send_command
 .balign 4
+.thumb_func
 send_command:
      ldr r2, =DHCSR             // Load the address to DHCSR
      ldr r2, [r2]               // Load the contents of DHCSR

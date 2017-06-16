@@ -1,3 +1,9 @@
+/**
+ * @file utils.h
+ *
+ * @brief Various basic utilities. ASM commands, IRQ locking, delay function, utility macros.
+ */
+
 #ifndef _UTILS_
 #define _UTILS_
 
@@ -8,8 +14,8 @@
 #define asm __asm__
 #endif
 
-#define NOP()  do { asm("NOP\n"); } while (0)
-#define BKPT() do { asm("BKPT\n"); } while (0)
+#define NOP()  __NOP()
+#define BKPT() do { asm("bkpt"); } while (0)
 
 static inline void __enable_irq()        { asm("cpsie i"); }
 static inline void __disable_irq()       { asm("cpsid i"); }
@@ -30,16 +36,24 @@ extern uint32_t __get_PRIMASK();
 extern void  __set_PRIMASK(uint32_t primask);
 
 /**
- * @brief Re-entrant IRQ lock functions
+ * @defgroup Re-entrant IRQ lock functions
+ * @{
  */
+/** @brief typedef to use with LOCK_IRQ/UNLOCK_IRQ **/
 typedef uint32_t irq_lock_t;
+/** @brief Stores PRIMASK, and disables IRQ */
 #define LOCK_IRQ(lock) do { (lock) = __get_PRIMASK(); __disable_irq(); } while (0)
+/** @brief Restores PRIMASK previously saved by LOCK_IRQ */
 #define UNLOCK_IRQ(lock) do { __set_PRIMASK((lock)); } while (0)
-
+/**@}*/
 
 /**
- * @brief NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
- *        frequency, by virtue of using g_clock.sysclkFreq for scaling (see clock.h).
+ * @brief Microsecond delay function
+ *
+ * @details NOP-based/cycle-counting based delay routine. Works regardless of current SYSCLK
+ *          frequency, by virtue of using g_clock.sysclkFreq for scaling (@see clock.h).
+ *
+ * @note Reads g_clock.sysclkFreq
  *
  * @note The lower the SYSCLK frequency is, the longer the minimum possible delay becomes. The
  *       overhead, while accounted for, is at least 12 cycles long, which translates to a minimum

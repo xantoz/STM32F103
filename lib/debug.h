@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "vfunc.h"
+#include "utils.h"
 
 /**
  * @brief Output a single character to the debug console.
@@ -67,7 +68,7 @@ void die(const char *s);
 
 #ifndef NDEBUG
 #define __assert2(cond, text) do { if (!(cond)) die((text)); } while (0)
-#define __assert1(cond) __assert2((cond), ""#cond ": "  __FILE__ __LINE__)
+#define __assert1(cond) __assert2((cond), #cond " @ "  __FILE__ ":" TOSTRING(__LINE__))
 #define assert(...) VFUNC(__assert, __VA_ARGS__)
 #else
 #define assert(...)

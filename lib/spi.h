@@ -1,3 +1,9 @@
+/**
+ * @file  spi.h
+ *
+ * @brief SPI peripheral register definitions + functions.
+ */
+
 #ifndef _SPI_
 #define _SPI_
 
@@ -120,12 +126,16 @@ enum SPI_RXCRCR_Flg { SPI_RXCRCR_CRCPOLY = 0x7fff /*!< RX CRC bitmask */ };
 enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
 
 /**
- * @brief Helper function that stores to flag of the first SPI_CR1_BR_DivX flag that will result in a baud
- * rate below or equal to maxFreq, when running at the current PCLK2 or PCLK1.
+ * @brief   Given an SPI peripheral and a frequency, get a flag for SPI_CR1_BR.
+ *
+ * @details This is a helper function that stores to flag of the first SPI_CR1_BR_DivX flag that
+ *          will result in a baud rate below or equal to maxFreq, when running at the current
+ *          PCLK2 or PCLK1.
  *
  * @note  Uses g_clock to get the base frequency
  *
- * @param [in]   spi         For which SPI peripheral (determines whether we use g_clock.pclk2Freq or g_clock.pclk1freq)
+ * @param [in]   spi         For which SPI peripheral (determines whether we use
+ *                             g_clock.pclk2Freq or g_clock.pclk1freq)
  * @param [in]   maxFreq     Maximum frequency/baud rate in Hz
  * @param [out]  flag        Set to the SPI_CR1_BR_DivX flag, unless NULL
  * @param [out]  actualFreq  Set to the actual baud rate this will give, unless NULL
@@ -133,6 +143,7 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  * @return true if a divisor was found, false if no baud rate below maxFreq available
  *
  * Example usage:
+ * @code
  *   uint16_t flag;
  *   uint32_t actualFreq;
  *   if (!spi_getBaudRateDivisorFromMaxFreq(&SPI1, 1000000, &flag, &actualFreq))
@@ -140,6 +151,7 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  *   SPI1.CR1 &= ~SPI_CR1_BR;
  *   SPI1.CR1 |= flag;
  *   // actualFreq now contains the actual baud rate
+ * @endcode
  */
 bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);

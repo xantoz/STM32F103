@@ -5,6 +5,8 @@ INCLUDES   = $(shell find -L . -type f -name '*.h')
 DEPENDS    = $(SOURCES:%.c=%.dep) $(ASMSOURCES:%.s=%.dep)
 OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 
+LINKER_SCRIPT := lib/stm32f103c8t6.ld
+
 AS       := arm-none-eabi-as
 CC       := arm-none-eabi-gcc
 LD       := arm-none-eabi-ld
@@ -13,7 +15,7 @@ CPUFLAGS := -mcpu=cortex-m3 -march=armv7-m -mthumb
 DEBUG    ?= -g
 ASFLAGS  := $(DEBUG) $(CPUFLAGS)
 CCFLAGS  := $(DEBUG) -Os -std=c11 $(CPUFLAGS) -fshort-enums -Wall -Winline -Wno-main
-LDFLAGS  := '-Tlib/stm32f103c8t6.ld' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
+LDFLAGS  := '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  := -Obinary --strip-unneeded
 
 # all generates our target bin
@@ -24,8 +26,8 @@ $(NAME).bin: $(NAME).elf
 	$(OC) $(OCFLAGS) $^ $@
 
 # generate obj (ELF) by linking all .o files
-$(NAME).elf: $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^
+$(NAME).elf: $(OBJS) $(LINKER_SCRIPT)
+	$(LD) $(LDFLAGS) -o $@ $(filter-out $(LINKER_SCRIPT),$^)
 
 %.o: %.s
 	$(AS) $(ASFLAGS) --MD $*.dep -o $@ $<

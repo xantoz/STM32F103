@@ -6,7 +6,7 @@
 #include "flash.h"
 #include "debug.h"
 
-// TODO: Code for setting ADC clock
+// TODO: Functions for setting ADC clock manually
 // TODO: early exits if we detect that settings are what we are going to set them to
 
 struct clocks g_clock = {
@@ -17,24 +17,43 @@ struct clocks g_clock = {
     .pclk1Freq = CLOCK_HSI_Hz,          // PCLK1 == HCLK == HSI by default
     .sysTickFreq = CLOCK_HSI_Hz/8,      // SysTick FREQ == SYSCLK/8 == HSI/8 by default
     .timerFreq = CLOCK_HSI_Hz,          // TIMxCLK == PCLK2*1 if APB2 prescaler == 1 else TIMxCLK == PCLK2*2
+    .adcClkFreq = CLOCK_HSI_Hz/2,       // ADCCLK == PCLK2/2 == HSI/2 by default
 };
 
 static const uint32_t MHz = 1000000; // Convert from Hz to MHz
 
 /// Macro to check at compile time that frequency is not out of range
 // TODO: Backwards compatible definition so we compile without C11 ?
-#define CASSERT_FREQUENCY(f) \
-    _Static_assert(0 < (f) && (f) < 72*MHz, "Frequency out of range")
+#define CASSERT_SYSCLKFREQ(f) \
+    _Static_assert(0 < (f) && (f) < SYSCLK_MAX, "Frequency out of range")
+
+/// Macro to check at compile time that frequency is not out of range
+// TODO: Backwards compatible definition so we compile without C11 ?
+#define CASSERT_PCLK2FREQ(f) \
+    _Static_assert(0 < (f) && (f) < PCLK2_MAX, "Frequency out of range")
 
 // Helper to get FLASH_ACR_LATENCY, based on what we are setting SYSCLK to
 #define GET_FLASH_ACR_LATENCY(f)                                                       \
     ({                                                                                 \
       const uint32_t _f = (f);                                                         \
-      CASSERT_FREQUENCY(_f);                                                           \
+      CASSERT_SYSCLKFREQ(_f);                                                           \
       (_f <= 24*MHz)                ? FLASH_ACR_LATENCY_0 : /* f <= 24 MHz */          \
       (24*MHz < _f && _f <= 48*MHz) ? FLASH_ACR_LATENCY_1 : /* 24 MHz < f <= 48 MHz */ \
       (48*MHz < _f && _f <= 72*MHz) ? FLASH_ACR_LATENCY_2 : /* 48 MHz < f <= 72 MHz */ \
                                       0b111;                /* undefined */            \
+    })
+
+// Helper to get a suitable ADCPRE given PCLK2 freq, so that ADCCLK is not running at more than 14 MHz
+#define GET_ADCPRE(pclk2Freq)                                           \
+    ({                                                                  \
+        CASSERT_PCLK2FREQ(pclk2Freq);                                   \
+        const uint32_t _pclk2Freq = (pclk2Freq);                        \
+        const uint32_t _flag =                                          \
+            (_pclk2Freq > (6*14)*MHz) ? RCC_CFGR_ADCPRE_PCLK2_Div8 :    \
+            (_pclk2Freq > (4*14)*MHz) ? RCC_CFGR_ADCPRE_PCLK2_Div6 :    \
+            (_pclk2Freq > (2*14)*MHz) ? RCC_CFGR_ADCPRE_PCLK2_Div4 :    \
+                                        RCC_CFGR_ADCPRE_PCLK2_Div2;     \
+        _flag;                                                          \
     })
 
 // Returns the frequency of PLLCLK in Hz (by reading back register settings)
@@ -71,8 +90,7 @@ static void updateClockFreqs()
         (sws == RCC_CFGR_SWS_HSI) ? CLOCK_HSI_Hz :
         (sws == RCC_CFGR_SWS_HSE) ? CLOCK_HSE_Hz :
         (sws == RCC_CFGR_SWS_PLL) ? getPLLFreq(cfgr) : 0;
-    if (g_clock.sysclkFreq == 0)
-        die("read undefined value for RCC_CFGR SWS");
+    assert(g_clock.sysclkFreq == 0, "read undefined value for RCC_CFGR SWS");
 
     // Get HCLK (AHB) frequency
     uint32_t hpre = cfgr & RCC_CFGR_HPRE;
@@ -86,8 +104,7 @@ static void updateClockFreqs()
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div128) ? 128 :
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div256) ? 256:
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div512) ? 512 : 0;
-    if (hpre_div == 0)
-        die("ERROR: Invalid HPRE setting in RCC_CFGR");
+    assert(hpre_div == 0, "ERROR: Invalid HPRE setting in RCC_CFGR");
     g_clock.hclkFreq = g_clock.sysclkFreq/hpre_div;
 
     // Get PCLK2 (APB2) frequency
@@ -98,8 +115,8 @@ static void updateClockFreqs()
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div4)  ? 4 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div8)  ? 8 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div16) ? 16 : 0;
-    if (ppre2_div == 0)
-        die("ERROR: Invalid PPRE2 setting in RCC_CFGR");
+    assert(ppre2_div == 0, "ERROR: Invalid PPRE2 setting in RCC_CFGR");
+
     g_clock.pclk2Freq = g_clock.hclkFreq/ppre2_div;
     // Set timer frequency (depends on ppre2)
     g_clock.timerFreq = (ppre2_div == 1) ? g_clock.pclk2Freq : g_clock.pclk2Freq*2;
@@ -112,9 +129,17 @@ static void updateClockFreqs()
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div4)  ? 4 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div8)  ? 8 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div16) ? 16 : 0;
-    if (ppre1_div == 0)
-        die("ERROR: Invalid PPRE1 setting in RCC_CFGR");
+    assert(ppre1_div == 0, "ERROR: Invalid PPRE1 setting in RCC_CFGR");
     g_clock.pclk1Freq = g_clock.hclkFreq/ppre1_div;
+
+    // Get ADCCLK frequency
+    uint32_t adcpre = cfgr & RCC_CFGR_ADCPRE;
+    uint32_t adcClk_div =  // The ADCPRE bits are exhaustive, so no need to check for PCLK2_Div2
+        (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div8) ? 8 :
+        (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div6) ? 6 :
+        (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div4) ? 4 : 2;
+    g_clock.adcClkFreq = g_clock.pclk2Freq/adcClk_div;
+    assert(g_clock.adcClkFreq > ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
 
     // Get SysTick frequency
     uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;
@@ -161,7 +186,7 @@ static void startHSI()
 
 void clock_setSysClockHSE()
 {
-    CASSERT_FREQUENCY(CLOCK_HSE_Hz);
+    CASSERT_SYSCLKFREQ(CLOCK_HSE_Hz);
 
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -176,6 +201,10 @@ void clock_setSysClockHSE()
     RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     /* HCLK = SYSCLK */
     RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
     RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
+
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE(CLOCK_HSE_Hz); // Get by PCLK2 frequency
 
     // Select HSE as system clock source
     RCC.CFGR &= ~RCC_CFGR_SW;
@@ -192,7 +221,7 @@ void clock_setSysClockHSE()
 
 void clock_setSysClockHSE_24MHz()
 {
-    CASSERT_FREQUENCY((CLOCK_HSE_Hz/2)*6);
+    CASSERT_SYSCLKFREQ((CLOCK_HSE_Hz/2)*6);
 
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -208,7 +237,9 @@ void clock_setSysClockHSE_24MHz()
     RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
     RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
 
-    // TODO: slow ADC down below 14 MHz
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE(((CLOCK_HSE_Hz/2)*6)/1/1); // Get by PCLK2 frequency
 
     // PLL configuration: (HSE / 2) * 6 = 24 MHz
     RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
@@ -235,7 +266,7 @@ void clock_setSysClockHSE_24MHz()
 
 void clock_setSysClockHSI_24MHz()
 {
-    CASSERT_FREQUENCY((CLOCK_HSI_Hz/2)*6);
+    CASSERT_SYSCLKFREQ((CLOCK_HSI_Hz/2)*6);
 
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -251,11 +282,13 @@ void clock_setSysClockHSI_24MHz()
     RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      /* PCLK2 = HCLK */
     RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div1;      /* PCLK1 = HCLK */
 
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE(((CLOCK_HSI_Hz/2)*6)/1/1); // Get by PCLK2 frequency
+
     // PLL configuration: (HSI / 2) * 6 = 24 MHz
     RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
     RCC.CFGR |= (RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMUL6);
-
-    // TODO: slow ADC down below 14 MHz
 
     // Enable PLL
     RCC.CR |= RCC_CR_PLLON;
@@ -278,7 +311,7 @@ void clock_setSysClockHSI_24MHz()
 
 void clock_setSysClockHSI()
 {
-    CASSERT_FREQUENCY(CLOCK_HSI_Hz);
+    CASSERT_SYSCLKFREQ(CLOCK_HSI_Hz);
 
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -291,6 +324,10 @@ void clock_setSysClockHSI()
 
     // HCLK = SYSCLK, PCLK2 = HCLK, PCLK1 = HCLK
     RCC.CFGR &= (RCC.CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1)) | (RCC_CFGR_HPRE_SYSCLK_Div1 | RCC_CFGR_PPRE2_HCLK_Div1 | RCC_CFGR_PPRE1_HCLK_Div1);
+
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE(CLOCK_HSI_Hz); // Get by PCLK2 frequency
 
     // Select HSI as system clock source
     RCC.CFGR = (RCC.CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI;

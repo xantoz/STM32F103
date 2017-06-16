@@ -14,7 +14,7 @@ OC       := arm-none-eabi-objcopy
 CPUFLAGS := -mcpu=cortex-m3 -march=armv7-m -mthumb
 DEBUG    ?= -g
 ASFLAGS  := $(DEBUG) $(CPUFLAGS)
-CCFLAGS  := $(DEBUG) -Os -std=c11 $(CPUFLAGS) -fshort-enums -Wall -Winline -Wno-main
+CCFLAGS  := $(DEBUG) -Os -std=c11 $(CPUFLAGS) -fshort-enums -fno-hosted -Wall -Winline -Wno-main
 LDFLAGS  := '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  := -Obinary --strip-unneeded
 

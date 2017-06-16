@@ -70,7 +70,7 @@ enum AFIO_MAPR_Flg
     AFIO_MAPR_USART1_REMAP              = 0x00000004,        /*!< USART1 remapping */
     AFIO_MAPR_USART2_REMAP              = 0x00000008,        /*!< USART2 remapping */
 
-    /* USART3_REMAP configuration */
+    /*!< USART3_REMAP configuration */
     AFIO_MAPR_USART3_REMAP              = 0x00000030,        /*!< USART3_REMAP[1:0] bits (USART3 remapping) */
     AFIO_MAPR_USART3_REMAP_NOREMAP      = 0x00000000,        /*!< No remap (TX/PB10, RX/PB11, CK/PB12, CTS/PB13, RTS/PB14) */
     AFIO_MAPR_USART3_REMAP_PARTIALREMAP = 0x00000010,        /*!< Partial remap (TX/PC10, RX/PC11, CK/PC12, CTS/PB13, RTS/PB14) */
@@ -187,7 +187,7 @@ enum AFIO_EXTICR2_Flg
     AFIO_EXTICR2_EXTI4_PF = 0x0005,            /*!< PF[4] pin */
     AFIO_EXTICR2_EXTI4_PG = 0x0006,            /*!< PG[4] pin */
 
-    /* EXTI5 configuration */
+    /*!< EXTI5 configuration */
     AFIO_EXTICR2_EXTI5_PA = 0x0000,            /*!< PA[5] pin */
     AFIO_EXTICR2_EXTI5_PB = 0x0010,            /*!< PB[5] pin */
     AFIO_EXTICR2_EXTI5_PC = 0x0020,            /*!< PC[5] pin */
@@ -272,7 +272,7 @@ enum AFIO_EXTICR4_Flg
     AFIO_EXTICR4_EXTI14    = 0x0F00,            /*!< EXTI 14 configuration */
     AFIO_EXTICR4_EXTI15    = 0xF000,            /*!< EXTI 15 configuration */
 
-    /* EXTI12 configuration */
+    /*!< EXTI12 configuration */
     AFIO_EXTICR4_EXTI12_PA = 0x0000,            /*!< PA[12] pin */
     AFIO_EXTICR4_EXTI12_PB = 0x0001,            /*!< PB[12] pin */
     AFIO_EXTICR4_EXTI12_PC = 0x0002,            /*!< PC[12] pin */
@@ -281,7 +281,7 @@ enum AFIO_EXTICR4_Flg
     AFIO_EXTICR4_EXTI12_PF = 0x0005,            /*!< PF[12] pin */
     AFIO_EXTICR4_EXTI12_PG = 0x0006,            /*!< PG[12] pin */
 
-    /* EXTI13 configuration */
+    /*!< EXTI13 configuration */
     AFIO_EXTICR4_EXTI13_PA = 0x0000,            /*!< PA[13] pin */
     AFIO_EXTICR4_EXTI13_PB = 0x0010,            /*!< PB[13] pin */
     AFIO_EXTICR4_EXTI13_PC = 0x0020,            /*!< PC[13] pin */

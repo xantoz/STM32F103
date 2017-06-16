@@ -33,14 +33,14 @@ static const uint32_t MHz = 1000000; // Convert from Hz to MHz
     _Static_assert(0 < (f) && (f) < PCLK2_MAX, "Frequency out of range")
 
 // Helper to get FLASH_ACR_LATENCY, based on what we are setting SYSCLK to
-#define GET_FLASH_ACR_LATENCY(f)                                                       \
-    ({                                                                                 \
-      const uint32_t _f = (f);                                                         \
-      CASSERT_SYSCLKFREQ(_f);                                                           \
-      (_f <= 24*MHz)                ? FLASH_ACR_LATENCY_0 : /* f <= 24 MHz */          \
-      (24*MHz < _f && _f <= 48*MHz) ? FLASH_ACR_LATENCY_1 : /* 24 MHz < f <= 48 MHz */ \
-      (48*MHz < _f && _f <= 72*MHz) ? FLASH_ACR_LATENCY_2 : /* 48 MHz < f <= 72 MHz */ \
-                                      0b111;                /* undefined */            \
+#define GET_FLASH_ACR_LATENCY(f)                                                         \
+    ({                                                                                   \
+        CASSERT_SYSCLKFREQ(f);                                                           \
+        const uint32_t _f = (f);                                                         \
+        (_f <= 24*MHz)                ? FLASH_ACR_LATENCY_0 : /* f <= 24 MHz */          \
+        (24*MHz < _f && _f <= 48*MHz) ? FLASH_ACR_LATENCY_1 : /* 24 MHz < f <= 48 MHz */ \
+        (48*MHz < _f && _f <= 72*MHz) ? FLASH_ACR_LATENCY_2 : /* 48 MHz < f <= 72 MHz */ \
+                                        0b111;                /* undefined */            \
     })
 
 // Helper to get a suitable ADCPRE given PCLK2 freq, so that ADCCLK is not running at more than 14 MHz

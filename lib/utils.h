@@ -4,23 +4,27 @@
 #include "types.h"
 #include "vfunc.h"
 
-#define NOP()  do { __asm volatile ("NOP\n"); } while (0)
-#define BKPT() do { __asm volatile ("BKPT\n"); } while (0)
+#if defined(__GNUC__) && defined(__STRICT_ANSI__)
+#define asm __asm__
+#endif
 
-static inline void __enable_irq()               { __asm volatile ("cpsie i"); }
-static inline void __disable_irq()              { __asm volatile ("cpsid i"); }
+#define NOP()  do { asm("NOP\n"); } while (0)
+#define BKPT() do { asm("BKPT\n"); } while (0)
 
-static inline void __enable_fault_irq()         { __asm volatile ("cpsie f"); }
-static inline void __disable_fault_irq()        { __asm volatile ("cpsid f"); }
+static inline void __enable_irq()        { asm("cpsie i"); }
+static inline void __disable_irq()       { asm("cpsid i"); }
 
-static inline void __NOP()                      { __asm volatile ("nop"); }
-static inline void __WFI()                      { __asm volatile ("wfi"); }
-static inline void __WFE()                      { __asm volatile ("wfe"); }
-static inline void __SEV()                      { __asm volatile ("sev"); }
-static inline void __ISB()                      { __asm volatile ("isb"); }
-static inline void __DSB()                      { __asm volatile ("dsb"); }
-static inline void __DMB()                      { __asm volatile ("dmb"); }
-static inline void __CLREX()                    { __asm volatile ("clrex"); }
+static inline void __enable_fault_irq()  { asm("cpsie f"); }
+static inline void __disable_fault_irq() { asm("cpsid f"); }
+
+static inline void __NOP()               { asm("nop"); }
+static inline void __WFI()               { asm("wfi"); }
+static inline void __WFE()               { asm("wfe"); }
+static inline void __SEV()               { asm("sev"); }
+static inline void __ISB()               { asm("isb"); }
+static inline void __DSB()               { asm("dsb"); }
+static inline void __DMB()               { asm("dmb"); }
+static inline void __CLREX()             { asm("clrex"); }
 
 extern uint32_t __get_PRIMASK();
 extern void  __set_PRIMASK(uint32_t primask);

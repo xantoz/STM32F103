@@ -36,6 +36,7 @@ struct SPI_Pins
     struct GPIO_PortPin NSS, SCK, MISO, MOSI;
 };
 
+// TODO: Check the various pin modes in Table 25. in the reference manual, and parametrize on that.
 // TODO: Assumes master mode (SCK is an output, so is NSS), but might work in slave mode as well, as
 //       SCK might as well be a bi-directional pin from the view of GPIO w.r.t. different
 //       configurations of the peripheral, but this will of course not let us do pull-ups or

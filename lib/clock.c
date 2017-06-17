@@ -25,12 +25,12 @@ static const uint32_t MHz = 1000000; // Convert from Hz to MHz
 /// Macro to check at compile time that frequency is not out of range
 // TODO: Backwards compatible definition so we compile without C11 ?
 #define CASSERT_SYSCLKFREQ(f) \
-    _Static_assert(0 < (f) && (f) < SYSCLK_MAX, "Frequency out of range")
+    _Static_assert(0 < (f) && (f) < SYSCLK_MAX, "SYSCLK frequency out of range")
 
 /// Macro to check at compile time that frequency is not out of range
 // TODO: Backwards compatible definition so we compile without C11 ?
 #define CASSERT_PCLK2FREQ(f) \
-    _Static_assert(0 < (f) && (f) < PCLK2_MAX, "Frequency out of range")
+    _Static_assert(0 < (f) && (f) < PCLK2_MAX, "PCLK2 frequency out of range")
 
 // Helper to get FLASH_ACR_LATENCY, based on what we are setting SYSCLK to
 #define GET_FLASH_ACR_LATENCY(f)                                                         \

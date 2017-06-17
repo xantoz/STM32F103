@@ -2,15 +2,13 @@
 
 /* MEMORY describes the device's memory blocks and their addresses */
 
-/* TODO: consider having stack below data */
-
 MEMORY {
   flash (rx)  : ORIGIN = 0x08000000, LENGTH = 128K /*(UP TO 128K) TODO: how much flash do we have actually? */
   ram   (rwx) : ORIGIN = 0x20000000, LENGTH =  20K
 }
 
 /* Start of stack (TODO: how much SRAM do we have, actually?) */
-/* _LD_STACK_TOP = 0x20001ff0;  */
+/* TODO: consider having stack below data */
 _estack = 0x20005000;
 
 /*

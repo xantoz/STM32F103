@@ -10,7 +10,7 @@
 #define mySPI (SPI1)
 #define MAX_BAUDRATE 8000000
 
-void spi_setup()
+static void spi_setup()
 {
     __disable_irq();
 
@@ -52,6 +52,7 @@ void spi_setup()
 #else
 #error "No such SPI: mySPI"
 #endif
+
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
     print("spi_getBaudRateDivisorFromMaxFreq\n");
     uint16_t flag;
@@ -73,21 +74,21 @@ void spi_setup()
     __enable_irq();
 }
 
-void spi_send(uint16_t data)
+static void spi_send(uint16_t data)
 {
     while (!(mySPI.SR & SPI_SR_TXE)); // Wait until transmit buffer empty
 
     mySPI.DR = data;
 }
 
-uint16_t spi_recv()
+static uint16_t spi_recv()
 {
     while (!(mySPI.SR & SPI_SR_RXNE)); // Block until we have data
 
     return mySPI.DR;
 }
 
-uint16_t spi_send_recv(uint16_t data)
+static uint16_t spi_send_recv(uint16_t data)
 {
     spi_send(data);
     return spi_recv(data);

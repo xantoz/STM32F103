@@ -85,6 +85,8 @@ int32_t clock()
 // TODO: do we need to enable debug before we BKPT, or indeed before we BKPT 0xAB?
 void die(const char *s)
 {
+    __disable_irq();
+
 #ifdef __GNUC__
     print("Caller address: ");
     print_hex((uint32_t)__builtin_return_address(0));

@@ -1,6 +1,8 @@
 #ifndef _AFIO_
 #define _AFIO_
 
+#include "utils.h"
+#include "debug.h"  // For assertions
 
 /**
  * @brief Alternate Function IO register defs
@@ -122,192 +124,55 @@ enum AFIO_MAPR_Flg
 };
 
 /**
- *   @brief Bit definition for AFIO_EXTICR1 register
+ * @brief Bit definitions for AFIO_EXTICRx_EXTIy registers.
+ *
+ * @note Needs to be shifted (increments of 4 bits), and applied to the right EXTICRx, to choose
+ *       which EXTIy to affect. See the function AFIO_mapEXTI()
  */
-enum AFIO_EXTICR1_Flg
+enum AFIO_EXTICRx_Flg
 {
-    AFIO_EXTICR1_EXTI0    = 0x000F,            /*!< EXTI 0 configuration */
-    AFIO_EXTICR1_EXTI1    = 0x00F0,            /*!< EXTI 1 configuration */
-    AFIO_EXTICR1_EXTI2    = 0x0F00,            /*!< EXTI 2 configuration */
-    AFIO_EXTICR1_EXTI3    = 0xF000,            /*!< EXTI 3 configuration */
+    AFIO_EXTICRx_EXTIy    = 0xf,  //!< Mask for an EXTIy
 
-    /*!< EXTI0 configuration */
-    AFIO_EXTICR1_EXTI0_PA = 0x0000,            /*!< PA[0] pin */
-    AFIO_EXTICR1_EXTI0_PB = 0x0001,            /*!< PB[0] pin */
-    AFIO_EXTICR1_EXTI0_PC = 0x0002,            /*!< PC[0] pin */
-    AFIO_EXTICR1_EXTI0_PD = 0x0003,            /*!< PD[0] pin */
-    AFIO_EXTICR1_EXTI0_PE = 0x0004,            /*!< PE[0] pin */
-    AFIO_EXTICR1_EXTI0_PF = 0x0005,            /*!< PF[0] pin */
-    AFIO_EXTICR1_EXTI0_PG = 0x0006,            /*!< PG[0] pin */
+    AFIO_EXTICRx_EXTIy_PA = 0x0,  //!< PA[y] pin
+    AFIO_EXTICRx_EXTIy_PB = 0x1,  //!< PB[y] pin
+    AFIO_EXTICRx_EXTIy_PC = 0x2,   //!< PC[y] pin
+    AFIO_EXTICRx_EXTIy_PD = 0x3,  //!< PD[y] pin
+    AFIO_EXTICRx_EXTIy_PE = 0x4,  //!< PE[y] pin
+    AFIO_EXTICRx_EXTIy_PF = 0x5,  //!< PF[y] pin
+    AFIO_EXTICRx_EXTIy_PG = 0x6,  //!< PG[y] pin
 
-    /*!< EXTI1 configuration */
-    AFIO_EXTICR1_EXTI1_PA = 0x0000,            /*!< PA[1] pin */
-    AFIO_EXTICR1_EXTI1_PB = 0x0010,            /*!< PB[1] pin */
-    AFIO_EXTICR1_EXTI1_PC = 0x0020,            /*!< PC[1] pin */
-    AFIO_EXTICR1_EXTI1_PD = 0x0030,            /*!< PD[1] pin */
-    AFIO_EXTICR1_EXTI1_PE = 0x0040,            /*!< PE[1] pin */
-    AFIO_EXTICR1_EXTI1_PF = 0x0050,            /*!< PF[1] pin */
-    AFIO_EXTICR1_EXTI1_PG = 0x0060,            /*!< PG[1] pin */
-
-    /*!< EXTI2 configuration */
-    AFIO_EXTICR1_EXTI2_PA = 0x0000,            /*!< PA[2] pin */
-    AFIO_EXTICR1_EXTI2_PB = 0x0100,            /*!< PB[2] pin */
-    AFIO_EXTICR1_EXTI2_PC = 0x0200,            /*!< PC[2] pin */
-    AFIO_EXTICR1_EXTI2_PD = 0x0300,            /*!< PD[2] pin */
-    AFIO_EXTICR1_EXTI2_PE = 0x0400,            /*!< PE[2] pin */
-    AFIO_EXTICR1_EXTI2_PF = 0x0500,            /*!< PF[2] pin */
-    AFIO_EXTICR1_EXTI2_PG = 0x0600,            /*!< PG[2] pin */
-
-    /*!< EXTI3 configuration */
-    AFIO_EXTICR1_EXTI3_PA = 0x0000,            /*!< PA[3] pin */
-    AFIO_EXTICR1_EXTI3_PB = 0x1000,            /*!< PB[3] pin */
-    AFIO_EXTICR1_EXTI3_PC = 0x2000,            /*!< PC[3] pin */
-    AFIO_EXTICR1_EXTI3_PD = 0x3000,            /*!< PD[3] pin */
-    AFIO_EXTICR1_EXTI3_PE = 0x4000,            /*!< PE[3] pin */
-    AFIO_EXTICR1_EXTI3_PF = 0x5000,            /*!< PF[3] pin */
-    AFIO_EXTICR1_EXTI3_PG = 0x6000,            /*!< PG[3] pin */
+    // Aliases for the above that are easier to type & remember
+    AFIO_EXTI_PortA = AFIO_EXTICRx_EXTIy_PA,  //!< PA[y] pin (alias of AFIO_EXTICRx_EXTIy_PA)
+    AFIO_EXTI_PortB = AFIO_EXTICRx_EXTIy_PB,  //!< PB[y] pin (alias of AFIO_EXTICRx_EXTIy_PB)
+    AFIO_EXTI_PortC = AFIO_EXTICRx_EXTIy_PC,  //!< PC[y] pin (alias of AFIO_EXTICRx_EXTIy_PC)
+    AFIO_EXTI_PortD = AFIO_EXTICRx_EXTIy_PD,  //!< PD[y] pin (alias of AFIO_EXTICRx_EXTIy_PD)
+    AFIO_EXTI_PortE = AFIO_EXTICRx_EXTIy_PE,  //!< PE[y] pin (alias of AFIO_EXTICRx_EXTIy_PE)
+    AFIO_EXTI_PortF = AFIO_EXTICRx_EXTIy_PF,  //!< PF[y] pin (alias of AFIO_EXTICRx_EXTIy_PF)
+    AFIO_EXTI_PortG = AFIO_EXTICRx_EXTIy_PG,  //!< PG[y] pin (alias of AFIO_EXTICRx_EXTIy_PG)
 };
 
 /**
- * @brief Bit definition for AFIO_EXTICR2 register
+ * @brief Map GPIO port to EXTI line
+ *
+ * @param EXTIy     [in] which EXTI to use
+ * @param port [in] Which GPIO port
  */
-enum AFIO_EXTICR2_Flg
+static inline void AFIO_mapEXTI(uint8_t EXTIy, enum AFIO_EXTICRx_Flg port)
 {
-    AFIO_EXTICR2_EXTI4    = 0x000F,            /*!< EXTI 4 configuration */
-    AFIO_EXTICR2_EXTI5    = 0x00F0,            /*!< EXTI 5 configuration */
-    AFIO_EXTICR2_EXTI6    = 0x0F00,            /*!< EXTI 6 configuration */
-    AFIO_EXTICR2_EXTI7    = 0xF000,            /*!< EXTI 7 configuration */
+    assert(AFIO_EXTICRx_EXTIy_PA <= port && port <= AFIO_EXTICRx_EXTIy_PG);
+    assert(EXTIy <= 15);
 
-    /*!< EXTI4 configuration */
-    AFIO_EXTICR2_EXTI4_PA = 0x0000,            /*!< PA[4] pin */
-    AFIO_EXTICR2_EXTI4_PB = 0x0001,            /*!< PB[4] pin */
-    AFIO_EXTICR2_EXTI4_PC = 0x0002,            /*!< PC[4] pin */
-    AFIO_EXTICR2_EXTI4_PD = 0x0003,            /*!< PD[4] pin */
-    AFIO_EXTICR2_EXTI4_PE = 0x0004,            /*!< PE[4] pin */
-    AFIO_EXTICR2_EXTI4_PF = 0x0005,            /*!< PF[4] pin */
-    AFIO_EXTICR2_EXTI4_PG = 0x0006,            /*!< PG[4] pin */
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
-    /*!< EXTI5 configuration */
-    AFIO_EXTICR2_EXTI5_PA = 0x0000,            /*!< PA[5] pin */
-    AFIO_EXTICR2_EXTI5_PB = 0x0010,            /*!< PB[5] pin */
-    AFIO_EXTICR2_EXTI5_PC = 0x0020,            /*!< PC[5] pin */
-    AFIO_EXTICR2_EXTI5_PD = 0x0030,            /*!< PD[5] pin */
-    AFIO_EXTICR2_EXTI5_PE = 0x0040,            /*!< PE[5] pin */
-    AFIO_EXTICR2_EXTI5_PF = 0x0050,            /*!< PF[5] pin */
-    AFIO_EXTICR2_EXTI5_PG = 0x0060,            /*!< PG[5] pin */
+    const uint32_t exticr_x = (EXTIy / 4);
+    const uint32_t bitpos   = (EXTIy % 4);
+    const uint32_t mask = ~(AFIO_EXTICRx_EXTIy << bitpos);
+    const uint32_t flag = (port << bitpos);
+    AFIO.EXTICR[exticr_x] = (AFIO.EXTICR[exticr_x] & mask) | flag;
 
-    /*!< EXTI6 configuration */
-    AFIO_EXTICR2_EXTI6_PA = 0x0000,            /*!< PA[6] pin */
-    AFIO_EXTICR2_EXTI6_PB = 0x0100,            /*!< PB[6] pin */
-    AFIO_EXTICR2_EXTI6_PC = 0x0200,            /*!< PC[6] pin */
-    AFIO_EXTICR2_EXTI6_PD = 0x0300,            /*!< PD[6] pin */
-    AFIO_EXTICR2_EXTI6_PE = 0x0400,            /*!< PE[6] pin */
-    AFIO_EXTICR2_EXTI6_PF = 0x0500,            /*!< PF[6] pin */
-    AFIO_EXTICR2_EXTI6_PG = 0x0600,            /*!< PG[6] pin */
-
-    /*!< EXTI7 configuration */
-    AFIO_EXTICR2_EXTI7_PA = 0x0000,            /*!< PA[7] pin */
-    AFIO_EXTICR2_EXTI7_PB = 0x1000,            /*!< PB[7] pin */
-    AFIO_EXTICR2_EXTI7_PC = 0x2000,            /*!< PC[7] pin */
-    AFIO_EXTICR2_EXTI7_PD = 0x3000,            /*!< PD[7] pin */
-    AFIO_EXTICR2_EXTI7_PE = 0x4000,            /*!< PE[7] pin */
-    AFIO_EXTICR2_EXTI7_PF = 0x5000,            /*!< PF[7] pin */
-    AFIO_EXTICR2_EXTI7_PG = 0x6000,            /*!< PG[7] pin */
-};
-
-/**
- * @brief Bit definition for AFIO_EXTICR3 register
- */
-enum AFIO_EXTICR3_Flg
-{
-    AFIO_EXTICR3_EXTI8     = 0x000F,            /*!< EXTI 8 configuration */
-    AFIO_EXTICR3_EXTI9     = 0x00F0,            /*!< EXTI 9 configuration */
-    AFIO_EXTICR3_EXTI10    = 0x0F00,            /*!< EXTI 10 configuration */
-    AFIO_EXTICR3_EXTI11    = 0xF000,            /*!< EXTI 11 configuration */
-
-    /*!< EXTI8 configuration */
-    AFIO_EXTICR3_EXTI8_PA  = 0x0000,            /*!< PA[8] pin */
-    AFIO_EXTICR3_EXTI8_PB  = 0x0001,            /*!< PB[8] pin */
-    AFIO_EXTICR3_EXTI8_PC  = 0x0002,            /*!< PC[8] pin */
-    AFIO_EXTICR3_EXTI8_PD  = 0x0003,            /*!< PD[8] pin */
-    AFIO_EXTICR3_EXTI8_PE  = 0x0004,            /*!< PE[8] pin */
-    AFIO_EXTICR3_EXTI8_PF  = 0x0005,            /*!< PF[8] pin */
-    AFIO_EXTICR3_EXTI8_PG  = 0x0006,            /*!< PG[8] pin */
-
-    /*!< EXTI9 configuration */
-    AFIO_EXTICR3_EXTI9_PA  = 0x0000,            /*!< PA[9] pin */
-    AFIO_EXTICR3_EXTI9_PB  = 0x0010,            /*!< PB[9] pin */
-    AFIO_EXTICR3_EXTI9_PC  = 0x0020,            /*!< PC[9] pin */
-    AFIO_EXTICR3_EXTI9_PD  = 0x0030,            /*!< PD[9] pin */
-    AFIO_EXTICR3_EXTI9_PE  = 0x0040,            /*!< PE[9] pin */
-    AFIO_EXTICR3_EXTI9_PF  = 0x0050,            /*!< PF[9] pin */
-    AFIO_EXTICR3_EXTI9_PG  = 0x0060,            /*!< PG[9] pin */
-
-    /*!< EXTI10 configuration */
-    AFIO_EXTICR3_EXTI10_PA = 0x0000,            /*!< PA[10] pin */
-    AFIO_EXTICR3_EXTI10_PB = 0x0100,            /*!< PB[10] pin */
-    AFIO_EXTICR3_EXTI10_PC = 0x0200,            /*!< PC[10] pin */
-    AFIO_EXTICR3_EXTI10_PD = 0x0300,            /*!< PD[10] pin */
-    AFIO_EXTICR3_EXTI10_PE = 0x0400,            /*!< PE[10] pin */
-    AFIO_EXTICR3_EXTI10_PF = 0x0500,            /*!< PF[10] pin */
-    AFIO_EXTICR3_EXTI10_PG = 0x0600,            /*!< PG[10] pin */
-
-    /*!< EXTI11 configuration */
-    AFIO_EXTICR3_EXTI11_PA = 0x0000,            /*!< PA[11] pin */
-    AFIO_EXTICR3_EXTI11_PB = 0x1000,            /*!< PB[11] pin */
-    AFIO_EXTICR3_EXTI11_PC = 0x2000,            /*!< PC[11] pin */
-    AFIO_EXTICR3_EXTI11_PD = 0x3000,            /*!< PD[11] pin */
-    AFIO_EXTICR3_EXTI11_PE = 0x4000,            /*!< PE[11] pin */
-    AFIO_EXTICR3_EXTI11_PF = 0x5000,            /*!< PF[11] pin */
-    AFIO_EXTICR3_EXTI11_PG = 0x6000,            /*!< PG[11] pin */
-};
-
-/**
- * @brief Bit definition for AFIO_EXTICR4 register
- */
-enum AFIO_EXTICR4_Flg
-{
-    AFIO_EXTICR4_EXTI12    = 0x000F,            /*!< EXTI 12 configuration */
-    AFIO_EXTICR4_EXTI13    = 0x00F0,            /*!< EXTI 13 configuration */
-    AFIO_EXTICR4_EXTI14    = 0x0F00,            /*!< EXTI 14 configuration */
-    AFIO_EXTICR4_EXTI15    = 0xF000,            /*!< EXTI 15 configuration */
-
-    /*!< EXTI12 configuration */
-    AFIO_EXTICR4_EXTI12_PA = 0x0000,            /*!< PA[12] pin */
-    AFIO_EXTICR4_EXTI12_PB = 0x0001,            /*!< PB[12] pin */
-    AFIO_EXTICR4_EXTI12_PC = 0x0002,            /*!< PC[12] pin */
-    AFIO_EXTICR4_EXTI12_PD = 0x0003,            /*!< PD[12] pin */
-    AFIO_EXTICR4_EXTI12_PE = 0x0004,            /*!< PE[12] pin */
-    AFIO_EXTICR4_EXTI12_PF = 0x0005,            /*!< PF[12] pin */
-    AFIO_EXTICR4_EXTI12_PG = 0x0006,            /*!< PG[12] pin */
-
-    /*!< EXTI13 configuration */
-    AFIO_EXTICR4_EXTI13_PA = 0x0000,            /*!< PA[13] pin */
-    AFIO_EXTICR4_EXTI13_PB = 0x0010,            /*!< PB[13] pin */
-    AFIO_EXTICR4_EXTI13_PC = 0x0020,            /*!< PC[13] pin */
-    AFIO_EXTICR4_EXTI13_PD = 0x0030,            /*!< PD[13] pin */
-    AFIO_EXTICR4_EXTI13_PE = 0x0040,            /*!< PE[13] pin */
-    AFIO_EXTICR4_EXTI13_PF = 0x0050,            /*!< PF[13] pin */
-    AFIO_EXTICR4_EXTI13_PG = 0x0060,            /*!< PG[13] pin */
-
-    /*!< EXTI14 configuration */
-    AFIO_EXTICR4_EXTI14_PA = 0x0000,            /*!< PA[14] pin */
-    AFIO_EXTICR4_EXTI14_PB = 0x0100,            /*!< PB[14] pin */
-    AFIO_EXTICR4_EXTI14_PC = 0x0200,            /*!< PC[14] pin */
-    AFIO_EXTICR4_EXTI14_PD = 0x0300,            /*!< PD[14] pin */
-    AFIO_EXTICR4_EXTI14_PE = 0x0400,            /*!< PE[14] pin */
-    AFIO_EXTICR4_EXTI14_PF = 0x0500,            /*!< PF[14] pin */
-    AFIO_EXTICR4_EXTI14_PG = 0x0600,            /*!< PG[14] pin */
-
-    /*!< EXTI15 configuration */
-    AFIO_EXTICR4_EXTI15_PA = 0x0000,            /*!< PA[15] pin */
-    AFIO_EXTICR4_EXTI15_PB = 0x1000,            /*!< PB[15] pin */
-    AFIO_EXTICR4_EXTI15_PC = 0x2000,            /*!< PC[15] pin */
-    AFIO_EXTICR4_EXTI15_PD = 0x3000,            /*!< PD[15] pin */
-    AFIO_EXTICR4_EXTI15_PE = 0x4000,            /*!< PE[15] pin */
-    AFIO_EXTICR4_EXTI15_PF = 0x5000,            /*!< PF[15] pin */
-    AFIO_EXTICR4_EXTI15_PG = 0x6000,            /*!< PG[15] pin */
-};
+    UNLOCK_IRQ(lock);
+}
 
 #if defined(STM32F10X_LD_VL) || defined(STM32F10X_MD_VL) || defined(STM32F10X_HD_VL) || defined(STM32F10X_HD_VL) || defined(STM32F10X_XL)
 #define HAVE_MAPR2

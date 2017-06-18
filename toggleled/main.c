@@ -25,8 +25,7 @@ void main(void)
     GPIO_setMODE_setCNF(&GPIOB, 0, GPIO_MODE_Input, GPIO_Input_CNF_PullupPulldown);
     GPIO_setPin(&GPIOB, 0); // Pull-up
     EXTI.IMR |= 0x00000001; // Enable interrupt from EXTI0
-    AFIO.EXTICR[0] &= ~(AFIO_EXTICR1_EXTI0);
-    AFIO.EXTICR[0] |= AFIO_EXTICR1_EXTI0_PB;
+    AFIO_mapEXTI(0, AFIO_EXTI_PortB); // Map PB[0] to EXTI0
     NVIC_EnableInterrupt(EXTI0_IRQn);
 
     __enable_irq();

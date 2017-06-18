@@ -2,7 +2,6 @@
 #define _RCC_
 
 #include "types.h"
-#include "memorymap.h"
 
 /**
  * @brief Reset and Clock Control

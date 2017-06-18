@@ -1,7 +1,7 @@
 #ifndef _FLASH_
 #define _FLASH_
 
-#include "memorymap.h"
+#include "types.h"
 
 /**
   * @brief FLASH Registers

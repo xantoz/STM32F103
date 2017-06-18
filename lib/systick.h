@@ -2,7 +2,6 @@
 #define _SYSTICK_
 
 #include "types.h"
-#include "memorymap.h"
 
 /**
  * @brief memory mapped structure for SysTick

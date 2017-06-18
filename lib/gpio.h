@@ -2,7 +2,6 @@
 #define _GPIO_
 
 #include "types.h"
-#include "memorymap.h"
 #include "vfunc.h"
 #include "utils.h"
 #include "debug.h"

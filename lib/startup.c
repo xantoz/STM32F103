@@ -1,7 +1,6 @@
 #include "types.h"
 #include "utils.h"
 // #include "stm32f10x.h"
-#include "memorymap.h"
 #include "rcc.h"
 #include "flash.h"
 #include "debug.h"

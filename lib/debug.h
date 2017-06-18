@@ -63,13 +63,48 @@ int32_t clock();
  * @brief Print error message to the debug console, then die (enter eternal spin-loop of doom)
  *
  * @params s [in]: Null-terminated string
+ *
+ * @todo: Have a macro define/setting where this does not take any string, and arguments passed to
+ *        it are thrown away (do: #define die(s) die()). The idea is that it can be turned on to
+ *        save some space (no string literals) for release builds.
  */
 void die(const char *s);
 
+#define static_assert _Static_assert
+
+#ifdef __GNUC__
+__attribute__((error("ASSERTION ALWAYS FALSE")))
+void __build_assert_error(void);
+
+// TODO: Kind of want to break this out as an alternative to static_assert (when we want to check
+// something at build-time, but only when possible). Problem: Difficult outside GCC. Perhaps call it
+// static_warning, or build_warning?
+#define __build_assert(cond,text)                   \
+    do {                                            \
+        if (__builtin_constant_p(cond) && !(cond))  \
+            __build_assert_error();                 \
+    } while (0)
+
+// TODO: have the compile time check for regular assert even when we have NDEBUG
+#define __assert_impl(cond, text)                                       \
+    do {                                                                \
+        __build_assert((cond),(text));                                  \
+        if (!(cond))                                                    \
+            die((text));                                                \
+    } while (0)
+#else
+#define __assert_impl(cond, text) do { if (!(cond)) die((text)); } while (0)
+#endif
+
+/**
+ * @brief Variant of assert that is not affected by whether NDEBUG is defined or not
+ */
+#define assert_always(...) VFUNC(__assert_always, __VA_ARGS__)
+#define __assert_always2(cond, text) __assert_impl((cond), (text))
+#define __assert_always1(cond) __assert_always2((cond), #cond " @ "  __FILE__ ":" TOSTRING(__LINE__))
+
 #ifndef NDEBUG
-#define __assert2(cond, text) do { if (!(cond)) die((text)); } while (0)
-#define __assert1(cond) __assert2((cond), #cond " @ "  __FILE__ ":" TOSTRING(__LINE__))
-#define assert(...) VFUNC(__assert, __VA_ARGS__)
+#define assert(...) assert_always(__VA_ARGS__)
 #else
 #define assert(...)
 #endif

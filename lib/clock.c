@@ -25,12 +25,12 @@ static const uint32_t MHz = 1000000; // Convert from Hz to MHz
 /// Macro to check at compile time that frequency is not out of range
 // TODO: Backwards compatible definition so we compile without C11 ?
 #define CASSERT_SYSCLKFREQ(f) \
-    _Static_assert(0 < (f) && (f) < SYSCLK_MAX, "SYSCLK frequency out of range")
+    static_assert(0 < (f) && (f) < SYSCLK_MAX, "SYSCLK frequency out of range")
 
 /// Macro to check at compile time that frequency is not out of range
 // TODO: Backwards compatible definition so we compile without C11 ?
 #define CASSERT_PCLK2FREQ(f) \
-    _Static_assert(0 < (f) && (f) < PCLK2_MAX, "PCLK2 frequency out of range")
+    static_assert(0 < (f) && (f) < PCLK2_MAX, "PCLK2 frequency out of range")
 
 // Helper to get FLASH_ACR_LATENCY, based on what we are setting SYSCLK to
 #define GET_FLASH_ACR_LATENCY(f)                                                         \
@@ -90,7 +90,7 @@ static void updateClockFreqs()
         (sws == RCC_CFGR_SWS_HSI) ? CLOCK_HSI_Hz :
         (sws == RCC_CFGR_SWS_HSE) ? CLOCK_HSE_Hz :
         (sws == RCC_CFGR_SWS_PLL) ? getPLLFreq(cfgr) : 0;
-    assert(g_clock.sysclkFreq == 0, "read undefined value for RCC_CFGR SWS");
+    assert_always(g_clock.sysclkFreq == 0, "read undefined value for RCC_CFGR SWS");
 
     // Get HCLK (AHB) frequency
     uint32_t hpre = cfgr & RCC_CFGR_HPRE;
@@ -104,7 +104,7 @@ static void updateClockFreqs()
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div128) ? 128 :
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div256) ? 256:
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div512) ? 512 : 0;
-    assert(hpre_div == 0, "ERROR: Invalid HPRE setting in RCC_CFGR");
+    assert_always(hpre_div != 0, "ERROR: Invalid HPRE setting in RCC_CFGR");
     g_clock.hclkFreq = g_clock.sysclkFreq/hpre_div;
 
     // Get PCLK2 (APB2) frequency
@@ -115,7 +115,7 @@ static void updateClockFreqs()
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div4)  ? 4 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div8)  ? 8 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div16) ? 16 : 0;
-    assert(ppre2_div == 0, "ERROR: Invalid PPRE2 setting in RCC_CFGR");
+    assert_always(ppre2_div != 0, "ERROR: Invalid PPRE2 setting in RCC_CFGR");
 
     g_clock.pclk2Freq = g_clock.hclkFreq/ppre2_div;
     // Set timer frequency (depends on ppre2)
@@ -129,7 +129,7 @@ static void updateClockFreqs()
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div4)  ? 4 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div8)  ? 8 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div16) ? 16 : 0;
-    assert(ppre1_div == 0, "ERROR: Invalid PPRE1 setting in RCC_CFGR");
+    assert_always(ppre1_div != 0, "ERROR: Invalid PPRE1 setting in RCC_CFGR");
     g_clock.pclk1Freq = g_clock.hclkFreq/ppre1_div;
 
     // Get ADCCLK frequency
@@ -139,7 +139,7 @@ static void updateClockFreqs()
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div6) ? 6 :
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div4) ? 4 : 2;
     g_clock.adcClkFreq = g_clock.pclk2Freq/adcClk_div;
-    assert(g_clock.adcClkFreq > ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
+    assert_always(g_clock.adcClkFreq > ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
 
     // Get SysTick frequency
     uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;

@@ -10,6 +10,16 @@
 #include "types.h"
 #include "vfunc.h"
 
+#ifdef __GNUC__
+/** @brief All-uppercase INLINE forces inlining of the function */
+#define INLINE __attribute__((always_inline)) inline
+#define PURE __attribute__((pure))
+#else
+#warning "INLINE not guaranteed to always inline"
+#define INLINE inline
+#define PURE
+#endif
+
 #if defined(__GNUC__) && defined(__STRICT_ANSI__)
 #define asm __asm__
 #endif
@@ -17,20 +27,20 @@
 #define NOP()  __NOP()
 #define BKPT() do { asm("bkpt"); } while (0)
 
-static inline void __enable_irq()        { asm("cpsie i"); }
-static inline void __disable_irq()       { asm("cpsid i"); }
+static INLINE void __enable_irq()        { asm("cpsie i"); }
+static INLINE void __disable_irq()       { asm("cpsid i"); }
 
-static inline void __enable_fault_irq()  { asm("cpsie f"); }
-static inline void __disable_fault_irq() { asm("cpsid f"); }
+static INLINE void __enable_fault_irq()  { asm("cpsie f"); }
+static INLINE void __disable_fault_irq() { asm("cpsid f"); }
 
-static inline void __NOP()               { asm("nop"); }
-static inline void __WFI()               { asm("wfi"); }
-static inline void __WFE()               { asm("wfe"); }
-static inline void __SEV()               { asm("sev"); }
-static inline void __ISB()               { asm("isb"); }
-static inline void __DSB()               { asm("dsb"); }
-static inline void __DMB()               { asm("dmb"); }
-static inline void __CLREX()             { asm("clrex"); }
+static INLINE void __NOP()               { asm("nop"); }
+static INLINE void __WFI()               { asm("wfi"); }
+static INLINE void __WFE()               { asm("wfe"); }
+static INLINE void __SEV()               { asm("sev"); }
+static INLINE void __ISB()               { asm("isb"); }
+static INLINE void __DSB()               { asm("dsb"); }
+static INLINE void __DMB()               { asm("dmb"); }
+static INLINE void __CLREX()             { asm("clrex"); }
 
 extern uint32_t __get_PRIMASK();
 extern void  __set_PRIMASK(uint32_t primask);

@@ -2,10 +2,14 @@
 
 #include "utils.h"
 
+#define IS_GPIO(x) ((&(x) == &GPIOA) || (&(x) == &GPIOB) || (&(x) == &GPIOC))
+
 void __GPIO_setMODE_impl(volatile struct GPIO_Port * const GPIOx,
                          const uint8_t pin,
                          const uint8_t mode)
 {
+    assert(IS_GPIO(*GPIOx));
+    assert(pin <= 15);
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
@@ -22,6 +26,8 @@ void __GPIO_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                         const uint8_t pin,
                         const uint8_t cnf)
 {
+    assert(IS_GPIO(*GPIOx));
+    assert(pin <= 15);
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
@@ -39,6 +45,8 @@ void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t cnf,
                                 const uint8_t mode)
 {
+    assert(IS_GPIO(*GPIOx));
+    assert(pin <= 15);
     irq_lock_t lock;
     LOCK_IRQ(lock);
 

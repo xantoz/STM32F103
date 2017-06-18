@@ -4,6 +4,8 @@
 #include "types.h"
 #include "memorymap.h"
 #include "vfunc.h"
+#include "utils.h"
+#include "debug.h"
 
 /**
  * @brief GPIO
@@ -55,8 +57,7 @@ struct GPIO_PortPin
 // need to restructure some inline funcs as macros)
 
 /** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
-__attribute__((pure))
-static inline HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
+static inline PURE HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin)
 {
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
@@ -84,26 +85,29 @@ void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
 #define _GPIO_setMODE_setCNF3(portpin, mode, cnf)    __GPIO_setMODE_setCNF_impl((portpin)->port, (portpin)->pin, (mode), (cnf))
 #define GPIO_setMODE_setCNF(...) VFUNC(_GPIO_setMODE_setCNF, __VA_ARGS__)
 
-#define __GPIO_define_portPin_alias(NAME) \
-    static inline void NAME##1(const struct GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
+#define __GPIO_define_portPin_alias(NAME)                               \
+    static INLINE void NAME##1(const struct GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
 
 #define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
-static inline void __GPIO_setPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+static INLINE void __GPIO_setPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+    assert(pin <= 15);
     port->BSRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_setPin)
 
 #define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
-static inline void __GPIO_resetPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+static INLINE void __GPIO_resetPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+    assert(pin <= 15);
     port->BRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_resetPin)
 
 #define GPIO_read(...) VFUNC(__GPIO_read, __VA_ARGS__)
-static inline bool __GPIO_read2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+static INLINE bool __GPIO_read2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+    assert(pin <= 15);
     return (port->IDR >> pin) & 0x1;
 }
-static inline bool __GPIO_read1(const struct GPIO_PortPin * const portpin) {
+static INLINE bool __GPIO_read1(const struct GPIO_PortPin * const portpin) {
     return __GPIO_read2(portpin->port, portpin->pin);
 }
 

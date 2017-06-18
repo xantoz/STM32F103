@@ -87,7 +87,7 @@ void USBWakeUp_IRQHandler(void) DEFAULTS_TO(deadend);
 /* The vector table - contains the initial stack pointer and pointers to boot code as well as
    interrupt and fault handler pointers. The processor will expect this to be located at address
    0x0, so we put it into a separate linker section. */
-__attribute__ ((section(".isr_vector")))
+IN_SECTION(".isr_vector")
 const void* vtable[] = {
     &_estack,                    // Stack top
     Reset_Handler,               // Reset

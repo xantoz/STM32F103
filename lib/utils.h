@@ -10,7 +10,19 @@
 #include "types.h"
 #include "vfunc.h"
 
-#ifdef __GNUC__
+/**
+ * @defgoup Compiler portability macros
+ * @{
+ */
+
+#if defined(__GNUC__) || defined(__CLANG__) || defined(__ARMCC_VERSION__)
+// Compilers which support the GCC-style attribute
+#define IN_SECTION(s) __attribute__((section(s)))
+#else
+#warning "Non-supported compiler: No method to force code to a certain section"
+#endif
+
+#if defined(__GNUC__) || defined(__ARMCC_VERSION__)
 /** @brief All-uppercase INLINE forces inlining of the function */
 #define INLINE __attribute__((always_inline)) inline
 #define PURE __attribute__((pure))
@@ -24,14 +36,17 @@
 #define asm __asm__
 #endif
 
+/**@}*/
+
 #define NOP()  __NOP()
 #define BKPT() do { asm("bkpt"); } while (0)
 
+#ifndef __ARMCC_VERSION__
 static INLINE void __enable_irq()        { asm("cpsie i"); }
-static INLINE void __disable_irq()       { asm("cpsid i"); }
-
-static INLINE void __enable_fault_irq()  { asm("cpsie f"); }
-static INLINE void __disable_fault_irq() { asm("cpsid f"); }
+static INLINE void __disable_irq()       { asm("cpsid ip"); }
+static INLINE void __enable_fiq()  { asm("cpsie f"); } //!< enable fault IRQ
+static INLINE void __disable_fiq() { asm("cpsid f"); } //!< Disable fault IRQ
+#endif
 
 static INLINE void __NOP()               { asm("nop"); }
 static INLINE void __WFI()               { asm("wfi"); }

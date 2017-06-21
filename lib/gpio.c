@@ -2,8 +2,6 @@
 
 #include "utils.h"
 
-#define IS_GPIO(x) ((&(x) == &GPIOA) || (&(x) == &GPIOB) || (&(x) == &GPIOC))
-
 void __GPIO_setMODE_impl(volatile struct GPIO_Port * const GPIOx,
                          const uint8_t pin,
                          const uint8_t mode)

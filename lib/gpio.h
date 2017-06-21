@@ -24,9 +24,10 @@ extern volatile struct GPIO_Port GPIOA;
 extern volatile struct GPIO_Port GPIOB;
 extern volatile struct GPIO_Port GPIOC;
 
+#define IS_GPIO(x) ((&(x) == &GPIOA) || (&(x) == &GPIOB) || (&(x) == &GPIOC))
+
 /**
  * @brief Simple tuple that can be used to refer to a specific pin on a specific port.
- * Defined here as a convenience.
  */
 struct GPIO_PortPin
 {
@@ -89,21 +90,27 @@ void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
 
 #define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
 static INLINE void __GPIO_setPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
-    assert(pin <= 15);
+    build_assert(IS_GPIO(*port), "First argument is not GPIO port");
+    build_assert(pin <= 15, "Pin number too high");
+
     port->BSRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_setPin)
 
 #define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
 static INLINE void __GPIO_resetPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
-    assert(pin <= 15);
+    build_assert(IS_GPIO(*port), "First argument is not GPIO port");
+    build_assert(pin <= 15, "Pin number too high");
+
     port->BRR = (1 << pin);
 }
 __GPIO_define_portPin_alias(__GPIO_resetPin)
 
 #define GPIO_read(...) VFUNC(__GPIO_read, __VA_ARGS__)
 static INLINE bool __GPIO_read2(volatile struct GPIO_Port * const port, const uint8_t pin) {
-    assert(pin <= 15);
+    build_assert(IS_GPIO(*port), "First argument is not GPIO port");
+    build_assert(pin <= 15, "Pin number too high");
+
     return (port->IDR >> pin) & 0x1;
 }
 static INLINE bool __GPIO_read1(const struct GPIO_PortPin * const portpin) {

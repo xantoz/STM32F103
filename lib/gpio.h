@@ -57,7 +57,7 @@ struct GPIO_PortPin
 // need to restructure some inline funcs as macros)
 
 /** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
-static inline PURE HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
+static INLINE PURE HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin)
 {
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
@@ -77,6 +77,7 @@ void __GPIO_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
 #define _GPIO_setCNF2(portpin, cnf)    __GPIO_setCNF_impl((portpin)->port, (portpin)->pin, (cnf))
 #define GPIO_setCNF(...) VFUNC(_GPIO_setCNF, __VA_ARGS__)
 
+// TODO: reimplement as macro? (it make sense, as cnf & mode are going to be static most of the time)
 void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
                                 const uint8_t pin,
                                 const uint8_t cnf,
@@ -85,9 +86,6 @@ void __GPIO_setMODE_setCNF_impl(volatile struct GPIO_Port * const GPIOx,
 #define _GPIO_setMODE_setCNF3(portpin, mode, cnf)    __GPIO_setMODE_setCNF_impl((portpin)->port, (portpin)->pin, (mode), (cnf))
 #define GPIO_setMODE_setCNF(...) VFUNC(_GPIO_setMODE_setCNF, __VA_ARGS__)
 
-#define __GPIO_define_portPin_alias(NAME)                               \
-    static INLINE void NAME##1(const struct GPIO_PortPin * const portpin) { NAME##2(portpin->port, portpin->pin); }
-
 #define GPIO_setPin(...) VFUNC(__GPIO_setPin, __VA_ARGS__)
 static INLINE void __GPIO_setPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
     build_assert(IS_GPIO(*port), "First argument is not GPIO port");
@@ -95,7 +93,9 @@ static INLINE void __GPIO_setPin2(volatile struct GPIO_Port * const port, const 
 
     port->BSRR = (1 << pin);
 }
-__GPIO_define_portPin_alias(__GPIO_setPin)
+static INLINE void __GPIO_setPin1(const struct GPIO_PortPin * const portpin) {
+    __GPIO_setPin2(portpin->port, portpin->pin);
+}
 
 #define GPIO_resetPin(...) VFUNC(__GPIO_resetPin, __VA_ARGS__)
 static INLINE void __GPIO_resetPin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
@@ -104,7 +104,9 @@ static INLINE void __GPIO_resetPin2(volatile struct GPIO_Port * const port, cons
 
     port->BRR = (1 << pin);
 }
-__GPIO_define_portPin_alias(__GPIO_resetPin)
+static INLINE void __GPIO_resetPin1(const struct GPIO_PortPin * const portpin) {
+    __GPIO_resetPin2(portpin->port, portpin->pin);
+}
 
 #define GPIO_read(...) VFUNC(__GPIO_read, __VA_ARGS__)
 static INLINE bool __GPIO_read2(volatile struct GPIO_Port * const port, const uint8_t pin) {

@@ -101,16 +101,13 @@ extern void delay_us(int32_t us);
 #define BITBAND_PERI_BASE 0x42000000
 #define BITBAND_PERI(a,b) ((bool*)(BITBAND_PERI_BASE + ((a)-BITBAND_PERI_REF)*32 + ((b)*4))) // Convert PERI address
 
-#define BB_MAGIC(a,b)                               \
+#define BIT_ATOMIC(a,b)                             \
     ({                                              \
         const uint8_t *__a  = (uint8_t*)(a);        \
         const uint8_t *ref  = __a & 0x60000000;     \
         const uint8_t *base = ref | 0x02000000;     \
         (bool*)(base + (__a - ref)*32 + ((b)*4));   \
     })
-
-#define BITSET(x) ()
-#define BITRESET(x) ()
 
 #define DIV_ROUND_CLOSEST(n, d) \
     ((((n) < 0) ^ ((d) < 0)) ? (((n) - (d)/2)/(d)) : (((n) + (d)/2)/(d)))

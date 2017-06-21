@@ -87,16 +87,16 @@ void die(const char *s);
  * promoted to constants).
  */
 #define build_assert(...) VFUNC(__build_assert, __VA_ARGS__)
-#define __build_assert2(cond, text) __build_assert_impl((cond), (text), __COUNTER__)
-#define __build_assert1(cond) __build_assert_impl((cond), #cond " @ "  __FILE__ ":" TOSTRING(__LINE__), __COUNTER__)
+#define __build_assert2(cond, text) __build_assert_impl(cond, text)
+#define __build_assert1(cond) __build_assert_impl(cond, #cond " @ "  __FILE__ ":" TOSTRING(__LINE__))
 
-#define __build_assert_impl(cond, text, cntr)                           \
+#define __build_assert_impl(cond, text)                                 \
     do {                                                                \
         __attribute__((error("BUILD ASSERT:" #text)))                   \
-            void __build_assert_error##cntr(void);                      \
+            void __build_assert_error(void);                            \
                                                                         \
-        if (__builtin_constant_p(cond) && !(cond))                      \
-            __build_assert_error##cntr();                               \
+        if (__builtin_constant_p((cond)) && !(cond))                    \
+            __build_assert_error();                                     \
     } while (0)
 #else
 // Implementations of build_assert for other compilers can be put here

@@ -119,6 +119,9 @@ extern void delay_us(int32_t us);
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
+#define __TOKENPASTE(x, y) x ## y
+#define TOKENPASTE(x, y) __TOKENPASTE(x, y)
+
 // Usage examples: SET(SPI1, SPI_CR1, BR, PCLK_Div64)
 //                 SET(SPI1, SPI_CR1, LSBFIRST)
 //                 RESET(SPI1, SPI_CR1, LSBFIRST)

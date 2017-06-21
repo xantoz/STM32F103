@@ -88,8 +88,13 @@ void die(const char *s);
  *
  * A typical use case is within functions marked inline (used instead of macros), so that their
  * arguments can be checked for errors at build time, much like compiler warnings for bad format
- * strings etc. (unless, of course, they have been called with arguments that are not able to be
- * promoted to constants).
+ * strings etc. (unless, of course, they have been called with arguments that are not resolveable at
+ * build time).
+ *
+ * @todo TODO: Maybe this should be called build_assert_warning or static_warning instead, and just
+ *             emit warnings. Although then we need to provide a definition of the function carrying
+ *             the attribute, whose call is not optimized out by the compiler (it *should* on the
+ *             other hand be optimized out when not called)
  */
 #define build_assert(...) VFUNC(__build_assert, __VA_ARGS__)
 #define __build_assert2(cond, text) __build_assert_impl(cond, text, __COUNTER__)
@@ -97,8 +102,8 @@ void die(const char *s);
 
 #define __build_assert_impl(cond, text, cntr)                           \
     do {                                                                \
-        __attribute__((error("BUILD ASSERT:" #text)))                   \
-            void TOKENPASTE(__build_assert_error, cntr)(void);          \
+        __attribute__((error("BUILD ASSERT:" text)))                    \
+        void TOKENPASTE(__build_assert_error, cntr)(void);              \
                                                                         \
         if (__builtin_constant_p((cond)) && !(cond))                    \
             TOKENPASTE(__build_assert_error, cntr)();                   \

@@ -42,20 +42,20 @@
 #define BKPT() do { asm("bkpt"); } while (0)
 
 #ifndef __ARMCC_VERSION__
-static INLINE void __enable_irq()        { asm("cpsie i"); }
-static INLINE void __disable_irq()       { asm("cpsid ip"); }
+static INLINE void __enable_irq()  { asm("cpsie i"); }
+static INLINE void __disable_irq() { asm("cpsid ip"); }
 static INLINE void __enable_fiq()  { asm("cpsie f"); } //!< enable fault IRQ
 static INLINE void __disable_fiq() { asm("cpsid f"); } //!< Disable fault IRQ
 #endif
 
-static INLINE void __NOP()               { asm("nop"); }
-static INLINE void __WFI()               { asm("wfi"); }
-static INLINE void __WFE()               { asm("wfe"); }
-static INLINE void __SEV()               { asm("sev"); }
-static INLINE void __ISB()               { asm("isb"); }
-static INLINE void __DSB()               { asm("dsb"); }
-static INLINE void __DMB()               { asm("dmb"); }
-static INLINE void __CLREX()             { asm("clrex"); }
+static INLINE void __NOP()   { asm("nop"); }
+static INLINE void __WFI()   { asm("wfi"); }
+static INLINE void __WFE()   { asm("wfe"); }
+static INLINE void __SEV()   { asm("sev"); }
+static INLINE void __ISB()   { asm("isb"); }
+static INLINE void __DSB()   { asm("dsb"); }
+static INLINE void __DMB()   { asm("dmb"); }
+static INLINE void __CLREX() { asm("clrex"); }
 
 extern uint32_t __get_PRIMASK();
 extern void  __set_PRIMASK(uint32_t primask);

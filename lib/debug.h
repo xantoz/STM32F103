@@ -73,22 +73,46 @@ void die(const char *s);
 #define static_assert _Static_assert
 
 #ifdef __GNUC__
-__attribute__((error("ASSERTION ALWAYS FALSE")))
-void __build_assert_error(void);
+/**
+ * @brief Build time assert if condition is able to be promoted to constant (e.g. function arguments
+ *        in function marked inline)
+ *
+ * A lax alternative to static_assert that works even with non-static arguments. (such as arguments
+ * from functions) given to it. Only performs the assertion if it is possible to promote the value
+ * to constant at compile time.
+ *
+ * A typical use case is within functions marked inline (used instead of macros), so that their
+ * arguments can be checked for errors at build time, much like compiler warnings for bad format
+ * strings etc. (unless, of course, they have been called with arguments that are not able to be
+ * promoted to constants).
+ */
+#define build_assert(...) VFUNC(__build_assert, __VA_ARGS__)
+#define __build_assert2(cond, text) __build_assert_impl((cond), (text), __COUNTER__)
+#define __build_assert1(cond) __build_assert_impl((cond), #cond " @ "  __FILE__ ":" TOSTRING(__LINE__), __COUNTER__)
 
-// TODO: Kind of want to break this out as an alternative to static_assert (when we want to check
-// something at build-time, but only when possible). Problem: Difficult outside GCC. Perhaps call it
-// static_warning, or build_warning?
-#define __build_assert(cond,text)                   \
-    do {                                            \
-        if (__builtin_constant_p(cond) && !(cond))  \
-            __build_assert_error();                 \
+#define __build_assert_impl(cond, text, cntr)                           \
+    do {                                                                \
+        __attribute__((error("BUILD ASSERT:" #text)))                   \
+            void __build_assert_error##cntr(void);                      \
+                                                                        \
+        if (__builtin_constant_p(cond) && !(cond))                      \
+            __build_assert_error##cntr();                               \
     } while (0)
+#else
+// Implementations of build_assert for other compilers can be put here
+#warning "build_assert not implemented for this compiler, all checks will silently pass"
+#define build_assert(...)
+#endif /* __GNUC__ */
+
+#ifdef __GNUC__
+__attribute__((error("ASSERTION ALWAYS FALSE")))
+void __compiletime_assert_error(void);
 
 // TODO: have the compile time check for regular assert even when we have NDEBUG
 #define __assert_impl(cond, text)                                       \
     do {                                                                \
-        __build_assert((cond),(text));                                  \
+        if (__builtin_constant_p(cond) && !(cond))                      \
+            __compiletime_assert_error();                               \
         if (!(cond))                                                    \
             die((text));                                                \
     } while (0)

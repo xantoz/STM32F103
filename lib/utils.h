@@ -43,7 +43,7 @@
 
 #ifndef __ARMCC_VERSION__
 static INLINE void __enable_irq()  { asm("cpsie i"); }
-static INLINE void __disable_irq() { asm("cpsid ip"); }
+static INLINE void __disable_irq() { asm("cpsid i"); }
 static INLINE void __enable_fiq()  { asm("cpsie f"); } //!< enable fault IRQ
 static INLINE void __disable_fiq() { asm("cpsid f"); } //!< Disable fault IRQ
 #endif

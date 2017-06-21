@@ -48,19 +48,32 @@ void print(const char *s)
     write(2/*stderr*/, s, strlen(s));
 }
 
-void print_hex(const uint32_t val)
+static void __print_hex_impl(const uint32_t val, bool newline)
 {
     static char const * const hexLut = "0123456789ABCDEF";
     static const size_t nibbles = 2*sizeof(uint32_t); // = 8
     char str[2 + nibbles + 1]; // '0x' + 8 nibbles + newline
+    const size_t len = (newline) ? sizeof(str) : sizeof(str) - 1;
+
     str[0] = '0'; str[1] = 'x';
     for (uint32_t i = 0; i < nibbles; ++i)
     {
         str[2 + (nibbles-1) - i] = hexLut[(val >> i*4) & 0x0f];
     }
-    str[2 + nibbles] = '\n';
+    if (newline)
+        str[2 + nibbles] = '\n';
 
-    write(2/*stderr*/, str, sizeof(str));
+    write(2/*stderr*/, str, len);
+}
+
+void print_hex(const uint32_t val)
+{
+    __print_hex_impl(val, false);
+}
+
+void println_hex(const uint32_t val)
+{
+    __print_hex_impl(val, true);
 }
 
 void system(const char *cmd)
@@ -89,7 +102,7 @@ void die(const char *s)
 
 #ifdef __GNUC__
     print("Caller address: ");
-    print_hex((uint32_t)__builtin_return_address(0));
+    println_hex((uint32_t)__builtin_return_address(0));
 #endif
     print(s);
     put_char('\n');

@@ -57,7 +57,7 @@ void Systick_Handler(void)
     ++cntr;
     if (cntr == 30)
     {
-        print_hex(buttonState);
+        println_hex(buttonState);
         cntr = 0;
     }
 }

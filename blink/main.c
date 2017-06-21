@@ -20,9 +20,9 @@ void main(void)
     RCC.APB2ENR |= RCC_APB2Periph_GPIOC;
 
     print("GPIOC.CRH before: ");
-    print_hex(GPIOC.CRH);
+    println_hex(GPIOC.CRH);
     print("GPIOC.CRL before: ");
-    print_hex(GPIOC.CRL);
+    println_hex(GPIOC.CRL);
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
@@ -35,14 +35,14 @@ void main(void)
     put_char('\n');
 
     print("GPIOC.CRH after: ");
-    print_hex(GPIOC.CRH);
+    println_hex(GPIOC.CRH);
     print("GPIOC.CRL after: ");
-    print_hex(GPIOC.CRL);
+    println_hex(GPIOC.CRL);
 
     print("Hello world\n");
-    print_hex(time());
-    print_hex(clock());
-    print_hex(time());
+    println_hex(time());
+    println_hex(clock());
+    println_hex(time());
 
     uint8_t cnt = 0;
     while (1) {

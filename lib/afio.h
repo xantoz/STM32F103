@@ -135,7 +135,7 @@ enum AFIO_EXTICRx_Flg
 
     AFIO_EXTICRx_EXTIy_PA = 0x0,  //!< PA[y] pin
     AFIO_EXTICRx_EXTIy_PB = 0x1,  //!< PB[y] pin
-    AFIO_EXTICRx_EXTIy_PC = 0x2,   //!< PC[y] pin
+    AFIO_EXTICRx_EXTIy_PC = 0x2,  //!< PC[y] pin
     AFIO_EXTICRx_EXTIy_PD = 0x3,  //!< PD[y] pin
     AFIO_EXTICRx_EXTIy_PE = 0x4,  //!< PE[y] pin
     AFIO_EXTICRx_EXTIy_PF = 0x5,  //!< PF[y] pin

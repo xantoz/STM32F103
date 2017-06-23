@@ -129,14 +129,14 @@ bool nRF24L01_init(struct nRF24L01 *dev)
     }
     nRF24L01_setRegister8(dev, RF_SETUP_Reg, rf_setup);
 
-    uint8_t config = CONFIG_MASK_MAX_RT | CONFIG_PWR_UP;
+    uint8_t config = CONFIG_PWR_UP;
     if (dev->useCRC == nRF24L01_CRC)
         config |= CONFIG_EN_CRC;
 
     if (dev->mode == nRF24L01_RX)
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, config | CONFIG_MASK_TX_DS | CONFIG_PRIM_RX);
-        GPIO_setPin(dev->CE);     // Start receiving
+        GPIO_setPin(&dev->CE);     // Start receiving
     }
     else if (dev->mode == nRF24L01_TX)
     {
@@ -153,39 +153,71 @@ bool nRF24L01_init(struct nRF24L01 *dev)
 void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload)
 {
     // TODO: check if TX FIFO full, and fail/block in this case
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
 
-    for (uint32_t i = 0; i < dev->payloadWidth; ++i)
-    {
-        nRF24L01_writeTxPayload(dev, payload, dev->payload_width);
-    }
+    nRF24L01_writeTxPayload(dev, payload, dev->payloadWidth);
     // Toggle CE pin to send TX FIFO
-    GPIO_setPin(dev->CE);
+    GPIO_setPin(&dev->CE);
     delay_us(10);
-    GPIO_resetPin(dev->CE);
+    GPIO_resetPin(&dev->CE);
+
+    UNLOCK_IRQ(lock);
 }
 
-void nRF24L01_interrupt(struct nRF24L01 *dev)
+static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
 {
-    // TODO: MAX_RT handler if we have set useACK
+    if (!(dev->mode == nRF24L01_TX))
+        die("Got unexpected TX_DS interrupt (not in TX mode)");
+
+    // TODO: anything more? Callback?
+
+    // Clear TX_DS flag
+    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_TX_DS);
+}
+
+static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
+{
     if (dev->mode == nRF24L01_RX)
     {
-        GPIO_resetPin(dev->CE);
+        GPIO_resetPin(&dev->CE);
         for (uint8_t fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg);
              !(fifo_status & FIFO_STATUS_RX_EMPTY);
              fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg))
         { // Until RX FIFO is empty
             uint8_t recv[dev->payloadWidth];
-            nRF24L01_getRxPayload(dev, &recv, sizeof(recv));
+            // TODO: get the pipe number and send it on to rx_cb (currently we only support one pipe)
+            // const uint8_t pipeNo = dev->status & RX_P_NO;
+            nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
             if (dev->rx_cb != NULL)
                 dev->rx_cb(dev, &recv, sizeof(recv));
         }
-        // Clear RX_DR flag
-        nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);
-        GPIO_setPin(dev->CE);
+        GPIO_setPin(&dev->CE);
     }
-    else if (dev->mode == nRF24L01_TX)
+    else
     {
-        // Clear TX_DS flag
-        nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_TX_DS);
+        die("Got unexpected RX_DR interrupt (not in RX mode)");
     }
+
+    // Clear RX_DR flag
+    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);
+}
+
+static void nRF24L01_MAX_RT_handler(struct nRF24L01 *dev)
+{
+    // TODO: anything more? Callback?
+
+    // Clear MAX_RT flag
+    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_MAX_RT);
+}
+
+void nRF24L01_interrupt(struct nRF24L01 *dev)
+{
+    nRF24L01_NOP(dev);     // Update dev->status
+    const uint8_t status = dev->status;
+
+    // Interrupt handler dispatch
+    if (status & STATUS_RX_DR)  nRF24L01_RX_DR_handler(dev);
+    if (status & STATUS_TX_DS)  nRF24L01_TX_DS_handler(dev);
+    if (status & STATUS_MAX_RT) nRF24L01_MAX_RT_handler(dev);
 }

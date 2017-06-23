@@ -44,7 +44,7 @@ static void spi_setup()
 
     // Setup GPIO pins for SPI
 #if mySPI == SPI1
-    print("SPI2_SetupGpio\n");
+    print("SPI1_SetupGpio\n");
     SPI1_SetupGpio(DEFAULT, SPI_PushPull, SPI_PullDown);
 #elif mySPI == SPI2
     print("SPI2_SetupGpio\n");

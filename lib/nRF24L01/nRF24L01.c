@@ -103,12 +103,18 @@ bool nRF24L01_init(struct nRF24L01 *dev)
     assert(dev->channel <= 127);
     assert(0 < dev->payloadWidth && dev->payloadWidth <= 32);
 
-    // TODO: settings for the GPIO pins
+    // Setup the GPIO outputs
+    GPIO_setMODE_setCNF(&dev->CE,  GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(&dev->CSN, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_resetPin(&dev->CE); // Active high
+    GPIO_setPin(&dev->CSN);  // Active low
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->useACK) ? EN_AA_ENAA_All : 0);
     nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P1);
     nRF24L01_setRegister8(dev, RX_PW_P1_Reg, dev->payloadWidth & 0x1f);
+
+    // TODO: RX/TX addr settings (need changes in the struct. Currently we just use the reset defaults
 
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;

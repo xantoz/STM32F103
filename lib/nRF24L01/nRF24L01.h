@@ -89,8 +89,17 @@ struct nRF24L01
 bool nRF24L01_init(struct nRF24L01 *dev);
 
 /**
+ * @brief Send data
+ *
+ * @param dev     [in/out] nRF24L01 device object
+ * @param payload [in]     Pointer to buffer containing payload to send. This buffer needs to be
+ *                         dev->payloadWidth bytes large.
+ */
+void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload);
+
+/**
  * @brief This should be called by the interrupt routine connected to the
- *        interrupt pin from the nRF24L01
+ *        IRQ pin coming from the nRF24L01
  *
  * @param dev [in/out] nRF24L01 device object
  *

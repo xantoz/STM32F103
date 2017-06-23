@@ -74,6 +74,9 @@ struct nRF24L01
     enum nRF24L01_Retransmission retransmission;
     enum nRF24L01_Mode           mode;                    //!< Mode of operation
 
+    uint8_t payloadWidth; //!< How many bytes in one payload. This driver only
+                          //! supports a static payload size. 0 < payloadWidth <= 32
+
     uint8_t channel; //!< Value from 0 to 127. Take care that channels are
                      //! spaced 2 apart when running in 2mbps mode
 };

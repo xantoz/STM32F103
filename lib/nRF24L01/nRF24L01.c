@@ -8,7 +8,7 @@
  * @brief nRF24L01 write operation help function
  *
  * @param dev    [in/out] nRF24L01 device object
- * @param cmd    [in]     Command byte. Shoudl be a write operation
+ * @param cmd    [in]     Command byte. Should be a write operation
  * @param dataIn [in]     Pointer to data bytes to write operation. Can be NULL if len == 0. Data should be in LSByte to
  *                        MSByte order, with MSBit in each byte first.
  * @param len    [in]     How many data bytes. From 0 to maximum defined by the command
@@ -101,10 +101,14 @@ static void nRF24L01_modifyRegister8(struct nRF24L01 *dev, enum nRF24L01_Registe
 bool nRF24L01_init(struct nRF24L01 *dev)
 {
     assert(dev->channel <= 127);
+    assert(0 < dev->payloadWidth && dev->payloadWidth <= 32);
+
+    // TODO: settings for the GPIO pins
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->useACK) ? EN_AA_ENAA_All : 0);
     nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P1);
+    nRF24L01_setRegister8(dev, RX_PW_P1_Reg, dev->payloadWidth & 0x1f);
 
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;
@@ -125,13 +129,14 @@ bool nRF24L01_init(struct nRF24L01 *dev)
     }
     nRF24L01_setRegister8(dev, RF_SETUP_Reg, rf_setup);
 
-    uint8_t config = CONFIG_MASK_MAX_RT;
+    uint8_t config = CONFIG_MASK_MAX_RT | CONFIG_PWR_UP;
     if (dev->useCRC == nRF24L01_CRC)
         config |= CONFIG_EN_CRC;
 
     if (dev->mode == nRF24L01_RX)
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, config | CONFIG_MASK_TX_DS | CONFIG_PRIM_RX);
+        GPIO_setPin(dev->CE);     // Start receiving
     }
     else if (dev->mode == nRF24L01_TX)
     {
@@ -145,22 +150,38 @@ bool nRF24L01_init(struct nRF24L01 *dev)
     return true;
 }
 
+void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload)
+{
+    // TODO: check if TX FIFO full, and fail/block in this case
+
+    for (uint32_t i = 0; i < dev->payloadWidth; ++i)
+    {
+        nRF24L01_writeTxPayload(dev, payload, dev->payload_width);
+    }
+    // Toggle CE pin to send TX FIFO
+    GPIO_setPin(dev->CE);
+    delay_us(10);
+    GPIO_resetPin(dev->CE);
+}
+
 void nRF24L01_interrupt(struct nRF24L01 *dev)
 {
+    // TODO: MAX_RT handler if we have set useACK
     if (dev->mode == nRF24L01_RX)
     {
+        GPIO_resetPin(dev->CE);
         for (uint8_t fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg);
              !(fifo_status & FIFO_STATUS_RX_EMPTY);
              fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg))
         { // Until RX FIFO is empty
-            // TODO: data word width setting here, determining how much we should be fetching at a time
-            uint8_t recv;
+            uint8_t recv[dev->payloadWidth];
             nRF24L01_getRxPayload(dev, &recv, sizeof(recv));
             if (dev->rx_cb != NULL)
                 dev->rx_cb(dev, &recv, sizeof(recv));
         }
         // Clear RX_DR flag
         nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);
+        GPIO_setPin(dev->CE);
     }
     else if (dev->mode == nRF24L01_TX)
     {

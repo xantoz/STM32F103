@@ -75,7 +75,7 @@ struct nRF24L01_Options
 
     //! RX mode only. Callback function called for each recevied word. Called
     //! with a pointer to the device, a pointer to the received word, and the
-    //! length of the received word.
+    //! length of the received word. May be NULL.
     void (*rx_cb)(const struct nRF24L01*, const void *data, size_t len);
 
     enum nRF24L01_AirDataRate    airDataRate;

@@ -50,7 +50,7 @@ static void spi_setup()
     print("SPI2_SetupGpio\n");
     SPI2_SetupGpio(SPI_PushPull, SPI_PullDown, true);
 #else
-#error "No such SPI: mySPI"
+#error "No such SPI"
 #endif
 
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
@@ -104,9 +104,12 @@ void main(void)
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
     RCC.APB1ENR |= RCC_APB1Periph_SPI2;    // Enable clock to SPI2
 
-    spi_setup();
-
+    GPIO_setMODE_setCNF(&GPIOC, 11, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+
+    GPIO_setPin(&GPIOC, 11);
+    spi_setup();
+    GPIO_resetPin(&GPIOC, 11);
 
     while (true)
     {

@@ -194,9 +194,7 @@ static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
     assert(dev->conf->mode == nRF24L01_RX, "Got unexpected RX_DR interrupt (not in RX mode)");
 
     GPIO_resetPin(&dev->conf->CE);
-    for (uint8_t fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg);
-         !(fifo_status & FIFO_STATUS_RX_EMPTY);
-         fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg))
+    while (!(nRF24L01_getRegister8(dev, FIFO_STATUS_Reg) & FIFO_STATUS_RX_EMPTY))
     { // Until RX FIFO is empty
         uint8_t recv[dev->conf->payloadWidth];
         // TODO: get the pipe number and send it on to rx_cb (currently we only support one pipe)

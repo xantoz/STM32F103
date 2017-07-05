@@ -162,7 +162,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     return true;
 }
 
-void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload)
+void nRF24L01_send(struct nRF24L01 *dev, const void *payload)
 {
     assert(dev->conf->mode == nRF24L01_TX);
 

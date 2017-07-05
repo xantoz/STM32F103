@@ -126,7 +126,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
  *
  * @note  Must be in TX mode
  */
-void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload);
+void nRF24L01_send(struct nRF24L01 *dev, const void *payload);
 
 /**
  * @brief This should be called by the interrupt routine connected to the

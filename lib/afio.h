@@ -166,7 +166,7 @@ static inline void AFIO_mapEXTI(uint8_t EXTIy, enum AFIO_EXTICRx_Flg port)
     LOCK_IRQ(lock);
 
     const uint32_t exticr_x = (EXTIy / 4);
-    const uint32_t bitpos   = (EXTIy % 4);
+    const uint32_t bitpos   = (EXTIy % 4)*4;
     const uint32_t mask = ~(AFIO_EXTICRx_EXTIy << bitpos);
     const uint32_t flag = (port << bitpos);
     AFIO.EXTICR[exticr_x] = (AFIO.EXTICR[exticr_x] & mask) | flag;

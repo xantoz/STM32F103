@@ -34,7 +34,7 @@ void main(void)
     while (true)
     {
         if ((cntr % 1234090) == 0)
-            println_hex(cntr);
+            println_u32_hex(cntr);
         ++cntr;
     }
 }

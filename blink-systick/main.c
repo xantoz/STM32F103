@@ -25,7 +25,7 @@ void main(void)
     while (true)
     {
         if ((asdf % 123409) == 0)
-            print_hex(SysTick.VAL);
+            print_u32_hex(SysTick.VAL);
         ++asdf;
     }
 }

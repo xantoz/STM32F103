@@ -48,7 +48,7 @@ void print(const char *s)
     write(2/*stderr*/, s, strlen(s));
 }
 
-static void __print_hex_impl(const uint32_t val, bool newline)
+static void __print_u32_hex_impl(const uint32_t val, bool newline)
 {
     static char const * const hexLut = "0123456789ABCDEF";
     static const size_t nibbles = 2*sizeof(uint32_t); // = 8
@@ -66,14 +66,14 @@ static void __print_hex_impl(const uint32_t val, bool newline)
     write(2/*stderr*/, str, len);
 }
 
-void print_hex(const uint32_t val)
+void print_u32_hex(const uint32_t val)
 {
-    __print_hex_impl(val, false);
+    __print_u32_hex_impl(val, false);
 }
 
-void println_hex(const uint32_t val)
+void println_u32_hex(const uint32_t val)
 {
-    __print_hex_impl(val, true);
+    __print_u32_hex_impl(val, true);
 }
 
 void system(const char *cmd)
@@ -102,7 +102,7 @@ void die(const char *s)
 
 #ifdef __GNUC__
     print("Caller address: ");
-    println_hex((uint32_t)__builtin_return_address(0));
+    println_u32_hex((uint32_t)__builtin_return_address(0));
 #endif
     print(s);
     put_char('\n');

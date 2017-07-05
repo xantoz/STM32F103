@@ -90,7 +90,7 @@ static void updateClockFreqs()
         (sws == RCC_CFGR_SWS_HSI) ? CLOCK_HSI_Hz :
         (sws == RCC_CFGR_SWS_HSE) ? CLOCK_HSE_Hz :
         (sws == RCC_CFGR_SWS_PLL) ? getPLLFreq(cfgr) : 0;
-    assert_always(g_clock.sysclkFreq == 0, "read undefined value for RCC_CFGR SWS");
+    assert_always(g_clock.sysclkFreq != 0, "read undefined value for RCC_CFGR SWS");
 
     // Get HCLK (AHB) frequency
     uint32_t hpre = cfgr & RCC_CFGR_HPRE;
@@ -139,7 +139,7 @@ static void updateClockFreqs()
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div6) ? 6 :
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div4) ? 4 : 2;
     g_clock.adcClkFreq = g_clock.pclk2Freq/adcClk_div;
-    assert_always(g_clock.adcClkFreq > ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
+    assert_always(g_clock.adcClkFreq <= ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
 
     // Get SysTick frequency
     uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;

@@ -12,6 +12,9 @@
 #define SYS_CLOCK  0x10
 #define SYS_READC  0x07
 
+// Lookup table used by hex and dec printing commands
+static char const * const numberLUT = "0123456789ABCDEF";
+
 // static uint32_t send_command(register uint32_t command, register void *message)
 // {
 //     register uint32_t r0 asm("r0") = command;
@@ -50,7 +53,6 @@ void print(const char *s)
 
 static void __print_u32_hex_impl(const uint32_t val, bool newline)
 {
-    static char const * const hexLut = "0123456789ABCDEF";
     static const size_t nibbles = 2*sizeof(uint32_t); // = 8
     char str[2 + nibbles + 1]; // '0x' + 8 nibbles + newline
     const size_t len = (newline) ? sizeof(str) : sizeof(str) - 1;
@@ -58,7 +60,7 @@ static void __print_u32_hex_impl(const uint32_t val, bool newline)
     str[0] = '0'; str[1] = 'x';
     for (uint32_t i = 0; i < nibbles; ++i)
     {
-        str[2 + (nibbles-1) - i] = hexLut[(val >> i*4) & 0x0f];
+        str[2 + (nibbles-1) - i] = numberLUT[(val >> i*4) & 0x0f];
     }
     if (newline)
         str[2 + nibbles] = '\n';
@@ -75,6 +77,42 @@ void println_u32_hex(const uint32_t val)
 {
     __print_u32_hex_impl(val, true);
 }
+
+static void __print_u32_dec_impl(uint32_t val, bool newline)
+{
+    static const size_t maxlen = 9;
+    char str[maxlen + 1]; // maximum 9 digits for uint32 + newline
+
+    // Find the largest ten in the number, start from 10**9
+    uint32_t position = 1000000000u;
+    while (0 == (val / position) && position > 1)
+        position /= 10;
+
+    size_t len;
+    for (len = 0; position != 0 && len < maxlen; position /= 10, ++len)
+    {
+        str[len] = numberLUT[val / position];
+        val %= position;
+    }
+    if (newline)
+    {
+        str[len] = '\n'; // Finish with newline
+        ++len;
+    }
+
+    write(2/*stderr*/, str, len);
+}
+
+void print_u32_dec(const uint32_t val)
+{
+    __print_u32_dec_impl(val, false);
+}
+
+void println_u32_dec(const uint32_t val)
+{
+    __print_u32_dec_impl(val, true);
+}
+
 
 void system(const char *cmd)
 {

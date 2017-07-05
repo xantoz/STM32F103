@@ -38,7 +38,7 @@ void write(uint32_t fhandle, void const * const s, size_t len);
 void print(const char *s);
 
 /**
- * @brief Prints a uint32_t in hexadecimal, to the debug console.
+ * @brief Prints a uint32_t in hexadecimal to the debug console.
  */
 void print_u32_hex(const uint32_t val);
 
@@ -46,6 +46,16 @@ void print_u32_hex(const uint32_t val);
  * @brief Prints a uint32_t in hexadecimal, followed by a newline, to the debug console.
  */
 void println_u32_hex(const uint32_t val);
+
+/**
+ * @brief Prints a uint32_t in decimal to the debug console.
+ */
+void print_u32_dec(const uint32_t val);
+
+/**
+ * @brief Prints a uint32_t in decimal, followed by a newline, to the debug console.
+ */
+void println_u32_dec(const uint32_t val);
 
 /**
  * @brief Execute command in host system shell.

@@ -214,11 +214,16 @@ extern const struct SPI_Pins SPI2_Pins;
 /**
  * @brief Write me
  */
-void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode);
+void SPI1_SetupGpio(enum AF_Mapping mapping,
+                    enum SPI_OutputMode outputMode,
+                    enum SPI_InputMode inputMode,
+                    bool hardwareNSS);
 
 /**
  * @brief Write me
  */
-void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode);
+void SPI2_SetupGpio(enum SPI_OutputMode outputMode,
+                    enum SPI_InputMode inputMode,
+                    bool hardwareNSS);
 
 #endif

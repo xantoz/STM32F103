@@ -57,15 +57,21 @@ bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
 //       SCK might as well be a bi-directional pin from the view of GPIO w.r.t. different
 //       configurations of the peripheral, but this will of course not let us do pull-ups or
 //       pull-downs on a SCK input, for instance.
-// TODO: NSS pin is always configured as an AF output, this might not be what we always want
 static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
                                 enum SPI_InputMode inputMode,
-                                struct SPI_Pins const * const pins)
+                                struct SPI_Pins const * const pins,
+                                bool hardwareNSS)
 {
     const uint8_t outputCNF = (outputMode == SPI_PushPull) ? GPIO_Output_CNF_AFPushPull : GPIO_Output_CNF_AFOpenDrain;
     const uint8_t inputCNF  = (inputMode == SPI_Floating) ? GPIO_Input_CNF_Floating : GPIO_Input_CNF_PullupPulldown;
 
-    GPIO_setMODE_setCNF(&pins->NSS,  GPIO_MODE_Output_50MHz, outputCNF); // NSS
+    if (hardwareNSS)
+        GPIO_setMODE_setCNF(&pins->NSS,  GPIO_MODE_Output_50MHz, outputCNF);
+    else
+        GPIO_setMODE_setCNF(&pins->NSS,
+                            GPIO_MODE_Output_50MHz,
+                            (outputMode == SPI_PushPull) ? GPIO_Output_CNF_GPPushPull : GPIO_Output_CNF_GPOpenDrain);
+
     GPIO_setMODE_setCNF(&pins->SCK,  GPIO_MODE_Output_50MHz, outputCNF); // SCK
     GPIO_setMODE_setCNF(&pins->MOSI, GPIO_MODE_Output_50MHz, outputCNF); // MOSI
 
@@ -79,7 +85,10 @@ static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
 
 // TODO: mold this into a more fully encompassing SPI init function (handle freq, clock phase &c.,
 // and do not set up port bits for NSS when not applicable)
-void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
+void SPI1_SetupGpio(enum AF_Mapping mapping,
+                    enum SPI_OutputMode outputMode,
+                    enum SPI_InputMode inputMode,
+                    bool hardwareNSS)
 {
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -90,17 +99,19 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
         AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
 
     const struct SPI_Pins *pinMap = (mapping == AFIO_ALTERNATE) ? &SPI1_Alternate_Pins : &SPI1_Default_Pins;
-    spi_setupGpioHelper(outputMode, inputMode, pinMap);
+    spi_setupGpioHelper(outputMode, inputMode, pinMap, hardwareNSS);
 
     UNLOCK_IRQ(lock);
 }
 
-void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode)
+void SPI2_SetupGpio(enum SPI_OutputMode outputMode,
+                    enum SPI_InputMode inputMode,
+                    bool hardwareNSS)
 {
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
-    spi_setupGpioHelper(outputMode, inputMode, &SPI2_Pins);
+    spi_setupGpioHelper(outputMode, inputMode, &SPI2_Pins, hardwareNSS);
 
     UNLOCK_IRQ(lock);
 }

@@ -45,10 +45,10 @@ static void spi_setup()
     // Setup GPIO pins for SPI
 #if mySPI == SPI1
     print("SPI1_SetupGpio\n");
-    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown);
+    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, true);
 #elif mySPI == SPI2
     print("SPI2_SetupGpio\n");
-    SPI2_SetupGpio(SPI_PushPull, SPI_PullDown);
+    SPI2_SetupGpio(SPI_PushPull, SPI_PullDown, true);
 #else
 #error "No such SPI: mySPI"
 #endif

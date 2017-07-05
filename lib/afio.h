@@ -214,8 +214,8 @@ enum AFIO_MAPR2_Flg
  */
 enum AF_Mapping
 {
-    DEFAULT,
-    ALTERNATE
+    AFIO_DEFAULT,
+    AFIO_ALTERNATE,
 };
 
 #endif /* _AFIO_ */

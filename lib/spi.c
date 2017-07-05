@@ -68,7 +68,7 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
-    if (mapping == ALTERNATE)
+    if (mapping == AFIO_ALTERNATE)
         AFIO.MAPR |= AFIO_MAPR_SPI1_REMAP;
     else
         AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
@@ -86,7 +86,7 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
         .MOSI = {&GPIOB, 5}
     };
 
-    const struct SPI_Pins *pinMap = (mapping == ALTERNATE) ? &SPI1_Alternate_Mapping : &SPI1_Default_Mapping;
+    const struct SPI_Pins *pinMap = (mapping == AFIO_ALTERNATE) ? &SPI1_Alternate_Mapping : &SPI1_Default_Mapping;
     spi_setupGpioHelper(outputMode, inputMode, pinMap);
 
     UNLOCK_IRQ(lock);

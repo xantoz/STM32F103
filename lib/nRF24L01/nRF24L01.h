@@ -84,7 +84,11 @@ struct nRF24L01_Options
     //! Pointer to function that sends 8 bits and then reads 8 bits back, with
     //! the least significant bit first. This function should not toggle the
     //! chip select pin, that is handled separately (the chip select pin (CSN)
-    //! may indeed be low during two or more calls of this function)
+    //! may indeed be low during two or more calls of this function).
+    //!
+    //! The reason for providing this function as a callback is to be more
+    //! portable and flexible, so that we may use different SPI hardware, or
+    //! maybe just bitbanged SPI, without changing the code
     uint8_t (*spi_sendrecv)(uint8_t);
 
     //! RX mode only. Callback function called for each recevied word. Called

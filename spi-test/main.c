@@ -63,10 +63,10 @@ static void spi_setup()
     mySPI.CR1 |= flag;
 
     print("Set baudrate to ");
-    print_u32_hex(actualFreq);
+    print_u32_dec(actualFreq);
     print(" flag: ");
     print_u32_hex(flag);
-    print("(Requested " TOSTRING(MAX_BAUDRATE) ")\n");
+    print(" (Requested " TOSTRING(MAX_BAUDRATE) ")\n");
 
     // Enable SPI
     mySPI.CR1 |= SPI_CR1_SPE;

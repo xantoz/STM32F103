@@ -48,7 +48,21 @@ enum nRF24L01_Mode
     nRF24L01_TX,
 };
 
+/**
+ * @brief Struct for an initialized nRF24L01
+ */
 struct nRF24L01
+{
+    uint8_t status;                         //!< Holds STATUS from last command to nRF24L01
+    struct nRF24L01_Options const * conf;   //!< Device options
+};
+
+/**
+ * @brief Struct to hold options for setting up nRF24L01
+ *
+ * @note  Possible to use as static const, so that it is completely stored in Flash
+ */
+struct nRF24L01_Options
 {
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
@@ -64,9 +78,6 @@ struct nRF24L01
     //! length of the received word.
     void (*rx_cb)(const struct nRF24L01*, const void *data, size_t len);
 
-    uint8_t status;  //!< Holds STATUS from last command to nRF24L01
-
-    // The following options are all settings
     enum nRF24L01_AirDataRate    airDataRate;
     enum nRF24L01_TXPower        power;
     enum nRF24L01_UseACK         useACK;
@@ -84,16 +95,31 @@ struct nRF24L01
 /**
  * @brief Initialize nRF24L01
  *
- * @param dev [in/out] nRF24L01 device object
+ * @param options [in]  Struct with device options and callbacks
+ * @param dev     [out] nRF24L01 device object
+ *
+ * Example usage:
+ * @code
+ * static const struct nRF24L01_Options rfDev_opts = {
+ *     .spi_sendrecv = &SPI1_SendAndReceive,
+ *     .airDataRate = nRF24L01_2Mbps,
+ *     .power = nRF24L01_TXPower_Minus12dBm,
+ *     ...
+ * };
+ * struct nRF24L01 rfDev;
+ * nRF24L01_init(&rfDev_opts, &rfDev);
+ * @endcode
  */
-bool nRF24L01_init(struct nRF24L01 *dev);
+bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev);
 
 /**
- * @brief Send data
+ * @brief Send data.
  *
  * @param dev     [in/out] nRF24L01 device object
  * @param payload [in]     Pointer to buffer containing payload to send. This buffer needs to be
- *                         dev->payloadWidth bytes large.
+ *                         payloadWidth bytes large.
+ *
+ * @note  Must be in TX mode
  */
 void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload);
 
@@ -103,7 +129,7 @@ void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload);
  *
  * @param dev [in/out] nRF24L01 device object
  *
- * @note  When in RX mode calls dev->rx_cb
+ * @note  When in RX mode calls rx_cb
  */
 void nRF24L01_interrupt(struct nRF24L01 *dev);
 

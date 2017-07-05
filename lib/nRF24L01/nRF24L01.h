@@ -67,17 +67,6 @@ struct nRF24L01_Options
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
 
-    //! Pointer to function that sends 8 bits and then reads 8 bits back, with
-    //! the least significant bit first. This function should not toggle the
-    //! chip select pin, that is handled separately (the chip select pin (CSN)
-    //! may indeed be low during two or more calls of this function)
-    uint8_t (*spi_sendrecv)(uint8_t);
-
-    //! RX mode only. Callback function called for each recevied word. Called
-    //! with a pointer to the device, a pointer to the received word, and the
-    //! length of the received word. May be NULL.
-    void (*rx_cb)(const struct nRF24L01*, const void *data, size_t len);
-
     enum nRF24L01_AirDataRate    airDataRate;
     enum nRF24L01_TXPower        power;
     enum nRF24L01_UseACK         useACK;
@@ -90,6 +79,18 @@ struct nRF24L01_Options
 
     uint8_t channel; //!< Value from 0 to 127. Take care that channels are
                      //! spaced 2 apart when running in 2mbps mode
+
+
+    //! Pointer to function that sends 8 bits and then reads 8 bits back, with
+    //! the least significant bit first. This function should not toggle the
+    //! chip select pin, that is handled separately (the chip select pin (CSN)
+    //! may indeed be low during two or more calls of this function)
+    uint8_t (*spi_sendrecv)(uint8_t);
+
+    //! RX mode only. Callback function called for each recevied word. Called
+    //! with a pointer to the device, a pointer to the received word, and the
+    //! length of the received word. May be NULL.
+    void (*rx_cb)(const struct nRF24L01*, const void *data, size_t len);
 };
 
 /**

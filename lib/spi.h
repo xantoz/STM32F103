@@ -176,6 +176,41 @@ enum SPI_InputMode
     SPI_PullDown
 };
 
+struct SPI_Pins
+{
+    struct GPIO_PortPin NSS, SCK, MISO, MOSI;
+};
+
+/**
+ * @brief GPIO pins used by SPI1, default mapping
+ *
+ * .NSS  = {&GPIOA, 4},
+ * .SCK  = {&GPIOA, 5},
+ * .MISO = {&GPIOA, 6},
+ * .MOSI = {&GPIOA, 7}
+ */
+extern const struct SPI_Pins SPI1_Default_Pins;
+
+/**
+ * @brief GPIO pins used by SPI1, alternate mapping
+ *
+ * .NSS  = {&GPIOA, 15},
+ * .SCK  = {&GPIOB, 3},
+ * .MISO = {&GPIOB, 4},
+ * .MOSI = {&GPIOB, 5}
+ */
+extern const struct SPI_Pins SPI1_Alternate_Pins;
+
+/**
+ * @brief GPIO pins used by SPI2
+ *
+ * .NSS  = {&GPIOB, 12},
+ * .SCK  = {&GPIOB, 13},
+ * .MISO = {&GPIOB, 14},
+ * .MOSI = {&GPIOB, 15},
+ */
+extern const struct SPI_Pins SPI2_Pins;
+
 /**
  * @brief Write me
  */

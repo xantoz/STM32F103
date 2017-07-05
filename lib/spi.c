@@ -3,6 +3,27 @@
 #include "clock.h"
 #include "utils.h"
 
+const struct SPI_Pins SPI1_Default_Pins = {
+    .NSS  = {&GPIOA, 4},
+    .SCK  = {&GPIOA, 5},
+    .MISO = {&GPIOA, 6},
+    .MOSI = {&GPIOA, 7}
+};
+
+const struct SPI_Pins SPI1_Alternate_Pins = {
+    .NSS  = {&GPIOA, 15},
+    .SCK  = {&GPIOB, 3},
+    .MISO = {&GPIOB, 4},
+    .MOSI = {&GPIOB, 5}
+};
+
+const struct SPI_Pins SPI2_Pins = {
+    .NSS  = {&GPIOB, 12},
+    .SCK  = {&GPIOB, 13},
+    .MISO = {&GPIOB, 14},
+    .MOSI = {&GPIOB, 15},
+};
+
 bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq)
 {
@@ -30,11 +51,6 @@ bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
     }
     return false;
 }
-
-struct SPI_Pins
-{
-    struct GPIO_PortPin NSS, SCK, MISO, MOSI;
-};
 
 // TODO: Check the various pin modes in Table 25. in the reference manual, and parametrize on that.
 // TODO: Assumes master mode (SCK is an output, so is NSS), but might work in slave mode as well, as
@@ -73,20 +89,7 @@ void SPI1_SetupGpio(enum AF_Mapping mapping, enum SPI_OutputMode outputMode, enu
     else
         AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
 
-    static const struct SPI_Pins SPI1_Default_Mapping = {
-        .NSS  = {&GPIOA, 4},
-        .SCK  = {&GPIOA, 5},
-        .MISO = {&GPIOA, 6},
-        .MOSI = {&GPIOA, 7}
-    };
-    static const struct SPI_Pins SPI1_Alternate_Mapping = {
-        .NSS  = {&GPIOA, 15},
-        .SCK  = {&GPIOB, 3},
-        .MISO = {&GPIOB, 4},
-        .MOSI = {&GPIOB, 5}
-    };
-
-    const struct SPI_Pins *pinMap = (mapping == AFIO_ALTERNATE) ? &SPI1_Alternate_Mapping : &SPI1_Default_Mapping;
+    const struct SPI_Pins *pinMap = (mapping == AFIO_ALTERNATE) ? &SPI1_Alternate_Pins : &SPI1_Default_Pins;
     spi_setupGpioHelper(outputMode, inputMode, pinMap);
 
     UNLOCK_IRQ(lock);
@@ -97,14 +100,7 @@ void SPI2_SetupGpio(enum SPI_OutputMode outputMode, enum SPI_InputMode inputMode
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
-    static const struct SPI_Pins SPI2_Mapping = {
-        .NSS  = {&GPIOB, 12},
-        .SCK  = {&GPIOB, 13},
-        .MISO = {&GPIOB, 14},
-        .MOSI = {&GPIOB, 15},
-    };
-
-    spi_setupGpioHelper(outputMode, inputMode, &SPI2_Mapping);
+    spi_setupGpioHelper(outputMode, inputMode, &SPI2_Pins);
 
     UNLOCK_IRQ(lock);
 }

@@ -178,8 +178,7 @@ void nRF24L01_send(struct nRF24L01 *dev, const uint8_t *payload)
 
 static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
 {
-    if (!(dev->conf->mode == nRF24L01_TX))
-        die("Got unexpected TX_DS interrupt (not in TX mode)");
+    assert(dev->conf->mode == nRF24L01_TX, "Got unexpected TX_DS interrupt (not in TX mode)");
 
     // TODO: anything more? Callback?
 
@@ -189,26 +188,21 @@ static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
 
 static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
 {
-    if (dev->conf->mode == nRF24L01_RX)
-    {
-        GPIO_resetPin(&dev->conf->CE);
-        for (uint8_t fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg);
-             !(fifo_status & FIFO_STATUS_RX_EMPTY);
-             fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg))
-        { // Until RX FIFO is empty
-            uint8_t recv[dev->conf->payloadWidth];
-            // TODO: get the pipe number and send it on to rx_cb (currently we only support one pipe)
-            // const uint8_t pipeNo = dev->status & RX_P_NO;
-            nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
-            if (dev->conf->rx_cb != NULL)
-                dev->conf->rx_cb(dev, &recv, sizeof(recv));
-        }
-        GPIO_setPin(&dev->conf->CE);
+    assert(dev->conf->mode == nRF24L01_RX, "Got unexpected RX_DR interrupt (not in RX mode)");
+
+    GPIO_resetPin(&dev->conf->CE);
+    for (uint8_t fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg);
+         !(fifo_status & FIFO_STATUS_RX_EMPTY);
+         fifo_status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg))
+    { // Until RX FIFO is empty
+        uint8_t recv[dev->conf->payloadWidth];
+        // TODO: get the pipe number and send it on to rx_cb (currently we only support one pipe)
+        // const uint8_t pipeNo = dev->status & RX_P_NO;
+        nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
+        if (dev->conf->rx_cb != NULL)
+            dev->conf->rx_cb(dev, &recv, sizeof(recv));
     }
-    else
-    {
-        die("Got unexpected RX_DR interrupt (not in RX mode)");
-    }
+    GPIO_setPin(&dev->conf->CE);
 
     // Clear RX_DR flag
     nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);

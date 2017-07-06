@@ -7,7 +7,8 @@
 
 #include "lib/nRF24L01/nRF24L01.h"
 
-#define MAX_BAUDRATE 8000000
+// #define MAX_BAUDRATE 8000000
+#define MAX_BAUDRATE 2000000
 #define DELAY 200000
 
 // TODO: A0 receives IRQ when recv
@@ -32,9 +33,9 @@ static void spi_setup()
     // + Rx DMA
     // + SS output
     SPI1.CR1 &= ~(SPI_CR1_BIDIMODE | SPI_CR1_CRCEN | SPI_CR1_SSM |
-                   SPI_CR1_DFF | SPI_CR1_LSBFIRST | SPI_CR1_RXONLY);
+                  SPI_CR1_DFF | SPI_CR1_LSBFIRST | SPI_CR1_RXONLY);
     SPI1.CR2 &= ~(SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE |
-                   SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN | SPI_CR2_SSOE);
+                  SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN | SPI_CR2_SSOE);
 
     // Enable:
     // * Master mode
@@ -71,14 +72,14 @@ static void spi_send(uint16_t data)
 {
     while (!(SPI1.SR & SPI_SR_TXE)); // Wait until transmit buffer empty
 
-    SPI1.DR = data;
+    SPI1.DR = (uint16_t)data;
 }
 
 static uint8_t spi_recv()
 {
     while (!(SPI1.SR & SPI_SR_RXNE)); // Block until we have data
 
-    return SPI1.DR;
+    return (uint16_t)SPI1.DR;
 }
 
 static uint8_t spi_sendrecv(uint8_t data)

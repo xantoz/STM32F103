@@ -45,7 +45,7 @@ static void spi_setup()
     SPI1.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
 
     // Setup GPIO pins for SPI1
-    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, false);
+    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, true);
 
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
     print("spi_getBaudRateDivisorFromMaxFreq\n");
@@ -68,7 +68,7 @@ static void spi_setup()
     __enable_irq();
 }
 
-static void spi_send(uint16_t data)
+static void spi_send(uint8_t data)
 {
     while (!(SPI1.SR & SPI_SR_TXE)); // Wait until transmit buffer empty
 
@@ -79,7 +79,7 @@ static uint8_t spi_recv()
 {
     while (!(SPI1.SR & SPI_SR_RXNE)); // Block until we have data
 
-    return (uint16_t)SPI1.DR;
+    return (uint8_t)SPI1.DR;
 }
 
 static uint8_t spi_sendrecv(uint8_t data)
@@ -90,7 +90,7 @@ static uint8_t spi_sendrecv(uint8_t data)
 
 // Settings for the nRF24L01
 static const struct nRF24L01_Options rfDev_opts = {
-    .CSN = {&GPIOA, 4}, // OK since we set up SPI1 so that this is usable as GPIO
+    .CSN = {&GPIOA, 3},
     .CE  = {&GPIOA, 1},
 
     .airDataRate    = nRF24L01_2Mbps,
@@ -111,7 +111,8 @@ struct nRF24L01 rfDev;
 
 void main()
 {
-    clock_setSysClockHSE_24MHz();
+    clock_setSysClockHSE();
+    // clock_setSysClockHSE_24MHz();
 
     // Enable clock to all GPIO:s
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
@@ -119,9 +120,20 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_resetPin(&GPIOC, 15);
 
+    delay_us(64);
+
+    GPIO_setPin(&GPIOC, 15);
     spi_setup();
+    GPIO_resetPin(&GPIOC, 15);
+
+    delay_us(123);
+
+    GPIO_setPin(&GPIOC, 15);
     nRF24L01_init(&rfDev_opts, &rfDev);
+    GPIO_resetPin(&GPIOC, 15);
 
     uint16_t msg = 110;
     while (true)
@@ -130,6 +142,7 @@ void main()
         delay_us(DELAY);
 
         nRF24L01_send(&rfDev, &msg);
+        // spi_send(msg % 256);
 
         GPIO_setPin(&GPIOC, 13);
         delay_us(DELAY);

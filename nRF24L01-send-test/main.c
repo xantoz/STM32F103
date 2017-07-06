@@ -10,11 +10,13 @@
 #define MAX_BAUDRATE 8000000
 #define DELAY 200000
 
+// TODO: A0 receives IRQ when recv
+
 static void spi_setup()
 {
     __disable_irq();
 
-    SPI2.CR1 &= SPI_CR1_SPE; // Ensure SPI not enabled
+    SPI1.CR1 &= SPI_CR1_SPE; // Ensure SPI not enabled
 
     // Disable:
     // * Bidirectional
@@ -29,29 +31,29 @@ static void spi_setup()
     // + Tx DMA
     // + Rx DMA
     // + SS output
-    SPI2.CR1 &= ~(SPI_CR1_BIDIMODE | SPI_CR1_CRCEN | SPI_CR1_SSM |
+    SPI1.CR1 &= ~(SPI_CR1_BIDIMODE | SPI_CR1_CRCEN | SPI_CR1_SSM |
                    SPI_CR1_DFF | SPI_CR1_LSBFIRST | SPI_CR1_RXONLY);
-    SPI2.CR2 &= ~(SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE |
+    SPI1.CR2 &= ~(SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE |
                    SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN | SPI_CR2_SSOE);
 
     // Enable:
     // * Master mode
-    SPI2.CR1 |= SPI_CR1_MSTR;
+    SPI1.CR1 |= SPI_CR1_MSTR;
 
     // Clock phase settings. CPOL = 0, CPHA = 0
-    SPI2.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
+    SPI1.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
 
-    // Setup GPIO pins for SPI2
-    SPI2_SetupGpio(SPI_PushPull, SPI_PullDown, false);
+    // Setup GPIO pins for SPI1
+    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, false);
 
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
     print("spi_getBaudRateDivisorFromMaxFreq\n");
     uint16_t flag;
     uint32_t actualFreq;
-    if (!spi_getBaudRateDivisorFromMaxFreq(&SPI2, MAX_BAUDRATE, &flag, &actualFreq))
+    if (!spi_getBaudRateDivisorFromMaxFreq(&SPI1, MAX_BAUDRATE, &flag, &actualFreq))
         die("Requested SPI baudrate not available");
-    SPI2.CR1 &= ~SPI_CR1_BR;
-    SPI2.CR1 |= flag;
+    SPI1.CR1 &= ~SPI_CR1_BR;
+    SPI1.CR1 |= flag;
 
     print("Set baudrate to ");
     print_u32_dec(actualFreq);
@@ -60,23 +62,23 @@ static void spi_setup()
     print(" (Requested " TOSTRING(MAX_BAUDRATE) ")\n");
 
     // Enable SPI
-    SPI2.CR1 |= SPI_CR1_SPE;
+    SPI1.CR1 |= SPI_CR1_SPE;
 
     __enable_irq();
 }
 
 static void spi_send(uint16_t data)
 {
-    while (!(SPI2.SR & SPI_SR_TXE)); // Wait until transmit buffer empty
+    while (!(SPI1.SR & SPI_SR_TXE)); // Wait until transmit buffer empty
 
-    SPI2.DR = data;
+    SPI1.DR = data;
 }
 
 static uint8_t spi_recv()
 {
-    while (!(SPI2.SR & SPI_SR_RXNE)); // Block until we have data
+    while (!(SPI1.SR & SPI_SR_RXNE)); // Block until we have data
 
-    return SPI2.DR;
+    return SPI1.DR;
 }
 
 static uint8_t spi_sendrecv(uint8_t data)
@@ -87,8 +89,8 @@ static uint8_t spi_sendrecv(uint8_t data)
 
 // Settings for the nRF24L01
 static const struct nRF24L01_Options rfDev_opts = {
-    .CSN = {&GPIOB, 12}, // OK since we set up SPI2 so that this is usable as GPIO
-    .CE  = {&GPIOB, 6},
+    .CSN = {&GPIOA, 4}, // OK since we set up SPI1 so that this is usable as GPIO
+    .CE  = {&GPIOA, 1},
 
     .airDataRate    = nRF24L01_2Mbps,
     .power          = nRF24L01_TXPower_Minus0dBm,
@@ -114,7 +116,6 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
 
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
-    RCC.APB1ENR |= RCC_APB1Periph_SPI2;    // Enable clock to SPI2
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 

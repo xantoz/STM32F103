@@ -104,12 +104,13 @@ void main(void)
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
     RCC.APB1ENR |= RCC_APB1Periph_SPI2;    // Enable clock to SPI2
 
-    GPIO_setMODE_setCNF(&GPIOC, 11, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_resetPin(&GPIOC, 15);
 
-    GPIO_setPin(&GPIOC, 11);
+    GPIO_setPin(&GPIOC, 15);
     spi_setup();
-    GPIO_resetPin(&GPIOC, 11);
+    GPIO_resetPin(&GPIOC, 15);
 
     while (true)
     {

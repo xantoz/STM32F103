@@ -113,6 +113,9 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     GPIO_resetPin(&dev->conf->CE); // Active high
     GPIO_setPin(&dev->conf->CSN);  // Active low
 
+    uint8_t config = CONFIG_PWR_UP;
+    nRF24L01_setRegister8(dev, CONFIG_Reg, config);  // Power up
+
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK) ? EN_AA_ENAA_All : 0);
     nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P1);
@@ -121,6 +124,8 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     // TODO: RX/TX addr settings (need changes in the struct. Currently we just use the reset
     // defaults) + We would like to be able to change the address settings on the fly, so needs to
     // be copied to the RW part of the struct
+
+    // TODO: apply retransmission setting from conf
 
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->conf->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;
@@ -141,7 +146,6 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     }
     nRF24L01_setRegister8(dev, RF_SETUP_Reg, rf_setup);
 
-    uint8_t config = CONFIG_PWR_UP;
     if (dev->conf->useCRC == nRF24L01_CRC)
         config |= CONFIG_EN_CRC;
 

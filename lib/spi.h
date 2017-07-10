@@ -184,9 +184,9 @@ struct SPI_Pins
 /**
  * @brief GPIO pins used by SPI1, default mapping
  *
- * .NSS  = {&GPIOA, 4},
- * .SCK  = {&GPIOA, 5},
- * .MISO = {&GPIOA, 6},
+ * .NSS  = {&GPIOA, 4}
+ * .SCK  = {&GPIOA, 5}
+ * .MISO = {&GPIOA, 6}
  * .MOSI = {&GPIOA, 7}
  */
 extern const struct SPI_Pins SPI1_Default_Pins;
@@ -194,9 +194,9 @@ extern const struct SPI_Pins SPI1_Default_Pins;
 /**
  * @brief GPIO pins used by SPI1, alternate mapping
  *
- * .NSS  = {&GPIOA, 15},
- * .SCK  = {&GPIOB, 3},
- * .MISO = {&GPIOB, 4},
+ * .NSS  = {&GPIOA, 15}
+ * .SCK  = {&GPIOB, 3}
+ * .MISO = {&GPIOB, 4}
  * .MOSI = {&GPIOB, 5}
  */
 extern const struct SPI_Pins SPI1_Alternate_Pins;
@@ -204,10 +204,10 @@ extern const struct SPI_Pins SPI1_Alternate_Pins;
 /**
  * @brief GPIO pins used by SPI2
  *
- * .NSS  = {&GPIOB, 12},
- * .SCK  = {&GPIOB, 13},
- * .MISO = {&GPIOB, 14},
- * .MOSI = {&GPIOB, 15},
+ * .NSS  = {&GPIOB, 12}
+ * .SCK  = {&GPIOB, 13}
+ * .MISO = {&GPIOB, 14}
+ * .MOSI = {&GPIOB, 15}
  */
 extern const struct SPI_Pins SPI2_Pins;
 

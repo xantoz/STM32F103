@@ -12,13 +12,13 @@
 
 enum nRF24L01_AirDataRate
 {
-    nRF24L01_1Mbps,
+    nRF24L01_1Mbps = 0,
     nRF24L01_2Mbps,
 };
 
 enum nRF24L01_TXPower
 {
-    nRF24L01_TXPower_Minus18dBm,
+    nRF24L01_TXPower_Minus18dBm = 0,
     nRF24L01_TXPower_Minus12dBm,
     nRF24L01_TXPower_Minus6dBm,
     nRF24L01_TXPower_Minus0dBm,
@@ -26,25 +26,25 @@ enum nRF24L01_TXPower
 
 enum nRF24L01_UseACK
 {
+    nRF24L01_ACK = 0,
     nRF24L01_NoACK,
-    nRF24L01_ACK,
 };
 
 enum nRF24L01_UseCRC
 {
+    nRF24L01_CRC = 0,
     nRF24L01_NoCRC,
-    nRF24L01_CRC,
 };
 
 enum nRF24L01_Retransmission
 {
+    nRF24L01_Retransmission = 0,
     nRF24L01_NoRetransmission,
-    nRF24L01_Retransmission,
 };
 
 enum nRF24L01_Mode
 {
-    nRF24L01_RX,
+    nRF24L01_RX = 0,
     nRF24L01_TX,
 };
 
@@ -74,6 +74,7 @@ struct nRF24L01_Options
     enum nRF24L01_Retransmission retransmission;
     enum nRF24L01_Mode           mode;                    //!< Mode of operation
 
+    // TODO: change to 1 < payloadWidth <= 32
     uint8_t payloadWidth; //!< How many bytes in one payload. This driver only
                           //! supports a static payload size. 0 < payloadWidth <= 32
 

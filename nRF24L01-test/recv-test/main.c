@@ -52,7 +52,6 @@ static const struct nRF24L01_Options rfDev_opts = {
     .CE  = {&GPIOA, 1},
 
     .airDataRate    = nRF24L01_2Mbps,
-    .power          = nRF24L01_TXPower_Minus0dBm, // Not relevant for RX
     .useACK         = nRF24L01_NoACK,
     .useCRC         = nRF24L01_NoCRC,
     .retransmission = nRF24L01_NoRetransmission,

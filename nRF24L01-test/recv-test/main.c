@@ -122,5 +122,7 @@ void EXTI0_IRQHandler(void)
     print("EXTI0\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
+
+    EXTI.PR = 0xffffffff;
     __enable_irq();
 }

@@ -64,6 +64,8 @@ void main()
         delay_us(DELAY);
 
         nRF24L01_send(&rfDev, &msg);
+        println_u32_dec(msg);
+        println_u32_hex(rfDev.status);
         // spi_send(msg % 256);
 
         GPIO_setPin(&GPIOC, 13);

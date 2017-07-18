@@ -36,6 +36,8 @@ void main()
     clock_setSysClockHSE();
     // clock_setSysClockHSE_24MHz();
 
+    delay_us(1000000);
+
     // Enable clock to all GPIO:s
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
 
@@ -45,13 +47,9 @@ void main()
     GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&GPIOC, 15);
 
-    delay_us(64);
-
     GPIO_setPin(&GPIOC, 15);
     spi_setup();
     GPIO_resetPin(&GPIOC, 15);
-
-    delay_us(123);
 
     GPIO_setPin(&GPIOC, 15);
     nRF24L01_init(&rfDev_opts, &rfDev);

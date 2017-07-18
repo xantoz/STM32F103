@@ -71,6 +71,8 @@ void main()
     clock_setSysClockHSE();
     // clock_setSysClockHSE_24MHz();
 
+    delay_us(1000000);
+
     __disable_irq();
 
     // Enable clock to all GPIO:s
@@ -87,19 +89,16 @@ void main()
     for (uint8_t i = 0; i < 15; ++i)
         GPIO_setMODE_setCNF(&GPIOB, i, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    delay_us(64);
     GPIO_setPin(&GPIOC, 15);
     spi_setup();
     print("spi setup done\n");
     GPIO_resetPin(&GPIOC, 15);
 
-    delay_us(96);
     GPIO_setPin(&GPIOC, 15);
     exti_setup();
     print("exti setup done\n");
     GPIO_resetPin(&GPIOC, 15);
 
-    delay_us(123);
     GPIO_setPin(&GPIOC, 15);
     nRF24L01_init(&rfDev_opts, &rfDev);
     print("nRF24L01 initted\n");
@@ -107,13 +106,14 @@ void main()
 
     GPIO_resetPin(&GPIOC, 13);
 
+    __enable_irq();
+
     while (true)
     {
         delay_us(1000000);
         print("boop\n");
+        println_u32_hex(rfDev.status);
     };
-
-    __enable_irq();
 }
 
 void EXTI0_IRQHandler(void)

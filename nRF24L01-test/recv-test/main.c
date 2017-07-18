@@ -89,19 +89,19 @@ void main()
     delay_us(64);
     GPIO_setPin(&GPIOC, 15);
     spi_setup();
-    print("spi setup done");
+    print("spi setup done\n");
     GPIO_resetPin(&GPIOC, 15);
 
     delay_us(96);
     GPIO_setPin(&GPIOC, 15);
     exti_setup();
-    print("exti setup done");
+    print("exti setup done\n");
     GPIO_resetPin(&GPIOC, 15);
 
     delay_us(123);
     GPIO_setPin(&GPIOC, 15);
     nRF24L01_init(&rfDev_opts, &rfDev);
-    print("nRF24L01 initted");
+    print("nRF24L01 initted\n");
     GPIO_resetPin(&GPIOC, 15);
 
     __enable_irq();

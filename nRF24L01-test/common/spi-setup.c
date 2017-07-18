@@ -26,11 +26,13 @@ void spi_setup()
     SPI1.CR1 &= ~(SPI_CR1_BIDIMODE | SPI_CR1_CRCEN | SPI_CR1_SSM |
                   SPI_CR1_DFF | SPI_CR1_LSBFIRST | SPI_CR1_RXONLY);
     SPI1.CR2 &= ~(SPI_CR2_TXEIE | SPI_CR2_RXNEIE | SPI_CR2_ERRIE |
-                  SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN | SPI_CR2_SSOE);
+                  SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
 
     // Enable:
     // * Master mode
+    // + SS output
     SPI1.CR1 |= SPI_CR1_MSTR;
+    SPI1.CR2 |= SPI_CR2_SSOE;
 
     // Clock phase settings. CPOL = 0, CPHA = 0
     SPI1.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);

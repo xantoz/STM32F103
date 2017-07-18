@@ -107,14 +107,13 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     assert(0 < dev->conf->payloadWidth && dev->conf->payloadWidth <= 32);
     assert(dev->conf->spi_sendrecv != NULL);
 
+    delay_us(10300);                                        // 10.3 ms for Power on reset
+
     // Setup the GPIO outputs
     GPIO_setMODE_setCNF(&dev->conf->CE,  GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&dev->conf->CSN, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&dev->conf->CE); // Active high
     GPIO_setPin(&dev->conf->CSN);  // Active low
-
-    uint8_t config = CONFIG_PWR_UP;
-    nRF24L01_setRegister8(dev, CONFIG_Reg, config);  // Power up
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : 0);
@@ -146,17 +145,21 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     }
     nRF24L01_setRegister8(dev, RF_SETUP_Reg, rf_setup);
 
+    uint8_t config = CONFIG_PWR_UP;
     if (dev->conf->useCRC == nRF24L01_CRC)
         config |= CONFIG_EN_CRC;
 
     if (dev->conf->mode == nRF24L01_RX)
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, config | CONFIG_MASK_TX_DS | CONFIG_PRIM_RX);
+        delay_us(1500);                  // 1.5 ms to power up
         GPIO_setPin(&dev->conf->CE);     // Start receiving
     }
     else if (dev->conf->mode == nRF24L01_TX)
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, (config | CONFIG_MASK_RX_DR) & ~CONFIG_PRIM_RX);
+        delay_us(1500);                  // 1.5 ms to power up
+        GPIO_resetPin(&dev->conf->CE);
     }
     else
     {
@@ -175,6 +178,7 @@ void nRF24L01_send(struct nRF24L01 *dev, const void *payload)
     LOCK_IRQ(lock);
 
     nRF24L01_writeTxPayload(dev, payload, dev->conf->payloadWidth);
+
     // Toggle CE pin to send TX FIFO
     GPIO_setPin(&dev->conf->CE);
     delay_us(10);

@@ -79,6 +79,7 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setPin(&GPIOC, 13);
     GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&GPIOC, 15);
 
@@ -104,11 +105,22 @@ void main()
     print("nRF24L01 initted\n");
     GPIO_resetPin(&GPIOC, 15);
 
+    GPIO_resetPin(&GPIOC, 13);
+
+    while (true)
+    {
+        delay_us(1000000);
+        print("boop\n");
+    };
+
     __enable_irq();
 }
 
 void EXTI0_IRQHandler(void)
 {
+    __disable_irq();
+    print("EXTI0\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
+    __enable_irq();
 }

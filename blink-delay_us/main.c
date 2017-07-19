@@ -1,9 +1,9 @@
-#include "lib/utils.h"
-#include "lib/rcc.h"
-#include "lib/gpio.h"
-#include "lib/clock.h"
+#include "utils.h"
+#include "rcc.h"
+#include "gpio.h"
+#include "clock.h"
 
-#include "lib/debug.h"
+#include "debug.h"
 
 void main(void)
 {

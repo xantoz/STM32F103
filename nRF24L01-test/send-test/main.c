@@ -1,12 +1,12 @@
-#include "lib/types.h"
-#include "lib/utils.h"
-#include "lib/rcc.h"
-#include "lib/clock.h"
-#include "lib/debug.h"
+#include "types.h"
+#include "utils.h"
+#include "rcc.h"
+#include "clock.h"
+#include "debug.h"
 
-#include "lib/nRF24L01/nRF24L01.h"
+#include "nRF24L01/nRF24L01.h"
 
-#include "common/spi-setup.h"
+#include "spi-setup.h"
 
 #define DELAY 200000
 

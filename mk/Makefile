@@ -1,4 +1,5 @@
-SOURCE_DIRS = .
+SOURCE_DIRS += $(BASE)/lib
+SOURCE_DIRS += .
 
 NAME       = firmware
 SOURCES    = $(shell find -L $(SOURCE_DIRS) -type f -name '*.c')
@@ -7,7 +8,7 @@ INCLUDES   = $(shell find -L $(SOURCE_DIRS) -type f -name '*.h')
 DEPENDS    = $(SOURCES:%.c=%.dep) $(ASMSOURCES:%.s=%.dep)
 OBJS       = $(SOURCES:%.c=%.o) $(ASMSOURCES:%.s=%.o)
 
-LINKER_SCRIPT := lib/stm32f103c8t6.ld
+LINKER_SCRIPT = $(BASE)/lib/stm32f103c8t6.ld
 
 AS       = arm-none-eabi-as
 CC       = arm-none-eabi-gcc
@@ -16,8 +17,8 @@ OC       = arm-none-eabi-objcopy
 CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
 CPPFLAGS = $(addprefix -I,$(SOURCE_DIRS))
 DEBUG    ?= -g
-ASFLAGS  = $(DEBUG) $(CPUFLAGS)
-CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) -DSTM32F10X_MD -fshort-enums -fno-hosted -Wall -Winline -Wno-main -Wvariadic-macros
+ASFLAGS  = $(DEBUG) $(CPUFLAGS) $(CPPFLAGS)
+CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -DSTM32F10X_MD -fshort-enums -fno-hosted -Wall -Winline -Wno-main -Wvariadic-macros
 LDFLAGS  = '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  = -Obinary --strip-unneeded
 

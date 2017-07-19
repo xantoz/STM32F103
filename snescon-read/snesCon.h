@@ -7,8 +7,8 @@
 #ifndef _SNESCON_
 #define _SNESCON_
 
-#include "lib/types.h"
-#include "lib/gpio.h"
+#include "types.h"
+#include "gpio.h"
 
 /**
  * @brief SNES Controller GPIO pin definition structure.

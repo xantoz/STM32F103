@@ -1,5 +1,5 @@
 #include "spi-setup.h"
-#include "../../lib/spi.h"
+#include "spi.h"
 
 // #define MAX_BAUDRATE 8000000
 #define MAX_BAUDRATE 2000000

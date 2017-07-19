@@ -1,12 +1,12 @@
 #include "snesCon_read.h"
 
-#include "lib/gpio.h"
-#include "lib/rcc.h"
-#include "lib/clock.h"
-#include "lib/systick.h"
-#include "lib/utils.h"
+#include "gpio.h"
+#include "rcc.h"
+#include "clock.h"
+#include "systick.h"
+#include "utils.h"
 
-#include "lib/debug.h"
+#include "debug.h"
 
 static const uint8_t pollFreq = 60;  //!< How often to poll the controller [Hz]
 

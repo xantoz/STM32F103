@@ -1,14 +1,14 @@
-#include "lib/types.h"
-#include "lib/utils.h"
-#include "lib/rcc.h"
-#include "lib/gpio.h"
-#include "lib/afio.h"
-#include "lib/clock.h"
-#include "lib/systick.h"
-#include "lib/exti.h"
-#include "lib/nvic.h"
+#include "types.h"
+#include "utils.h"
+#include "rcc.h"
+#include "gpio.h"
+#include "afio.h"
+#include "clock.h"
+#include "systick.h"
+#include "exti.h"
+#include "nvic.h"
 
-#include "lib/debug.h"
+#include "debug.h"
 
 void main(void)
 {

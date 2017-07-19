@@ -1,10 +1,10 @@
-#include "lib/types.h"
-#include "lib/utils.h"
-#include "lib/rcc.h"
-#include "lib/clock.h"
-#include "lib/spi.h"
+#include "types.h"
+#include "utils.h"
+#include "rcc.h"
+#include "clock.h"
+#include "spi.h"
 
-#include "lib/debug.h"
+#include "debug.h"
 
 // Allow to easily change which SPI peripheral is used in this code
 #define mySPI (SPI1)

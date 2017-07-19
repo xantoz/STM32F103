@@ -9,7 +9,7 @@
 
 #include "snesCon.h"
 
-#include "lib/types.h"
+#include "types.h"
 
 /**
  * @brief Initialize hardware for the pin&port definition in def.

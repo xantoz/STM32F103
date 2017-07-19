@@ -138,6 +138,7 @@ enum EN_AA_Reg
     EN_AA_ENAA_P4 = 1 << 4, //!< [rst: 1] Enable auto-ack for data pipe 4
     EN_AA_ENAA_P5 = 1 << 5, //!< [rst: 1] Enable auto-ack for data pipe 5
 
+    EN_AA_ENAA_None = 0x00,
     EN_AA_ENAA_All = (EN_AA_ENAA_P0 | EN_AA_ENAA_P1 | EN_AA_ENAA_P2 |
                       EN_AA_ENAA_P3 | EN_AA_ENAA_P4 | EN_AA_ENAA_P5),
 };

@@ -116,7 +116,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     GPIO_setPin(&dev->conf->CSN);  // Active low
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
-    nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : 0);
+    nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : EN_AA_ENAA_None);
     nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P1);
     nRF24L01_setRegister8(dev, RX_PW_P1_Reg, dev->conf->payloadWidth & 0x1f);
 

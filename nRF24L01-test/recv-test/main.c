@@ -24,7 +24,7 @@ static void exti_setup()
     NVIC_EnableInterrupt(EXTI0_IRQn);
     AFIO_mapEXTI(0, AFIO_EXTI_PortA); // Map PA[0] to EXTI0
     GPIO_setMODE_setCNF(&GPIOA, 0, GPIO_MODE_Input, GPIO_Input_CNF_PullupPulldown);
-    GPIO_setPin(&GPIOB, 0); // Pull-up
+    GPIO_setPin(&GPIOA, 0); // Pull-up
 }
 
 static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len)

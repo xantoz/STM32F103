@@ -201,7 +201,7 @@ static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
 {
     assert(dev->conf->mode == nRF24L01_RX, "Got unexpected RX_DR interrupt (not in RX mode)");
 
-    GPIO_resetPin(&dev->conf->CE);
+    GPIO_resetPin(&dev->conf->CE); // Stop listening
     while (!(nRF24L01_getRegister8(dev, FIFO_STATUS_Reg) & FIFO_STATUS_RX_EMPTY))
     { // Until RX FIFO is empty
         uint8_t recv[dev->conf->payloadWidth];
@@ -211,7 +211,8 @@ static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
         if (dev->conf->rx_cb != NULL)
             dev->conf->rx_cb(dev, &recv, sizeof(recv));
     }
-    GPIO_setPin(&dev->conf->CE);
+    delay_us(130);  // Need to wait 130 us before starting to receive again
+    GPIO_setPin(&dev->conf->CE); // Start listening
 
     // Clear RX_DR flag
     nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);

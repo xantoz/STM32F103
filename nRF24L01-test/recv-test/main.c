@@ -127,11 +127,11 @@ static void recv_message(const struct nRF24L01 *dev, const void *data, size_t le
 
 void EXTI0_IRQHandler(void)
 {
-    // __disable_irq();
+    __disable_irq();
     print("EXTI0\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
 
-    EXTI.PR = 0xffffffff;
-    // __enable_irq();
+    EXTI.PR = 0x00000001;
+    __enable_irq();
 }

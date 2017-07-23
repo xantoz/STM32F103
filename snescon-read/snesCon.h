@@ -42,7 +42,7 @@ enum snesCon_buttons
     snesCon_BUTTON_X_Pos = 9,
     snesCon_BUTTON_L_Pos = 10,
     snesCon_BUTTON_R_Pos = 11,
-    
+
     snesCon_BUTTON_B_Msk      = (1 << snesCon_BUTTON_B_Pos),
     snesCon_BUTTON_Y_Msk      = (1 << snesCon_BUTTON_Y_Pos),
     snesCon_BUTTON_Select_Msk = (1 << snesCon_BUTTON_Select_Pos),
@@ -56,5 +56,5 @@ enum snesCon_buttons
     snesCon_BUTTON_L_Msk      = (1 << snesCon_BUTTON_L_Pos),
     snesCon_BUTTON_R_Msk      = (1 << snesCon_BUTTON_R_Pos)
 };
- 
+
 #endif

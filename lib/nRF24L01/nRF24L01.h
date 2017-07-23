@@ -134,6 +134,17 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
 void nRF24L01_send(struct nRF24L01 *dev, const void *payload);
 
 /**
+ * @brief Reads all words in the input FIFO and dispatches them to rx_cb.
+ *
+ * @param dev [in/out] nRF24L01 device object
+ *
+ * @note  RX mode only. calls rx_cb
+ * @note  If using interrupts you do not need to use this directly. nRF24L01_interrupt will call
+ *        this function when it receives a TX_DR interrupt.
+ */
+void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev);
+
+/**
  * @brief This should be called by the interrupt routine connected to the
  *        IRQ pin coming from the nRF24L01
  *

@@ -98,6 +98,10 @@ static void nRF24L01_modifyRegister8(struct nRF24L01 *dev, enum nRF24L01_Registe
     nRF24L01_setRegister8(dev, reg, value);
 }
 
+// TODO: * add options for active selecting pipes and their addresses
+//       * add option to select TX addr
+//       * special mode where we keep spraying the same number until the next send operation, or we
+//         request to turn it off
 bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev)
 {
     dev->status = 0;
@@ -191,7 +195,10 @@ static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
 {
     assert(dev->conf->mode == nRF24L01_TX, "Got unexpected TX_DS interrupt (not in TX mode)");
 
-    // TODO: anything more? Callback?
+    // TODO: atomically set flag in device struct to notify that we are now free to send more?
+
+    if (dev->conf->tx_ds_cb != NULL)
+        dev->conf->tx_ds_cb(dev);
 
     // Clear TX_DS flag
     nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_TX_DS);
@@ -220,7 +227,9 @@ static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
 
 static void nRF24L01_MAX_RT_handler(struct nRF24L01 *dev)
 {
-    // TODO: anything more? Callback?
+    // Call callback if any
+    if (dev->conf->max_rt_cb != NULL)
+        dev->conf->max_rt_cb(dev);
 
     // Clear MAX_RT flag
     nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_MAX_RT);

@@ -92,10 +92,14 @@ struct nRF24L01_Options
     //! maybe just bitbanged SPI, without changing the code
     uint8_t (*spi_sendrecv)(uint8_t);
 
-    //! RX mode only. Callback function called for each recevied word. Called
+    //! RX mode only. Callback function called for each received word. Called
     //! with a pointer to the device, a pointer to the received word, and the
     //! length of the received word. May be NULL.
     void (*rx_cb)(const struct nRF24L01*, const void *data, size_t len);
+    //! TX mode only. Callback function called on TX_DS. May be NULL.
+    void (*tx_ds_cb)(const struct nRF24L01*);
+    //! TX mode with retransmissions only. Called on MAX_RT. May be NULL.
+    void (*max_rt_cb)(const struct nRF24L01*);
 };
 
 /**

@@ -14,8 +14,6 @@
 #include "../common/spi-setup.h"
 #include "../common/ports.h"
 
-#define DELAY 200000
-
 // SETUP: A0 receives IRQ when recv
 static void exti_setup()
 {
@@ -25,8 +23,8 @@ static void exti_setup()
     EXTI.RTSR &= ~0x00000001; // Disable rising trigger select for EXTI0
     NVIC_EnableInterrupt(EXTI0_IRQn);
     AFIO_mapEXTI(0, AFIO_EXTI_PortA); // Map PA[0] to EXTI0
-    GPIO_setMODE_setCNF(&GPIOA, 0, GPIO_MODE_Input, GPIO_Input_CNF_PullupPulldown);
-    GPIO_setPin(&GPIOA, 0); // Pull-up
+    EXTI.PR   =   0x00000001; // Clear bit in pending register
+    GPIO_setMODE_setCNF(&GPIOA, 0, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
 }
 
 static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len);

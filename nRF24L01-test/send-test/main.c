@@ -6,7 +6,8 @@
 
 #include "nRF24L01/nRF24L01.h"
 
-#include "spi-setup.h"
+#include "../common/spi-setup.h"
+#include "../common/ports.h"
 
 #define DELAY 200000
 
@@ -43,22 +44,22 @@ void main()
 
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
-    GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-    GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setMODE_setCNF(&DEBUG_INIT_PIN, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    GPIO_setPin(&GPIOC, 15);
+    GPIO_setPin(&DEBUG_INIT_PIN);
     spi_setup();
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    GPIO_setPin(&GPIOC, 15);
+    GPIO_setPin(&DEBUG_INIT_PIN);
     nRF24L01_init(&rfDev_opts, &rfDev);
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
     uint16_t msg = 110;
     while (true)
     {
-        GPIO_resetPin(&GPIOC, 13);
+        GPIO_resetPin(&LED);
         delay_us(DELAY);
 
         nRF24L01_send(&rfDev, &msg);
@@ -66,7 +67,7 @@ void main()
         println_u32_hex(rfDev.status);
         // spi_send(msg % 256);
 
-        GPIO_setPin(&GPIOC, 13);
+        GPIO_setPin(&LED);
         delay_us(DELAY);
         ++msg;
     }

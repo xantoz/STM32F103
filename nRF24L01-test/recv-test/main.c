@@ -6,11 +6,13 @@
 #include "afio.h"
 #include "exti.h"
 #include "nvic.h"
+#include "gpio.h"
 #include "IRQn.h"
 
 #include "nRF24L01/nRF24L01.h"
 
-#include "spi-setup.h"
+#include "../common/spi-setup.h"
+#include "../common/ports.h"
 
 #define DELAY 200000
 
@@ -27,26 +29,14 @@ static void exti_setup()
     GPIO_setPin(&GPIOA, 0); // Pull-up
 }
 
-static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len)
-{
-    assert(len == 2);
-    uint16_t msg = *((uint16_t*)data);
-
-    static bool state = true;
-    state = !state;
-    if (state)
-        GPIO_resetPin(&GPIOC, 13);
-    else
-        GPIO_setPin(&GPIOC, 13);
-
-    print("Got message: ");
-    println_u32_dec(msg);
-
-    // Set port B
-    GPIOB.ODR = msg;
-}
+static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len);
 
 // Settings for the nRF24L01
+// Note that we can simply leave out options for which we want to use default
+// values (with the notable exceptions of .CSN .CE and .spi_sendrecv, for which
+// there are no sensible default values). This is because C99 says that values
+// not mentioned will be initialized to 0, and the init routine is built so that
+// a numerical 0 means the default value for that option.
 static const struct nRF24L01_Options rfDev_opts = {
     .CSN = {&GPIOA, 3},
     .CE  = {&GPIOA, 1},
@@ -80,49 +70,68 @@ void main()
 
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
-    GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-    GPIO_setPin(&GPIOC, 13);
-    GPIO_setMODE_setCNF(&GPIOC, 15, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setPin(&LED);
+    GPIO_setMODE_setCNF(&DEBUG_INIT_PIN, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
     // enable entire PORT B as output
     for (uint8_t i = 0; i < 15; ++i)
         GPIO_setMODE_setCNF(&GPIOB, i, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    GPIO_setPin(&GPIOC, 15);
+    GPIO_setPin(&DEBUG_INIT_PIN);
     spi_setup();
     print("spi setup done\n");
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    GPIO_setPin(&GPIOC, 15);
+    GPIO_setPin(&DEBUG_INIT_PIN);
     exti_setup();
     print("exti setup done\n");
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    GPIO_setPin(&GPIOC, 15);
+    GPIO_setPin(&DEBUG_INIT_PIN);
     nRF24L01_init(&rfDev_opts, &rfDev);
     print("nRF24L01 initted\n");
-    GPIO_resetPin(&GPIOC, 15);
+    GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    GPIO_resetPin(&GPIOC, 13);
+    GPIO_resetPin(&LED);
 
     __enable_irq();
 
-    while (true)
-    {
-        delay_us(1000000);
-        print("boop\n");
-        println_u32_hex(rfDev.status);
-    };
+    // while (true)
+    // {
+    //     delay_us(1000000);
+    //     print("boop\n");
+    //     println_u32_hex(rfDev.status);
+    // };
+}
+
+static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len)
+{
+    assert(len == 2);
+    uint16_t msg = *((uint16_t*)data);
+    static bool state = true;
+    state = !state;
+
+    if (state)
+        GPIO_setPin(&LED);
+    else
+        GPIO_resetPin(&LED);
+
+    print("Got message: ");
+    println_u32_dec(msg);
+
+    // Set port B
+    GPIOB.ODR = msg;
 }
 
 void EXTI0_IRQHandler(void)
 {
-    __disable_irq();
+    // __disable_irq();
     print("EXTI0\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
 
     EXTI.PR = 0xffffffff;
-    __enable_irq();
+    // __enable_irq();
 }

@@ -111,13 +111,16 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     assert(0 < dev->conf->payloadWidth && dev->conf->payloadWidth <= 32);
     assert(dev->conf->spi_sendrecv != NULL);
 
-    delay_us(10300);                                        // 10.3 ms for Power on reset
+    // TODO: toggle the power line here to ensure it is truly reset? (will eat more GPIO... +
+    // require a transistor)
 
     // Setup the GPIO outputs
     GPIO_setMODE_setCNF(&dev->conf->CE,  GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&dev->conf->CSN, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&dev->conf->CE); // Active high
     GPIO_setPin(&dev->conf->CSN);  // Active low
+
+    delay_us(10300); // 10.3 ms for Power on reset (when powering on for the first time) (TODO: move out of this fn)
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : EN_AA_ENAA_None);
@@ -163,6 +166,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, (config | CONFIG_MASK_RX_DR) & ~CONFIG_PRIM_RX);
         delay_us(1500);                  // 1.5 ms to power up
+        delay_us(130);                   // 130 us to enter TX mode
         GPIO_resetPin(&dev->conf->CE);
     }
     else

@@ -122,6 +122,8 @@ struct nRF24L01_Options
  */
 bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev);
 
+// TODO: deinit function (follow recommended shutdown procedure)?
+
 /**
  * @brief Send data.
  *

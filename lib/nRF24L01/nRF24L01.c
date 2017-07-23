@@ -117,8 +117,8 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : EN_AA_ENAA_None);
-    nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P1);
-    nRF24L01_setRegister8(dev, RX_PW_P1_Reg, dev->conf->payloadWidth & 0x1f);
+    nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P0);
+    nRF24L01_setRegister8(dev, RX_PW_P0_Reg, dev->conf->payloadWidth & 0x1f);
 
     // TODO: RX/TX addr settings (need changes in the struct. Currently we just use the reset
     // defaults) + We would like to be able to change the address settings on the fly, so needs to
@@ -153,7 +153,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, config | CONFIG_MASK_TX_DS | CONFIG_PRIM_RX);
         delay_us(1500);                  // 1.5 ms to power up
-        GPIO_setPin(&dev->conf->CE);     // Start receiving
+        GPIO_setPin(&dev->conf->CE);     // In 103 us we are monitoring (but no need to delay)
     }
     else if (dev->conf->mode == nRF24L01_TX)
     {

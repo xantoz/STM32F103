@@ -245,6 +245,7 @@ enum nRF24L01_STATUS
 
     //! Data pipe number for the payload available for reading from RX_FIFO
     STATUS_RX_P_NO = 0b111 << 1,       //!< [rst: 0b111]
+    STATUS_RX_P_NO_Pos = 1,
     STATUS_RX_P_NO_Pipe0 = 0b001 << 1,
     STATUS_RX_P_NO_Pipe1 = 0b010 << 1,
     STATUS_RX_P_NO_Pipe2 = 0b011 << 1,

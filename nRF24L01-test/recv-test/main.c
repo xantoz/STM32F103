@@ -27,7 +27,7 @@ static void exti_setup()
     GPIO_setMODE_setCNF(&GPIOA, 0, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
 }
 
-static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len);
+static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
 
 // Settings for the nRF24L01
 // Note that we can simply leave out options for which we want to use default
@@ -96,15 +96,15 @@ void main()
 
     __enable_irq();
 
-    // while (true)
-    // {
-    //     delay_us(1000000);
-    //     print("boop\n");
-    //     println_u32_hex(rfDev.status);
-    // };
+    while (true)
+    {
+        delay_us(1000000);
+        print("boop\n");
+        println_u32_hex(rfDev.status);
+    };
 }
 
-static void recv_message(const struct nRF24L01 *dev, const void *data, size_t len)
+static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len)
 {
     assert(len == 2);
     uint16_t msg = *((uint16_t*)data);
@@ -117,6 +117,8 @@ static void recv_message(const struct nRF24L01 *dev, const void *data, size_t le
         GPIO_resetPin(&LED);
 
     print("Got message: ");
+    // print_u32_dec(pipeNo);
+    // print(", ");
     println_u32_dec(msg);
 
     // Set port B

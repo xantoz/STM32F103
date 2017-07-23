@@ -118,6 +118,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     GPIO_setMODE_setCNF(&dev->conf->CE,  GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&dev->conf->CSN, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&dev->conf->CE); // Active high
+    delay_us(4);
     GPIO_setPin(&dev->conf->CSN);  // Active low
 
     delay_us(10300); // 10.3 ms for Power on reset (when powering on for the first time) (TODO: move out of this fn)
@@ -216,11 +217,11 @@ void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev)
     while (!(nRF24L01_getRegister8(dev, FIFO_STATUS_Reg) & FIFO_STATUS_RX_EMPTY))
     { // Until RX FIFO is empty
         uint8_t recv[dev->conf->payloadWidth];
-        // TODO: get the pipe number and send it on to rx_cb (currently we only support one pipe)
-        // const uint8_t pipeNo = dev->status & RX_P_NO;
         nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
+        // get the pipe number and send it on to rx_cb
+        const uint8_t pipeNo = (dev->status & STATUS_RX_P_NO) >> STATUS_RX_P_NO_Pos;
         if (dev->conf->rx_cb != NULL)
-            dev->conf->rx_cb(dev, &recv, sizeof(recv));
+            dev->conf->rx_cb(dev, pipeNo, &recv, sizeof(recv));
     }
     GPIO_setPin(&dev->conf->CE); // Start listening (in 130 us)
 }

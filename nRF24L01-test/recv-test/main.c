@@ -18,13 +18,13 @@
 static void exti_setup()
 {
     // Interrupt EXTIO0 on falling edge of PB0
-    EXTI.IMR  |=  (0x1 << 2); // Enable interrupt from EXTI2
-    EXTI.FTSR |=  (0x1 << 2); // Set falling trigger select for EXTI2
-    EXTI.RTSR &= ~(0x1 << 2); // Disable rising trigger select for EXTI2
-    NVIC_EnableInterrupt(EXTI2_IRQn);
-    AFIO_mapEXTI(2, AFIO_EXTI_PortA); // Map PA[2] to EXTI2
-    EXTI.PR   =   (0x1 << 2); // Clear bit in pending register
-    GPIO_setMODE_setCNF(&GPIOA, 2, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI.IMR  |=  (0x1 << IRQ_EXTI_PIN); // Enable interrupt from EXTI2
+    EXTI.FTSR |=  (0x1 << IRQ_EXTI_PIN); // Set falling trigger select for EXTI2
+    EXTI.RTSR &= ~(0x1 << IRQ_EXTI_PIN); // Disable rising trigger select for EXTI2
+    NVIC_EnableInterrupt(IRQ_EXTI_IRQn);
+    AFIO_mapEXTI(IRQ_EXTI_PIN, IRQ_EXTI_AFIO_Port); // Map PA[2] to EXTI2
+    EXTI.PR   =   (0x1 << IRQ_EXTI_PIN); // Clear bit in pending register
+    GPIO_setMODE_setCNF(&IRQ_EXTI_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
 }
 
 static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
@@ -36,8 +36,8 @@ static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void 
 // not mentioned will be initialized to 0, and the init routine is built so that
 // a numerical 0 means the default value for that option.
 static const struct nRF24L01_Options rfDev_opts = {
-    .CSN = {&GPIOA, 4},
-    .CE  = {&GPIOA, 3},
+    .CSN = CSN_PortPin,
+    .CE  = CE_PortPin,
 
     .airDataRate    = nRF24L01_2Mbps,
     .useACK         = nRF24L01_NoACK,
@@ -126,13 +126,13 @@ static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void 
     GPIOB.ODR = msg;
 }
 
-void EXTI2_IRQHandler(void)
+void IRQ_EXTI_IRQHandler(void)
 {
     __disable_irq();
     print("EXTI2\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
 
-    EXTI.PR = 0x1 << 2;
+    EXTI.PR = 0x1 << IRQ_EXTI_PIN;
     __enable_irq();
 }

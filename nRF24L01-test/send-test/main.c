@@ -13,8 +13,8 @@
 
 // Settings for the nRF24L01
 static const struct nRF24L01_Options rfDev_opts = {
-    .CSN = {&GPIOA, 4},
-    .CE  = {&GPIOA, 3},
+    .CSN = CSN_PortPin,
+    .CE  = CE_PortPin,
 
     .airDataRate    = nRF24L01_2Mbps,
     .power          = nRF24L01_TXPower_Minus0dBm,

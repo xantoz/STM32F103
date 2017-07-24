@@ -116,12 +116,11 @@ extern void delay_us(int32_t us);
 #define TOSTRING(x) STRINGIFY(x)
 #define AT __FILE__ ":" TOSTRING(__LINE__)
 
-#define __TOKENPASTE6(a, b, c, d, e, f) a ## b ## c ## d ## e ## f
-#define __TOKENPASTE5(a, b, c, d, e)    a ## b ## c ## d ## e
-#define __TOKENPASTE4(a, b, c, d)       a ## b ## c ## d
-#define __TOKENPASTE3(a, b, c)          a ## b ## c
-#define __TOKENPASTE2(a, b)             a ## b
-#define TOKENPASTE(...) VFUNC(__TOKENPASTE, __VA_ARGS__)
+#define __TOKENPASTE3(a, b, c)         a ## b ## c
+#define TOKENPASTE3(a, b, c) __TOKENPASTE3(a, b, c)
+#define __TOKENPASTE2(a, b) a ## b
+#define TOKENPASTE2(a, b) __TOKENPASTE2(a, b)
+#define TOKENPASTE(a, b) __TOKENPASTE2(a, b)
 
 // Usage examples: SET(SPI1, SPI_CR1, BR, PCLK_Div64)
 //                 SET(SPI1, SPI_CR1, LSBFIRST)

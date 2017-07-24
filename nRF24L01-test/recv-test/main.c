@@ -18,13 +18,13 @@
 static void exti_setup()
 {
     // Interrupt EXTIO0 on falling edge of PB0
-    EXTI.IMR  |=  0x00000001; // Enable interrupt from EXTI0
-    EXTI.FTSR |=  0x00000001; // Set falling trigger select for EXTI0
-    EXTI.RTSR &= ~0x00000001; // Disable rising trigger select for EXTI0
-    NVIC_EnableInterrupt(EXTI0_IRQn);
-    AFIO_mapEXTI(0, AFIO_EXTI_PortA); // Map PA[0] to EXTI0
-    EXTI.PR   =   0x00000001; // Clear bit in pending register
-    GPIO_setMODE_setCNF(&GPIOA, 0, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI.IMR  |=  (0x1 << 2); // Enable interrupt from EXTI2
+    EXTI.FTSR |=  (0x1 << 2); // Set falling trigger select for EXTI2
+    EXTI.RTSR &= ~(0x1 << 2); // Disable rising trigger select for EXTI2
+    NVIC_EnableInterrupt(EXTI2_IRQn);
+    AFIO_mapEXTI(2, AFIO_EXTI_PortA); // Map PA[2] to EXTI2
+    EXTI.PR   =   (0x1 << 2); // Clear bit in pending register
+    GPIO_setMODE_setCNF(&GPIOA, 2, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
 }
 
 static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
@@ -36,8 +36,8 @@ static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void 
 // not mentioned will be initialized to 0, and the init routine is built so that
 // a numerical 0 means the default value for that option.
 static const struct nRF24L01_Options rfDev_opts = {
-    .CSN = {&GPIOA, 3},
-    .CE  = {&GPIOA, 1},
+    .CSN = {&GPIOA, 4},
+    .CE  = {&GPIOA, 3},
 
     .airDataRate    = nRF24L01_2Mbps,
     .useACK         = nRF24L01_NoACK,
@@ -73,9 +73,6 @@ void main()
     GPIO_setMODE_setCNF(&DEBUG_INIT_PIN, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
-    // enable entire PORT B as output
-    for (uint8_t i = 0; i < 15; ++i)
-        GPIO_setMODE_setCNF(&GPIOB, i, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
     GPIO_setPin(&DEBUG_INIT_PIN);
     spi_setup();
@@ -91,6 +88,10 @@ void main()
     nRF24L01_init(&rfDev_opts, &rfDev);
     print("nRF24L01 initted\n");
     GPIO_resetPin(&DEBUG_INIT_PIN);
+
+    // enable entire PORT B as output
+    for (uint8_t i = 0; i < 15; ++i)
+        GPIO_setMODE_setCNF(&GPIOB, i, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
     GPIO_resetPin(&LED);
 
@@ -125,13 +126,13 @@ static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void 
     GPIOB.ODR = msg;
 }
 
-void EXTI0_IRQHandler(void)
+void EXTI2_IRQHandler(void)
 {
     __disable_irq();
-    print("EXTI0\n");
+    print("EXTI2\n");
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
 
-    EXTI.PR = 0x00000001;
+    EXTI.PR = 0x1 << 2;
     __enable_irq();
 }

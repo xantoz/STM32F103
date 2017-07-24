@@ -37,7 +37,7 @@ void spi_setup()
     SPI1.CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
 
     // Setup GPIO pins for SPI1
-    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, true);
+    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, false);
 
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
     print("spi_getBaudRateDivisorFromMaxFreq\n");

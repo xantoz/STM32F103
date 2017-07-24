@@ -1,4 +1,4 @@
-#include "snesCon_read.h"
+#include "protocol/snesCon_read.h"
 
 #include "gpio.h"
 #include "rcc.h"

@@ -32,6 +32,12 @@
 #define PURE
 #endif
 
+#if defined(__GNUC__) || defined(__CLANG__) || defined(__ARMCC_VERSION__)
+#define UNUSED __attribute__((unused))
+#else
+#define UNUSED
+#endif
+
 #if defined(__GNUC__) && defined(__STRICT_ANSI__)
 #define asm __asm__
 #endif

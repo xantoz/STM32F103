@@ -105,7 +105,8 @@ void main()
     };
 }
 
-static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len)
+static void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
+                         const void *data, size_t len)
 {
     assert(len == 2);
     uint16_t msg = *((uint16_t*)data);

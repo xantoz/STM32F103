@@ -1,2 +1,2 @@
 BASE = ..
-include ../mk/Makefile
+include ../mk/base.mk

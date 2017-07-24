@@ -62,7 +62,7 @@ static inline bool NVIC_IsInterruptActive     (const enum IRQn interrupt) { retu
 static inline void NVIC_SetInterruptPriority(const enum IRQn interrupt, const uint8_t prio)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
-    NVIC.IP[interrupt];
+    NVIC.IP[interrupt] = prio;
 }
 
 static inline uint8_t NVIC_GetInterruptPriority(const enum IRQn interrupt)

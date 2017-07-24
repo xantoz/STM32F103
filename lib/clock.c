@@ -56,6 +56,8 @@ static const uint32_t MHz = 1000000; // Convert from Hz to MHz
         _flag;                                                          \
     })
 
+// TODO: define similar macro GET_PCLK1 to go from HCLK freq to PPRE1 divisor flag
+
 // Returns the frequency of PLLCLK in Hz (by reading back register settings)
 static uint32_t getPLLFreq(uint32_t cfgr)
 {
@@ -219,6 +221,38 @@ void clock_setSysClockHSE()
     UNLOCK_IRQ(lock);
 }
 
+void clock_setSysClockHSI()
+{
+    CASSERT_SYSCLKFREQ(CLOCK_HSI_Hz);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
+    startHSI();
+
+    FLASH.ACR |= FLASH_ACR_PRFTBE; // Enable flash prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSI_Hz);
+
+    // HCLK = SYSCLK, PCLK2 = HCLK, PCLK1 = HCLK
+    RCC.CFGR &= (RCC.CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1)) | (RCC_CFGR_HPRE_SYSCLK_Div1 | RCC_CFGR_PPRE2_HCLK_Div1 | RCC_CFGR_PPRE1_HCLK_Div1);
+
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE(CLOCK_HSI_Hz); // Get by PCLK2 frequency
+
+    // Select HSI as system clock source
+    RCC.CFGR = (RCC.CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI;
+
+    // Wait till HSI is used as system clock source
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
+
+    // Update the clock global variables to reflect changes
+    updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
+}
+
 void clock_setSysClockHSE_24MHz()
 {
     CASSERT_SYSCLKFREQ((CLOCK_HSE_Hz/2)*6);
@@ -309,31 +343,89 @@ void clock_setSysClockHSI_24MHz()
     UNLOCK_IRQ(lock);
 }
 
-void clock_setSysClockHSI()
+void clock_setSysClockHSE_48MHz()
 {
-    CASSERT_SYSCLKFREQ(CLOCK_HSI_Hz);
+    CASSERT_SYSCLKFREQ(CLOCK_HSE_Hz*6);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
+    startHSE();
+
+    FLASH.ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSE_Hz/2)*6);
+
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     // HCLK = SYSCLK
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      // PCLK2 = HCLK
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div2;      // PCLK1 = HCLK/2 = 24 MHz (should not be more than 36 MHz)
+
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE((CLOCK_HSE_Hz*6)/1/1); // Get by PCLK2 frequency
+
+    // PLL configuration: HSE * 6 = 48 MHz
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
+    RCC.CFGR |= (RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLXTPRE_HSE_Div1 | RCC_CFGR_PLLMUL6);
+
+    // Enable PLL
+    RCC.CR |= RCC_CR_PLLON;
+
+    // Wait till PLL is ready
+    while ((RCC.CR & RCC_CR_PLLRDY) == 0);
+
+    // Select PLL as system clock source
+    RCC.CFGR &= ~(RCC_CFGR_SW);
+    RCC.CFGR |= RCC_CFGR_SW_PLL;
+
+    // Wait till PLL is used as system clock source
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+
+    // Update the clock global variables to reflect changes
+    updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
+}
+
+void clock_setSysClockHSI_48MHz()
+{
+    CASSERT_SYSCLKFREQ((CLOCK_HSI_Hz/2)*12);
 
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
     startHSI();
 
-    FLASH.ACR |= FLASH_ACR_PRFTBE; // Enable flash prefetch buffer
+    FLASH.ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
     FLASH.ACR &= ~FLASH_ACR_LATENCY;
-    FLASH.ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSI_Hz);
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY((CLOCK_HSI_Hz/2)*12);
 
-    // HCLK = SYSCLK, PCLK2 = HCLK, PCLK1 = HCLK
-    RCC.CFGR &= (RCC.CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1)) | (RCC_CFGR_HPRE_SYSCLK_Div1 | RCC_CFGR_PPRE2_HCLK_Div1 | RCC_CFGR_PPRE1_HCLK_Div1);
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     // HCLK = SYSCLK
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      // PCLK2 = HCLK
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div2;      // PCLK1 = HCLK/2 = 24 MHz (should not be more than 36 MHz)
 
     // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
     RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
-    RCC.CFGR |= GET_ADCPRE(CLOCK_HSI_Hz); // Get by PCLK2 frequency
+    RCC.CFGR |= GET_ADCPRE(((CLOCK_HSI_Hz/2)*12)/1/1); // Get by PCLK2 frequency
 
-    // Select HSI as system clock source
-    RCC.CFGR = (RCC.CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_HSI;
+    // PLL configuration: (HSI/2) * 12 = 48 MHz
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
+    RCC.CFGR |= (RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMUL12);
 
-    // Wait till HSI is used as system clock source
-    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI);
+    // Enable PLL
+    RCC.CR |= RCC_CR_PLLON;
+
+    // Wait till PLL is ready
+    while ((RCC.CR & RCC_CR_PLLRDY) == 0);
+
+    // Select PLL as system clock source
+    RCC.CFGR &= ~(RCC_CFGR_SW);
+    RCC.CFGR |= RCC_CFGR_SW_PLL;
+
+    // Wait till PLL is used as system clock source
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
     // Update the clock global variables to reflect changes
     updateClockFreqs();

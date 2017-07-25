@@ -33,7 +33,7 @@ struct NVIC_Regs
 
 extern volatile struct NVIC_Regs NVIC;
 
-static inline void __NVIC_SetMask(volatile uint32_t * const base, const enum IRQn interrupt)
+static INLINE void __NVIC_SetMask(volatile uint32_t * const base, const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
 
@@ -42,7 +42,7 @@ static inline void __NVIC_SetMask(volatile uint32_t * const base, const enum IRQ
     base[reg] = mask;
 }
 
-static inline bool __NVIC_GetMask(volatile uint32_t * const base, const enum IRQn interrupt)
+static INLINE bool __NVIC_GetMask(volatile uint32_t * const base, const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
 

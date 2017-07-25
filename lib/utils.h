@@ -137,4 +137,6 @@ extern void delay_us(int32_t us);
 
 #define RESET(periph_instance, periph_reg, field) ((periph_instance).reg &= ~(periph_reg##_##field))
 
+#define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+
 #endif

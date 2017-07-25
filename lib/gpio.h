@@ -23,8 +23,19 @@ struct GPIO_Port
 extern volatile struct GPIO_Port GPIOA;
 extern volatile struct GPIO_Port GPIOB;
 extern volatile struct GPIO_Port GPIOC;
+extern volatile struct GPIO_Port GPIOD;
+extern volatile struct GPIO_Port GPIOE;
+extern volatile struct GPIO_Port GPIOF;
+extern volatile struct GPIO_Port GPIOG;
 
-#define IS_GPIO(x) ((&(x) == &GPIOA) || (&(x) == &GPIOB) || (&(x) == &GPIOC))
+#define IS_GPIO(x)                              \
+    ((&(x) == &GPIOA) ||                        \
+     (&(x) == &GPIOB) ||                        \
+     (&(x) == &GPIOC) ||                        \
+     (&(x) == &GPIOD) ||                        \
+     (&(x) == &GPIOE) ||                        \
+     (&(x) == &GPIOF) ||                        \
+     (&(x) == &GPIOG))
 
 /**
  * @brief Simple tuple that can be used to refer to a specific pin on a specific port.

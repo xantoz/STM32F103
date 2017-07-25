@@ -27,9 +27,4 @@ extern volatile uint32_t AHBPERIPH_BASE[];
 extern volatile uint32_t FLASH_R_BASE[];
 extern volatile uint32_t OB_BASE[];
 
-extern volatile uint32_t GPIOA_BASE[];
-extern volatile uint32_t GPIOB_BASE[];
-extern volatile uint32_t GPIOC_BASE[];
-
-
 #endif

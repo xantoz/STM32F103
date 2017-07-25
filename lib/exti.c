@@ -13,6 +13,14 @@ static enum AFIO_EXTICRx_Flg EXTI_GPIOxToAFIOPort(volatile const struct GPIO_Por
         return AFIO_EXTI_PortB;
     else if (port ==  &GPIOC)
         return AFIO_EXTI_PortC;
+    else if (port ==  &GPIOD)
+        return AFIO_EXTI_PortD;
+    else if (port ==  &GPIOE)
+        return AFIO_EXTI_PortE;
+    else if (port ==  &GPIOF)
+        return AFIO_EXTI_PortF;
+    else if (port ==  &GPIOG)
+        return AFIO_EXTI_PortG;
 
     die("no such port");
 }

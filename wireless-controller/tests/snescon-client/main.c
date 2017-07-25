@@ -5,12 +5,11 @@
 #include "clock.h"
 #include "rcc.h"
 #include "systick.h"
+#include "exti.h"
 
-#define CLOCK {&GPIOB, 0}
-#define LATCH {&GPIOB, 1}
-#define DATA  {&GPIOB, 10}
-#define CLOCK_IRQHandler EXTI0_IRQHandler
-#define LATCH_IRQHandler EXTI1_IRQHandler
+#define CLOCK ((struct GPIO_PortPin){&GPIOB, 7})
+#define LATCH ((struct GPIO_PortPin){&GPIOB, 8})
+#define DATA  ((struct GPIO_PortPin){&GPIOB, 9})
 
 struct snesCon_client controller = {
     .pinDef = {
@@ -42,7 +41,7 @@ void main()
 void Systick_Handler()
 {
     static uint32_t cntr = 0;
-    static snesCon_btn_t konamiCode[] = {
+    static const snesCon_btn_t konamiCode[] = {
         snesCon_BUTTON_Up,
         snesCon_BUTTON_NONE,
         snesCon_BUTTON_Up,
@@ -77,14 +76,19 @@ void Systick_Handler()
     snesCon_client_update(&controller, konamiCode[cntr++ % ARRAYLEN(konamiCode)]);
 }
 
-void LATCH_IRQHandler()
+void EXTI9_5_IRQHandler()
 {
-    snesCon_client_latch(&controller);
-    EXTI.PR = 0x1 << LATCH.pin;
-}
+    const uint32_t LATCH_Msk = (0x1 << LATCH.pin);
+    const uint32_t CLOCK_Msk = (0x1 << CLOCK.pin);
 
-void CLOCK_IRQHandler()
-{
-    snesCon_client_clock(&controller);
-    EXTI.PR = 0x1 << CLOCK.pin;
+    if (EXTI.PR & LATCH_Msk)
+    {
+        snesCon_client_latch(&controller);
+        EXTI.PR = LATCH_Msk;
+    }
+    if (EXTI.PR & CLOCK_Msk)
+    {
+        snesCon_client_clock(&controller);
+        EXTI.PR = LATCH_Msk;
+    }
 }

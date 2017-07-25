@@ -43,18 +43,19 @@ enum snesCon_buttons
     snesCon_BUTTON_L_Pos = 10,
     snesCon_BUTTON_R_Pos = 11,
 
-    snesCon_BUTTON_B_Msk      = (1 << snesCon_BUTTON_B_Pos),
-    snesCon_BUTTON_Y_Msk      = (1 << snesCon_BUTTON_Y_Pos),
-    snesCon_BUTTON_Select_Msk = (1 << snesCon_BUTTON_Select_Pos),
-    snesCon_BUTTON_Start_Msk  = (1 << snesCon_BUTTON_Start_Pos),
-    snesCon_BUTTON_Up_Msk     = (1 << snesCon_BUTTON_Up_Pos),
-    snesCon_BUTTON_Down_Msk   = (1 << snesCon_BUTTON_Down_Pos),
-    snesCon_BUTTON_Left_Msk   = (1 << snesCon_BUTTON_Left_Pos),
-    snesCon_BUTTON_Right_Msk  = (1 << snesCon_BUTTON_Right_Pos),
-    snesCon_BUTTON_A_Msk      = (1 << snesCon_BUTTON_A_Pos),
-    snesCon_BUTTON_X_Msk      = (1 << snesCon_BUTTON_X_Pos),
-    snesCon_BUTTON_L_Msk      = (1 << snesCon_BUTTON_L_Pos),
-    snesCon_BUTTON_R_Msk      = (1 << snesCon_BUTTON_R_Pos)
+    snesCon_BUTTON_NONE   = 0,
+    snesCon_BUTTON_B      = (1 << snesCon_BUTTON_B_Pos),
+    snesCon_BUTTON_Y      = (1 << snesCon_BUTTON_Y_Pos),
+    snesCon_BUTTON_Select = (1 << snesCon_BUTTON_Select_Pos),
+    snesCon_BUTTON_Start  = (1 << snesCon_BUTTON_Start_Pos),
+    snesCon_BUTTON_Up     = (1 << snesCon_BUTTON_Up_Pos),
+    snesCon_BUTTON_Down   = (1 << snesCon_BUTTON_Down_Pos),
+    snesCon_BUTTON_Left   = (1 << snesCon_BUTTON_Left_Pos),
+    snesCon_BUTTON_Right  = (1 << snesCon_BUTTON_Right_Pos),
+    snesCon_BUTTON_A      = (1 << snesCon_BUTTON_A_Pos),
+    snesCon_BUTTON_X      = (1 << snesCon_BUTTON_X_Pos),
+    snesCon_BUTTON_L      = (1 << snesCon_BUTTON_L_Pos),
+    snesCon_BUTTON_R      = (1 << snesCon_BUTTON_R_Pos)
 };
 
 #endif

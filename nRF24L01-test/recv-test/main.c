@@ -43,8 +43,7 @@ struct nRF24L01 rfDev;
 
 void main()
 {
-    clock_setSysClockHSE();
-    // clock_setSysClockHSE_24MHz();
+    clock_setSysClockHSE_24MHz();
 
     delay_us(1000000);
 
@@ -59,7 +58,6 @@ void main()
     GPIO_setPin(&LED);
     GPIO_setMODE_setCNF(&DEBUG_INIT_PIN, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_resetPin(&DEBUG_INIT_PIN);
-
 
     GPIO_setPin(&DEBUG_INIT_PIN);
     spi_setup();

@@ -34,8 +34,7 @@ struct nRF24L01 rfDev;
 
 void main()
 {
-    clock_setSysClockHSE();
-    // clock_setSysClockHSE_24MHz();
+    clock_setSysClockHSE_24MHz();
 
     delay_us(1000000);
 

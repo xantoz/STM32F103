@@ -80,9 +80,11 @@ void Systick_Handler()
 void LATCH_IRQHandler()
 {
     snesCon_client_latch(&controller);
+    EXTI.PR = 0x1 << LATCH.pin;
 }
 
 void CLOCK_IRQHandler()
 {
     snesCon_client_clock(&controller);
+    EXTI.PR = 0x1 << CLOCK.pin;
 }

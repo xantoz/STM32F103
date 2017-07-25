@@ -21,7 +21,7 @@ static void exti_setup()
     EXTI.IMR  |=  (0x1 << IRQ_EXTI_PIN); // Enable interrupt from EXTI2
     EXTI.FTSR |=  (0x1 << IRQ_EXTI_PIN); // Set falling trigger select for EXTI2
     EXTI.RTSR &= ~(0x1 << IRQ_EXTI_PIN); // Disable rising trigger select for EXTI2
-    NVIC_EnableInterrupt(IRQ_EXTI_IRQn);
+    NVIC_enableInterrupt(IRQ_EXTI_IRQn);
     AFIO_mapEXTI(IRQ_EXTI_PIN, IRQ_EXTI_AFIO_Port); // Map PA[2] to EXTI2
     EXTI.PR   =   (0x1 << IRQ_EXTI_PIN); // Clear bit in pending register
     GPIO_setMODE_setCNF(&IRQ_EXTI_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);

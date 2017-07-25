@@ -65,7 +65,7 @@ void EXTI_enableInterrupt(const struct GPIO_PortPin * const portpin, enum EXTI_F
     }
     AFIO_mapEXTI(portpin->pin, EXTI_GPIOxToAFIOPort(portpin->port)); // Map port
     EXTI.PR = bit;                                          // Clear bit in pending register
-    NVIC_EnableInterrupt(EXTI_pinNrToIRQn(portpin->pin));
+    NVIC_enableInterrupt(EXTI_pinNrToIRQn(portpin->pin));
     EXTI.IMR |= bit;                                        // Enable interrupt for EXTIx
 
     UNLOCK_IRQ(lock);
@@ -80,7 +80,7 @@ void EXTI_disableInterrupt(const struct GPIO_PortPin * const portpin)
     LOCK_IRQ(lock);
 
     const uint32_t bit = 0x1 << portpin->pin;
-    NVIC_DisableInterrupt(EXTI_pinNrToIRQn(portpin->pin));
+    NVIC_disableInterrupt(EXTI_pinNrToIRQn(portpin->pin));
     EXTI.IMR &= ~bit;
 
     UNLOCK_IRQ(lock);

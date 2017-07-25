@@ -33,7 +33,7 @@ struct NVIC_Regs
 
 extern volatile struct NVIC_Regs NVIC;
 
-static INLINE void __NVIC_SetMask(volatile uint32_t * const base, const enum IRQn interrupt)
+static INLINE void __NVIC_setMask(volatile uint32_t * const base, const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
 
@@ -42,7 +42,7 @@ static INLINE void __NVIC_SetMask(volatile uint32_t * const base, const enum IRQ
     base[reg] = mask;
 }
 
-static INLINE bool __NVIC_GetMask(volatile uint32_t * const base, const enum IRQn interrupt)
+static INLINE bool __NVIC_getMask(volatile uint32_t * const base, const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
 
@@ -51,44 +51,44 @@ static INLINE bool __NVIC_GetMask(volatile uint32_t * const base, const enum IRQ
     return (base[reg] & mask) ? true : false;
 }
 
-static inline void NVIC_EnableInterrupt       (const enum IRQn interrupt) { __NVIC_SetMask(NVIC.ISER, interrupt);        }
-static inline void NVIC_DisableInterrupt      (const enum IRQn interrupt) { __NVIC_SetMask(NVIC.ICER, interrupt);        }
-static inline bool NVIC_IsInterruptEnabled    (const enum IRQn interrupt) { return __NVIC_GetMask(NVIC.ISER, interrupt); }
-static inline void NVIC_SetInterruptPending   (const enum IRQn interrupt) { __NVIC_SetMask(NVIC.ISPR, interrupt);        }
-static inline void NVIC_ClearInterruptPending (const enum IRQn interrupt) { __NVIC_SetMask(NVIC.ICPR, interrupt);        }
-static inline bool NVIC_IsInterruptPending    (const enum IRQn interrupt) { return __NVIC_GetMask(NVIC.ISPR, interrupt); }
-static inline bool NVIC_IsInterruptActive     (const enum IRQn interrupt) { return __NVIC_GetMask(NVIC.IABR, interrupt); }
+static inline void NVIC_enableInterrupt       (const enum IRQn interrupt) { __NVIC_setMask(NVIC.ISER, interrupt);        }
+static inline void NVIC_disableInterrupt      (const enum IRQn interrupt) { __NVIC_setMask(NVIC.ICER, interrupt);        }
+static inline bool NVIC_isInterruptEnabled    (const enum IRQn interrupt) { return __NVIC_getMask(NVIC.ISER, interrupt); }
+static inline void NVIC_setInterruptPending   (const enum IRQn interrupt) { __NVIC_setMask(NVIC.ISPR, interrupt);        }
+static inline void NVIC_clearInterruptPending (const enum IRQn interrupt) { __NVIC_setMask(NVIC.ICPR, interrupt);        }
+static inline bool NVIC_isInterruptPending    (const enum IRQn interrupt) { return __NVIC_getMask(NVIC.ISPR, interrupt); }
+static inline bool NVIC_isInterruptActive     (const enum IRQn interrupt) { return __NVIC_getMask(NVIC.IABR, interrupt); }
 
-static inline void NVIC_SetInterruptPriority(const enum IRQn interrupt, const uint8_t prio)
+static inline void NVIC_setInterruptPriority(const enum IRQn interrupt, const uint8_t prio)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
     NVIC.IP[interrupt] = prio;
 }
 
-static inline uint8_t NVIC_GetInterruptPriority(const enum IRQn interrupt)
+static inline uint8_t NVIC_getInterruptPriority(const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
     return NVIC.IP[interrupt];
 }
 
-static inline void NVIC_TriggerInterrupt(const enum IRQn interrupt)
+static inline void NVIC_triggerInterrupt(const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
     NVIC.STIR = interrupt;
 }
 
 #if 0
-static inline uint8_t NVIC_GetInterruptGroupPriorityBits()
+static inline uint8_t NVIC_getInterruptGroupPriorityBits()
 {
     return 7 - ((SCB.AIRCR & AIRCR_PRIGROUP_MASK) >> 8);
 }
 
-static inline void NVIC_SetInterruptGroupPriorityBits(const uint8_t groupLength)
+static inline void NVIC_setInterruptGroupPriorityBits(const uint8_t groupLength)
 {
     SCB.AIRCR = AIRCR_VECTKEY | ((7-groupLength) << 8);
 }
 
-static inline void NVIC_ResetSystem()
+static inline void NVIC_resetSystem()
 {
     SCB.AIRCR = AIRCR_VECTKEY | AIRCR_SYSRESETREQ;
 }

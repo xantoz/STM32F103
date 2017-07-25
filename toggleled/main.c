@@ -25,7 +25,7 @@ void main(void)
     EXTI.IMR  |=  0x00000001; // Enable interrupt from EXTI0
     EXTI.FTSR |=  0x00000001; // Set falling trigger select for EXTI0
     EXTI.RTSR &= ~0x00000001; // Disable rising trigger select for EXTI0
-    NVIC_EnableInterrupt(EXTI0_IRQn);
+    NVIC_enableInterrupt(EXTI0_IRQn);
     AFIO_mapEXTI(0, AFIO_EXTI_PortB); // Map PB[0] to EXTI0
     GPIO_setMODE_setCNF(&GPIOB, 0, GPIO_MODE_Input, GPIO_Input_CNF_PullupPulldown);
     GPIO_setPin(&GPIOB, 0); // Pull-up

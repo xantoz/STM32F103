@@ -33,10 +33,10 @@ snesCon_btn_t snesCon_read_tick(const struct snesCon_pins * const def)
     for (uint8_t i = 0; i < 16; ++i)
     {
         GPIO_resetPin(&def->clock);
-        delay_us(12);
+        delay_us(6);
         btn |= (!GPIO_read(&def->data)) << i;               // Button pressed when low
         GPIO_setPin(&def->clock);
-        delay_us(12);
+        delay_us(6);
     }
 
     UNLOCK_IRQ(lock);

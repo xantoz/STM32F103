@@ -5,7 +5,6 @@
 #include "clock.h"
 #include "systick.h"
 #include "utils.h"
-
 #include "debug.h"
 
 static const uint8_t pollFreq = 60;  //!< How often to poll the controller [Hz]

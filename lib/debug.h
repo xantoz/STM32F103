@@ -83,6 +83,7 @@ int32_t clock();
  *        it are thrown away (do: #define die(s) die()). The idea is that it can be turned on to
  *        save some space (no string literals) for release builds.
  */
+__attribute__((noreturn))
 void die(const char *s);
 
 #define static_assert _Static_assert

@@ -13,9 +13,9 @@ static snesCon_btn_t buttonState;
 
 static const struct snesCon_pins snesCon_def =
 {
-    .clock = {&GPIOA, 6},
-    .latch = {&GPIOA, 7},
-    .data  = {&GPIOB, 0}
+    .clock = {&GPIOB, 7},
+    .latch = {&GPIOB, 8},
+    .data  = {&GPIOB, 9}
 };
 
 // static volatile const GPIO_Port * const asdf = GPIOA;

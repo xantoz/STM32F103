@@ -14,19 +14,6 @@
 #include "../common/spi-setup.h"
 #include "../common/ports.h"
 
-// SETUP: A0 receives IRQ when recv
-static void exti_setup()
-{
-    // Interrupt EXTIO0 on falling edge of PB0
-    EXTI.IMR  |=  (0x1 << IRQ_EXTI_PIN); // Enable interrupt from EXTI2
-    EXTI.FTSR |=  (0x1 << IRQ_EXTI_PIN); // Set falling trigger select for EXTI2
-    EXTI.RTSR &= ~(0x1 << IRQ_EXTI_PIN); // Disable rising trigger select for EXTI2
-    NVIC_enableInterrupt(IRQ_EXTI_IRQn);
-    AFIO_mapEXTI(IRQ_EXTI_PIN, IRQ_EXTI_AFIO_Port); // Map PA[2] to EXTI2
-    EXTI.PR   =   (0x1 << IRQ_EXTI_PIN); // Clear bit in pending register
-    GPIO_setMODE_setCNF(&IRQ_EXTI_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-}
-
 static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
 
 // Settings for the nRF24L01
@@ -80,7 +67,8 @@ void main()
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
     GPIO_setPin(&DEBUG_INIT_PIN);
-    exti_setup();
+    EXTI_enableInterrupt(&IRQ_EXTI_PortPin, EXTI_FALLING);
+    GPIO_setMODE_setCNF(&IRQ_EXTI_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     print("exti setup done\n");
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
@@ -134,6 +122,6 @@ void IRQ_EXTI_IRQHandler(void)
     // EXTI0 is connected to the interrupt line coming from the nRF24L01
     nRF24L01_interrupt(&rfDev);
 
-    EXTI.PR = 0x1 << IRQ_EXTI_PIN;
+    EXTI.PR = 0x1 << IRQ_EXTI_PortPin.pin;
     __enable_irq();
 }

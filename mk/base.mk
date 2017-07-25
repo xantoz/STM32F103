@@ -18,7 +18,7 @@ CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
 CPPFLAGS = $(addprefix -I,$(SOURCE_DIRS))
 DEBUG    ?= -g
 ASFLAGS  = $(DEBUG) $(CPUFLAGS) $(CPPFLAGS)
-CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -DSTM32F10X_MD -fshort-enums -fno-hosted -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits
+CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -DSTM32F10X_MD -nostdinc -fshort-enums -fno-hosted -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits
 LDFLAGS  = '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  = -Obinary --strip-unneeded
 

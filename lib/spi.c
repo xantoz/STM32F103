@@ -184,7 +184,9 @@ void SPI_initAsMaster(volatile struct SPI_Regs * spi, const struct SPI_Options *
     print_u32_dec(actualFreq);
     print(" flag: ");
     print_u32_hex(flag);
-    print(" (Requested " TOSTRING(MAX_BAUDRATE) ")\n");
+    print(" (Requested ");
+    print_u32_dec(options->maxFreq);
+    print(")\n");
 
     // Enable
     spi->CR1 |= SPI_CR1_SPE;

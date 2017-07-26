@@ -41,7 +41,7 @@ bool SPI_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
     const uint32_t baseFreq = (spi == &SPI1) ? g_clock.pclk2Freq : g_clock.pclk1Freq;
     for (uint8_t i = 1; i <= 8; ++i)
     {
-        uint32_t freq = (baseFreq >> i);
+        const uint32_t freq = (baseFreq >> i);
         if (freq <= maxFreq)
         {
             if (flag != NULL)       *flag = flags[i-1];

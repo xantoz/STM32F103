@@ -13,7 +13,7 @@ bool snesCon_client_init(const struct snesCon_client * const client)
 
     // init EXTI for LATCH and CLK
     GPIO_setMODE_setCNF(&client->pinDef.latch, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    GPIO_setMODE_setCNF(&client->pinDef.latch, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    GPIO_setMODE_setCNF(&client->pinDef.clock, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     EXTI_enableInterrupt(&client->pinDef.latch, EXTI_RISING);
     EXTI_enableInterrupt(&client->pinDef.clock, EXTI_RISING);
 

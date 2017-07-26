@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "debug.h"
 
-static const uint8_t pollFreq = 60;  //!< How often to poll the controller [Hz]
+static const uint8_t pollFreq = 120;  //!< How often to poll the controller [Hz]
 
 static snesCon_btn_t buttonState;
 

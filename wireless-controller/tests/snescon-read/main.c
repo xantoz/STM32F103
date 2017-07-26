@@ -1,11 +1,12 @@
-#include "protocol/snesCon_read.h"
-
 #include "gpio.h"
 #include "rcc.h"
 #include "clock.h"
 #include "systick.h"
 #include "utils.h"
 #include "debug.h"
+
+#include "protocol/snesCon_read.h"
+#include "common/debugLeds.h"
 
 static const uint8_t pollFreq = 120;  //!< How often to poll the controller [Hz]
 
@@ -17,40 +18,6 @@ static const struct snesCon_pins snesCon_def =
     .latch = {&GPIOB, 8},
     .data  = {&GPIOB, 9}
 };
-
-static const struct GPIO_PortPin debugLeds[] = {
-    {&GPIOB, 12},
-    {&GPIOB, 13},
-    {&GPIOB, 14},
-    {&GPIOB, 15},
-
-    {&GPIOA, 9},
-    {&GPIOA, 10},
-    {&GPIOA, 11},
-    {&GPIOA, 12},
-
-    {&GPIOB, 11},
-    {&GPIOB, 10},
-    {&GPIOB, 1},
-    {&GPIOB, 0},
-};
-
-static void init_debugLeds()
-{
-    for (unsigned i = 0; i < ARRAYLEN(debugLeds); ++i)
-        GPIO_setMODE_setCNF(&debugLeds[i], GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-}
-
-static void update_debugLeds(snesCon_btn_t btn)
-{
-    for (unsigned i = 0; i < ARRAYLEN(debugLeds); ++i)
-    {
-        GPIO_setBit(&debugLeds[i], (btn & 0x1) == 0x1);
-        btn >>= 1;
-    }
-}
-
-// static volatile const GPIO_Port * const asdf = GPIOA;
 
 void main(void)
 {
@@ -65,7 +32,7 @@ void main(void)
 
     GPIO_setMODE_setCNF(&GPIOC, 13, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    init_debugLeds();
+    debugLeds_init();
 
     snesCon_read_init(&snesCon_def);
 
@@ -86,7 +53,7 @@ void main(void)
 void Systick_Handler(void)
 {
     buttonState = snesCon_read_tick(&snesCon_def);
-    update_debugLeds(buttonState);
+    debugLeds_update(buttonState);
 
     static volatile uint8_t cntr = 0;
     ++cntr;

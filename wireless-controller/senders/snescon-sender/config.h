@@ -1,5 +1,5 @@
-#ifndef _SNES_SENDER_CONFIG_
-#define _SNES_SENDER_CONFIG_
+#ifndef _SNESCON_SENDER_CONFIG_
+#define _SNESCON_SENDER_CONFIG_
 
 /* **** Settings for the SNES controller **** */
 

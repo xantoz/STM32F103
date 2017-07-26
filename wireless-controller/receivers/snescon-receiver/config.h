@@ -34,7 +34,7 @@ static const struct nRF24L01_Options rfDev_opts = {
 
     .airDataRate    = nRF24L01_2Mbps,
     .useACK         = nRF24L01_NoACK,
-    .useCRC         = nRF24L01_NoCRC,
+    .useCRC         = nRF24L01_CRC,
     .retransmission = nRF24L01_NoRetransmission,
     .mode           = nRF24L01_RX,
 

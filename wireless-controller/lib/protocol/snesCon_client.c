@@ -29,7 +29,7 @@ void snesCon_client_update(struct snesCon_client *client, snesCon_btn_t btn)
 
 static void snesCon_client_driveData(const struct snesCon_client * const client)
 {
-    if (client->reg & 0x1)
+    if (client->latchReg & 0x1)
         GPIO_setPin(&client->pinDef.data);
     else
         GPIO_resetPin(&client->pinDef.data);

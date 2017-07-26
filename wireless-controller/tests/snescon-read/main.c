@@ -24,10 +24,10 @@ static const struct GPIO_PortPin debugLeds[] = {
     {&GPIOB, 14},
     {&GPIOB, 15},
 
+    {&GPIOA, 9},
     {&GPIOA, 10},
     {&GPIOA, 11},
     {&GPIOA, 12},
-    {&GPIOA, 15},
 
     {&GPIOB, 11},
     {&GPIOB, 10},

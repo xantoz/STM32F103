@@ -130,4 +130,22 @@ static INLINE bool __GPIO_read1(const struct GPIO_PortPin * const portpin) {
     return __GPIO_read2(portpin->port, portpin->pin);
 }
 
+#define GPIO_setBit(...) VFUNC(__GPIO_setBit, __VA_ARGS__)
+static INLINE void __GPIO_setBit3(volatile struct GPIO_Port * const port,
+                                  const uint8_t pin,
+                                  const bool value) {
+    build_assert(IS_GPIO(*port), "First argument is not GPIO port");
+    build_assert(pin <= 15, "Pin number too high");
+
+    if (value)
+        GPIO_setPin(port, pin);
+    else
+        GPIO_resetPin(port, pin);
+}
+static INLINE void __GPIO_setBit2(const struct GPIO_PortPin * const portpin,
+                                  const bool value) {
+    __GPIO_setBit3(portpin->port, portpin->pin, value);
+}
+
+
 #endif /* _GPIO_ */

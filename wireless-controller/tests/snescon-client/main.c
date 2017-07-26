@@ -81,14 +81,14 @@ void EXTI9_5_IRQHandler()
     const uint32_t LATCH_Msk = (0x1 << LATCH.pin);
     const uint32_t CLOCK_Msk = (0x1 << CLOCK.pin);
 
-    if (EXTI.PR & LATCH_Msk)
-    {
-        snesCon_client_latch(&controller);
-        EXTI.PR = LATCH_Msk;
-    }
     if (EXTI.PR & CLOCK_Msk)
     {
         snesCon_client_clock(&controller);
+        EXTI.PR = CLOCK_Msk;
+    }
+    if (EXTI.PR & LATCH_Msk)
+    {
+        snesCon_client_latch(&controller);
         EXTI.PR = LATCH_Msk;
     }
 }

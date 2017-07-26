@@ -7,6 +7,8 @@
 #include "systick.h"
 #include "exti.h"
 
+#define LED ((struct GPIO_PortPin){&GPIOC, 13})
+
 #define CLOCK ((struct GPIO_PortPin){&GPIOB, 7})
 #define LATCH ((struct GPIO_PortPin){&GPIOB, 8})
 #define DATA  ((struct GPIO_PortPin){&GPIOB, 9})
@@ -21,16 +23,20 @@ struct snesCon_client controller = {
 
 void main()
 {
-    clock_setSysClockHSE_24MHz();
+    clock_setSysClockHSE_48MHz();
 
     __disable_irq();
 
     // Enable clock to all GPIO:s
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
 
-    snesCon_client_init(&controller);
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setPin(&LED);
 
-    if (!systick_startSysTick_ms(500))
+    snesCon_client_init(&controller);
+    snesCon_client_update(&controller, 0x0000);
+
+    if (!systick_startSysTick_ms(1000))
         die("Could not set up systick");
 
     __enable_irq();
@@ -38,42 +44,64 @@ void main()
     return;
 }
 
+static const snesCon_btn_t konamiCode[] = {
+    snesCon_BUTTON_Up,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_Up,
+    snesCon_BUTTON_NONE,
+
+    snesCon_BUTTON_Down,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_Down,
+    snesCon_BUTTON_NONE,
+
+    snesCon_BUTTON_Left,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_Right,
+    snesCon_BUTTON_NONE,
+
+    snesCon_BUTTON_Left,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_Right,
+    snesCon_BUTTON_NONE,
+
+    snesCon_BUTTON_Left,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_Right,
+    snesCon_BUTTON_NONE,
+
+    snesCon_BUTTON_B,
+    snesCon_BUTTON_NONE,
+    snesCon_BUTTON_A,
+    snesCon_BUTTON_NONE,
+};
+
 void Systick_Handler()
 {
+    static bool state = false;
+    state = !state;
+    if (state)
+        GPIO_setPin(&LED);
+    else
+        GPIO_resetPin(&LED);
+
     static uint32_t cntr = 0;
-    static const snesCon_btn_t konamiCode[] = {
-        snesCon_BUTTON_Up,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_Up,
-        snesCon_BUTTON_NONE,
 
-        snesCon_BUTTON_Down,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_Down,
-        snesCon_BUTTON_NONE,
+    // snesCon_client_update(&controller, konamiCode[cntr++ % ARRAYLEN(konamiCode)]);
 
-        snesCon_BUTTON_Left,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_Right,
-        snesCon_BUTTON_NONE,
+    if (state)
+    {
+        uint16_t rolf = (cntr++ % 12);
+        println_u32_dec(rolf);
+        snesCon_client_update(&controller, 1 << rolf);
+        print("press ");
 
-        snesCon_BUTTON_Left,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_Right,
-        snesCon_BUTTON_NONE,
-
-        snesCon_BUTTON_Left,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_Right,
-        snesCon_BUTTON_NONE,
-
-        snesCon_BUTTON_B,
-        snesCon_BUTTON_NONE,
-        snesCon_BUTTON_A,
-        snesCon_BUTTON_NONE,
-    };
-
-    snesCon_client_update(&controller, konamiCode[cntr++ % ARRAYLEN(konamiCode)]);
+    }
+    else
+    {
+        snesCon_client_update(&controller, 0);
+        print("release\n");
+    }
 }
 
 void EXTI9_5_IRQHandler()
@@ -91,4 +119,6 @@ void EXTI9_5_IRQHandler()
         snesCon_client_latch(&controller);
         EXTI.PR = LATCH_Msk;
     }
+
+    // EXTI.PR = ~0;
 }

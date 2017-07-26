@@ -4,6 +4,6 @@
 #include "types.h"
 
 void spi_setup();
-uint8_t spi_sendrecv(uint8_t data);
+uint8_t spi_sendrecv(const uint8_t data);
 
 #endif

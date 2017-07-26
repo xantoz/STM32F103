@@ -36,7 +36,7 @@ void main()
     snesCon_client_init(&controller);
     snesCon_client_update(&controller, 0x0000);
 
-    if (!systick_startSysTick_ms(1000))
+    if (!systick_startSysTick_ms(500))
         die("Could not set up systick");
 
     __enable_irq();
@@ -87,21 +87,20 @@ void Systick_Handler()
 
     static uint32_t cntr = 0;
 
-    // snesCon_client_update(&controller, konamiCode[cntr++ % ARRAYLEN(konamiCode)]);
+    snesCon_client_update(&controller, konamiCode[cntr++ % ARRAYLEN(konamiCode)]);
 
-    if (state)
-    {
-        uint16_t rolf = (cntr++ % 12);
-        println_u32_dec(rolf);
-        snesCon_client_update(&controller, 1 << rolf);
-        print("press ");
-
-    }
-    else
-    {
-        snesCon_client_update(&controller, 0);
-        print("release\n");
-    }
+    // if (state)
+    // {
+    //     uint16_t rolf = (cntr++ % 12);
+    //     snesCon_client_update(&controller, 1 << rolf);
+    //     // print("press ");
+    //     // println_u32_dec(rolf);
+    // }
+    // else
+    // {
+    //     snesCon_client_update(&controller, 0);
+    //     // print("release\n");
+    // }
 }
 
 void EXTI9_5_IRQHandler()
@@ -119,6 +118,4 @@ void EXTI9_5_IRQHandler()
         snesCon_client_latch(&controller);
         EXTI.PR = LATCH_Msk;
     }
-
-    // EXTI.PR = ~0;
 }

@@ -31,7 +31,7 @@ static const struct SPI_Options spi_opts = {
 
 #define nRF24L01_IRQ_PortPin ((struct GPIO_PortPin){&GPIOA, 2})
 #define nRF24L01_IRQHandler  EXTI2_IRQHandler
-uint8_t spi_sendrecv(const uint8_t data);
+static uint8_t spi_sendrecv(const uint8_t data);
 static const struct nRF24L01_Options rfDev_opts = {
     .CSN = {&GPIOA, 4},
     .CE  = {&GPIOA, 3},

@@ -13,7 +13,7 @@
 
 struct nRF24L01 rfDev;
 
-uint8_t spi_sendrecv(const uint8_t data)
+static uint8_t spi_sendrecv(const uint8_t data)
 {
     SPI_send(&nRF24L01_SPI, data);
     return SPI_recv(&nRF24L01_SPI);

@@ -24,7 +24,7 @@ const struct SPI_Pins SPI2_Pins = {
     .MOSI = {&GPIOB, 15},
 };
 
-bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
+bool SPI_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq)
 {
     static const uint16_t flags[8] = {
@@ -57,7 +57,7 @@ bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
 //       SCK might as well be a bi-directional pin from the view of GPIO w.r.t. different
 //       configurations of the peripheral, but this will of course not let us do pull-ups or
 //       pull-downs on a SCK input, for instance.
-static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
+static void SPI_setupGPIOHelper(enum SPI_OutputMode outputMode,
                                 enum SPI_InputMode inputMode,
                                 struct SPI_Pins const * const pins,
                                 bool hardwareNSS)
@@ -85,7 +85,7 @@ static void spi_setupGpioHelper(enum SPI_OutputMode outputMode,
 
 // TODO: mold this into a more fully encompassing SPI init function (handle freq, clock phase &c.,
 // and do not set up port bits for NSS when not applicable)
-void SPI1_SetupGpio(enum AF_Mapping mapping,
+void SPI1_setupGPIO(enum AF_Mapping mapping,
                     enum SPI_OutputMode outputMode,
                     enum SPI_InputMode inputMode,
                     bool hardwareNSS)
@@ -99,19 +99,19 @@ void SPI1_SetupGpio(enum AF_Mapping mapping,
         AFIO.MAPR &= ~(AFIO_MAPR_SPI1_REMAP);
 
     const struct SPI_Pins *pinMap = (mapping == AFIO_ALTERNATE) ? &SPI1_Alternate_Pins : &SPI1_Default_Pins;
-    spi_setupGpioHelper(outputMode, inputMode, pinMap, hardwareNSS);
+    SPI_setupGPIOHelper(outputMode, inputMode, pinMap, hardwareNSS);
 
     UNLOCK_IRQ(lock);
 }
 
-void SPI2_SetupGpio(enum SPI_OutputMode outputMode,
+void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
                     enum SPI_InputMode inputMode,
                     bool hardwareNSS)
 {
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
-    spi_setupGpioHelper(outputMode, inputMode, &SPI2_Pins, hardwareNSS);
+    SPI_setupGPIOHelper(outputMode, inputMode, &SPI2_Pins, hardwareNSS);
 
     UNLOCK_IRQ(lock);
 }

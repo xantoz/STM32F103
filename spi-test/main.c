@@ -44,20 +44,20 @@ static void spi_setup()
 
     // Setup GPIO pins for SPI
 #if mySPI == SPI1
-    print("SPI1_SetupGpio\n");
-    SPI1_SetupGpio(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, true);
+    print("SPI1_setupGPIO\n");
+    SPI1_setupGPIO(AFIO_DEFAULT, SPI_PushPull, SPI_PullDown, true);
 #elif mySPI == SPI2
-    print("SPI2_SetupGpio\n");
-    SPI2_SetupGpio(SPI_PushPull, SPI_PullDown, true);
+    print("SPI2_setupGPIO\n");
+    SPI2_setupGPIO(SPI_PushPull, SPI_PullDown, true);
 #else
 #error "No such SPI"
 #endif
 
     // Set baudrate to maximum possible speed less than or equal to MAX_BAUDRATE
-    print("spi_getBaudRateDivisorFromMaxFreq\n");
+    print("SPI_getBaudRateDivisorFromMaxFreq\n");
     uint16_t flag;
     uint32_t actualFreq;
-    if (!spi_getBaudRateDivisorFromMaxFreq(&mySPI, MAX_BAUDRATE, &flag, &actualFreq))
+    if (!SPI_getBaudRateDivisorFromMaxFreq(&mySPI, MAX_BAUDRATE, &flag, &actualFreq))
         die("Requested SPI baudrate not available");
     mySPI.CR1 &= ~SPI_CR1_BR;
     mySPI.CR1 |= flag;

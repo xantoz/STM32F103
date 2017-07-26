@@ -146,14 +146,14 @@ enum SPI_TXCRCR_Flg { SPI_TXCRCR_CRCPOLY = 0x7fff /*!< TX CRC bitmask */ };
  * @code
  *   uint16_t flag;
  *   uint32_t actualFreq;
- *   if (!spi_getBaudRateDivisorFromMaxFreq(&SPI1, 1000000, &flag, &actualFreq))
+ *   if (!SPI_getBaudRateDivisorFromMaxFreq(&SPI1, 1000000, &flag, &actualFreq))
  *       die("Could not get suitable SPI baud rate");
  *   SPI1.CR1 &= ~SPI_CR1_BR;
  *   SPI1.CR1 |= flag;
  *   // actualFreq now contains the actual baud rate
  * @endcode
  */
-bool spi_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
+bool SPI_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const spi, uint32_t maxFreq,
                                        uint16_t *flag, uint32_t *actualFreq);
 
 enum SPI_NSSManagement
@@ -214,7 +214,7 @@ extern const struct SPI_Pins SPI2_Pins;
 /**
  * @brief Write me
  */
-void SPI1_SetupGpio(enum AF_Mapping mapping,
+void SPI1_setupGPIO(enum AF_Mapping mapping,
                     enum SPI_OutputMode outputMode,
                     enum SPI_InputMode inputMode,
                     bool hardwareNSS);
@@ -222,7 +222,7 @@ void SPI1_SetupGpio(enum AF_Mapping mapping,
 /**
  * @brief Write me
  */
-void SPI2_SetupGpio(enum SPI_OutputMode outputMode,
+void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
                     enum SPI_InputMode inputMode,
                     bool hardwareNSS);
 

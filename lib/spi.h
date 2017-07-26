@@ -158,8 +158,16 @@ bool SPI_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
 
 enum SPI_NSSManagement
 {
+    // The slave select information is driven internally by the value of the SSI bit in the
+    // SPI_CR1 register. The external NSS pin remains free for other application uses.
     SPI_SoftwareNSS,       // SSM = 1
+    // This configuration is used only when the device operates in master mode. The
+    // NSS signal is driven low when the master starts the communication and is kept
+    // low until the SPI is disabled.
     SPI_HardwareNSSOutput, // SSM = 0, SSOE = 1
+    // This configuration allows multimaster capability for devices operating in master
+    // mode. For devices set as slave, the NSS pin acts as a classical NSS input: the
+    // slave is selected when NSS is low and deselected when NSS high.
     SPI_HardwareNSSInput,  // SSM = 0, SSOE = 0 (master mode == become slave if NSS pulled low)
 };
 
@@ -225,5 +233,47 @@ void SPI1_setupGPIO(enum AF_Mapping mapping,
 void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
                     enum SPI_InputMode inputMode,
                     bool hardwareNSS);
+
+/**
+ * @brief Used to send options to SPI_initAsMaster
+ */
+struct SPI_Options
+{
+    uint32_t maxFreq;               //!< Set SPI peripheral to run at the highest frequency lower or equal to this
+    enum AF_Mapping mapping;        //!< Whether to use default or alternate mapping (only has an effect on SPI1)
+    enum SPI_OutputMode outputMode; //!< Mode for output pins (push-pull, open drain)
+    enum SPI_InputMode inputMode;   //!< Mode for input pins (pull-up, pull-down, floating)
+    enum SPI_NSSManagement nss;     //!< How to handle NSS pin?
+    uint8_t cpol;                   //!< Clock polarity
+    uint8_t cpha;                   //!< Clock phase
+};
+
+/**
+ * @brief Init SPI peripheral in master mode
+ */
+void SPI_initAsMaster(volatile struct SPI_Regs * spi, const struct SPI_Options * const options);
+
+/**
+ * @brief Send byte over SPI
+ *
+ * @note Blocks until transmit buffer is empty
+ */
+static inline void SPI_send(volatile struct SPI_Regs * spi, const uint8_t data)
+{
+    while (!(spi->SR & SPI_SR_TXE)); // Wait until transmit buffer empty
+    spi->DR = (uint16_t)data;
+}
+
+/**
+ * @brief Receive byte over SPI
+ *
+ * @note Blocks until data has been received
+ */
+static inline uint8_t SPI_recv(volatile struct SPI_Regs * spi)
+{
+    while (!(spi->SR & SPI_SR_RXNE)); // Block until we have data
+    return (uint8_t)spi->DR;
+}
+
 
 #endif

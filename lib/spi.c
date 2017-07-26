@@ -115,3 +115,79 @@ void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
 
     UNLOCK_IRQ(lock);
 }
+
+void SPI_initAsMaster(volatile struct SPI_Regs * spi, const struct SPI_Options * const options)
+{
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
+    spi->CR1 &= ~(SPI_CR1_SPE); // Ensure SPI not enabled
+
+    // Setup GPIO pins for SPI
+    if (spi == &SPI1)
+        SPI1_setupGPIO(options->mapping,
+                       options->outputMode,
+                       options->inputMode,
+                       options->nss != SPI_SoftwareNSS);
+    else if (spi == &SPI2)
+        SPI2_setupGPIO(options->outputMode,
+                       options->inputMode,
+                       options->nss != SPI_SoftwareNSS);
+    else
+        die("No such SPI");
+
+    spi->CR1 = SPI_CR1_MSTR; // Set as master
+    spi->CR2 = 0;
+    if (options->nss == SPI_SoftwareNSS)
+    {
+        // SSM = 1, SSI = 1, SSOE = 0
+        spi->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;
+        spi->CR2 &= ~(SPI_CR2_SSOE);
+    }
+    else if (options->nss == SPI_HardwareNSSOutput)
+    {
+        // SSM = 0, SSOE = 1
+        spi->CR1 &= ~(SPI_CR1_SSM);
+        spi->CR2 |= SPI_CR2_SSOE;
+    }
+    else if (options->nss == SPI_HardwareNSSInput)
+    {
+        // SSM = 0, SSOE = 0
+        spi->CR1 &= ~(SPI_CR1_SSM);
+        spi->CR2 &= ~(SPI_CR2_SSOE);
+    }
+    else
+    {
+        die("bad option for NSS");
+    }
+
+    // Clock phase settings
+    if (options->cpol)
+        spi->CR1 |= SPI_CR1_CPOL;
+    else
+        spi->CR1 &= ~(SPI_CR1_CPOL);
+
+    if (options->cpha)
+        spi->CR1 |= SPI_CR1_CPHA;
+    else
+        spi->CR1 &= ~(SPI_CR1_CPHA);
+
+    // Set bitrate to maximum possible speed less than or equal to maxFreq
+    uint16_t flag;
+    uint32_t actualFreq;
+    if (!SPI_getBaudRateDivisorFromMaxFreq(spi, options->maxFreq, &flag, &actualFreq))
+        die("Requested SPI bitrate not available");
+    spi->CR1 &= ~SPI_CR1_BR;
+    spi->CR1 |= flag;
+
+    print("SPI: Set bitrate to ");
+    print_u32_dec(actualFreq);
+    print(" flag: ");
+    print_u32_hex(flag);
+    print(" (Requested " TOSTRING(MAX_BAUDRATE) ")\n");
+
+    // Enable
+    spi->CR1 |= SPI_CR1_SPE;
+
+    UNLOCK_IRQ(lock);
+}

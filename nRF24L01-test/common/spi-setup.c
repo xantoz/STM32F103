@@ -7,7 +7,7 @@ void spi_setup()
 {
     __disable_irq();
 
-    SPI1.CR1 &= SPI_CR1_SPE; // Ensure SPI not enabled
+    SPI1.CR1 &= ~SPI_CR1_SPE; // Ensure SPI not enabled
 
     // Disable:
     // * Bidirectional

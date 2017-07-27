@@ -33,6 +33,34 @@ delay_us:                   // Cycle count (dumb: ignore potential pipeline effe
 2:
     bx lr                   // 2<usu> (2 to 4)
 
+.global __get_MSP
+.balign 4
+.thumb_func
+__get_MSP:
+    mrs r0, MSP
+    bx  lr
+
+.global __set_MSP
+.balign 4
+.thumb_func
+__set_MSP:
+    msr MSP, r0
+    bx  lr
+
+.global __get_BASEPRI
+.balign 4
+.thumb_func
+_get_BASEPRI:
+    mrs r0, BASEPRI_MAX
+    bx lr
+
+.global __set_BASEPRI
+.balign 4
+.thumb_func
+__set_BASEPRI:
+    msr BASEPRI, r0
+    bx lr
+
 .global __get_PRIMASK
 .balign 4
 .thumb_func
@@ -45,4 +73,18 @@ __get_PRIMASK:
 .thumb_func
 __set_PRIMASK:
     msr PRIMASK, r0
+    bx lr
+
+.global __get_FAULTMASK
+.balign 4
+.thumb_func
+__get_FAULTMASK:
+    mrs r0, FAULTMASK
+    bx lr
+
+.global __set_FAULTMASK
+.balign 4
+.thumb_func
+__set_FAULTMASK:
+    msr FAULTMASK, r0
     bx lr

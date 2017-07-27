@@ -15,14 +15,16 @@
  * @{
  */
 
-#if defined(__GNUC__) || defined(__CLANG__) || defined(__ARMCC_VERSION__)
+#include "internal/features.h"
+
+#if defined(HAVE_GCC_STYLE_ATTRIBUTES)
 // Compilers which support the GCC-style attribute
 #define IN_SECTION(s) __attribute__((section(s)))
 #else
-#warning "Non-supported compiler: No method to force code to a certain section"
+#warning "Non-supported compiler: No known method to force code to a certain section"
 #endif
 
-#if defined(__GNUC__) || defined(__ARMCC_VERSION__)
+#if defined(HAVE_GCC_STYLE_ATTRIBUTES)
 /** @brief All-uppercase INLINE forces inlining of the function */
 #define INLINE __attribute__((always_inline)) inline
 #define PURE __attribute__((pure))
@@ -32,7 +34,7 @@
 #define PURE
 #endif
 
-#if defined(__GNUC__) || defined(__CLANG__) || defined(__ARMCC_VERSION__)
+#if defined(HAVE_GCC_STYLE_ATTRIBUTES)
 #define UNUSED __attribute__((unused))
 #else
 #define UNUSED
@@ -63,8 +65,49 @@ static INLINE void __DSB()   { asm("dsb"); }
 static INLINE void __DMB()   { asm("dmb"); }
 static INLINE void __CLREX() { asm("clrex"); }
 
+#ifdef HAVE_GCC_EXTENDED_ASM
+static INLINE uint32_t __get_BASEPRI(void)
+{
+    uint32_t result = 0;
+    asm ("mrs %0, BASEPRI_MAX" : "=r" (result) );
+    return result;
+}
+static INLINE void __set_BASEPRI(uint32_t value)
+{
+    asm ("msr BASEPRI, %0" : : "r" (value) );
+}
+
+static INLINE uint32_t __get_PRIMASK(void)
+{
+    uint32_t result = 0;
+    asm ("mrs %0, PRIMASK" : "=r" (result) );
+    return result;
+}
+static INLINE void __set_PRIMASK(uint32_t priMask)
+{
+    asm ("msr PRIMASK, %0" : : "r" (priMask) );
+}
+
+static INLINE uint32_t __get_FAULTMASK()
+{
+    uint32_t result=0;
+    asm ("mrs %0, FAULTMASK" : "=r" (result) );
+    return result;
+}
+static INLINE void __set_FAULTMASK(uint32_t faultMask)
+{
+    asm ("msr FAULTMASK, %0" : : "r" (faultMask) );
+}
+#else
+extern uint32_t __get_BASEPRI();
+extern void  __set_BASEPRI(uint32_t primask);
 extern uint32_t __get_PRIMASK();
 extern void  __set_PRIMASK(uint32_t primask);
+extern uint32_t __get_FAULTMASK();
+extern void  __set_FAULTMASK(uint32_t primask);
+#endif
+extern uint32_t __get_MSP();
+extern void __set_MSP(uint32_t topOfMainStack);
 
 /**
  * @defgroup Re-entrant IRQ lock functions

@@ -15,16 +15,11 @@
  */
 static void nRF24L01_writeOp(struct nRF24L01 *dev, uint8_t cmd, const uint8_t *dataIn, size_t len)
 {
-    irq_lock_t lock;
-    LOCK_IRQ(lock);
-
     GPIO_resetPin(&dev->conf->CSN);
     dev->status = dev->conf->spi_sendrecv(cmd);
     for (size_t i = 0; i < len; ++i)
         dev->conf->spi_sendrecv(dataIn[i]);
     GPIO_setPin(&dev->conf->CSN);
-
-    UNLOCK_IRQ(lock);
 }
 
 /**
@@ -39,16 +34,11 @@ static void nRF24L01_writeOp(struct nRF24L01 *dev, uint8_t cmd, const uint8_t *d
  */
 static void nRF24L01_readOp(struct nRF24L01 *dev, uint8_t cmd, uint8_t *dataOut, size_t len)
 {
-    irq_lock_t lock;
-    LOCK_IRQ(lock);
-
     GPIO_resetPin(&dev->conf->CSN);
     dev->status = dev->conf->spi_sendrecv(cmd);
     for (size_t i = 0; i < len; ++i)
         dataOut[i] = dev->conf->spi_sendrecv(DUMMY);
     GPIO_setPin(&dev->conf->CSN);
-
-    UNLOCK_IRQ(lock);
 }
 
 static void nRF24L01_NOP(struct nRF24L01 *dev)

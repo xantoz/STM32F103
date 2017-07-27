@@ -11,6 +11,8 @@
 #include "IRQn.h"
 #include "debug.h"
 
+#define __NVIC_PRIO_BITS 4
+
 /**
  * @brief Memory mapped structure for Nested Vectored Interrupt Controller (NVIC)
  */
@@ -62,13 +64,13 @@ static inline bool NVIC_isInterruptActive     (const enum IRQn interrupt) { retu
 static inline void NVIC_setInterruptPriority(const enum IRQn interrupt, const uint8_t prio)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
-    NVIC.IP[interrupt] = prio;
+    NVIC.IP[interrupt] = (prio << (8 - __NVIC_PRIO_BITS));
 }
 
 static inline uint8_t NVIC_getInterruptPriority(const enum IRQn interrupt)
 {
     assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
-    return NVIC.IP[interrupt];
+    return NVIC.IP[interrupt] >> (8 - __NVIC_PRIO_BITS);
 }
 
 static inline void NVIC_triggerInterrupt(const enum IRQn interrupt)

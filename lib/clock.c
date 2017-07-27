@@ -411,7 +411,7 @@ void clock_setSysClockHSI_48MHz()
     RCC.CFGR |= GET_ADCPRE(((CLOCK_HSI_Hz/2)*12)/1/1); // Get by PCLK2 frequency
 
     // PLL configuration: (HSI/2) * 12 = 48 MHz
-    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
     RCC.CFGR |= (RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMUL12);
 
     // Enable PLL

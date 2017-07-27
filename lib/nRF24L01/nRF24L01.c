@@ -213,7 +213,6 @@ void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev)
 {
     assert(dev->conf->mode == nRF24L01_RX, "RX mode only function");
 
-    GPIO_resetPin(&dev->conf->CE); // Stop listening
     while (!(nRF24L01_getRegister8(dev, FIFO_STATUS_Reg) & FIFO_STATUS_RX_EMPTY))
     { // Until RX FIFO is empty
         uint8_t recv[dev->conf->payloadWidth];
@@ -223,7 +222,6 @@ void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev)
         if (dev->conf->rx_cb != NULL)
             dev->conf->rx_cb(dev, pipeNo, &recv, sizeof(recv));
     }
-    GPIO_setPin(&dev->conf->CE); // Start listening (in 130 us)
 }
 
 static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)

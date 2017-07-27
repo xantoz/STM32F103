@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "debug.h"
 #include "exti.h"
+#include "IRQn.h"
+#include "nvic.h"
 
 #include "spi.h"
 #include "nRF24L01/nRF24L01.h"
@@ -47,8 +49,12 @@ void main()
     EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
     GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     nRF24L01_init(&rfDev_opts, &rfDev);
+    nRF24L01_interrupt(&rfDev);
 
     snesCon_client_init(&controller);
+
+    NVIC_setInterruptPriority(EXTI2_IRQn, 4);
+    NVIC_setInterruptPriority(EXTI9_5_IRQn, 3);
 
     __enable_irq();
 

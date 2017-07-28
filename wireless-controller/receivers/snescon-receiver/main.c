@@ -41,8 +41,6 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    // TODO: set interrupt priorities: EXTI9_5 should be higher priority than EXTI2
-
     debugLeds_init();
 
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);

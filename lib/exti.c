@@ -35,7 +35,7 @@ static enum IRQn EXTI_pinNrToIRQn(uint8_t pin)
     {
         return EXTI9_5_IRQn;
     }
-    else if (9 <= pin && pin <= 15)
+    else if (10 <= pin && pin <= 15)
     {
         return EXTI15_10_IRQn;
     }

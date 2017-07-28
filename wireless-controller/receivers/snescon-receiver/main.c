@@ -41,6 +41,9 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
+    NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
+    NVIC_setInterruptPriority(snesCon_IRQn, 3);
+
     debugLeds_init();
 
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
@@ -51,21 +54,9 @@ void main()
 
     snesCon_client_init(&controller);
 
-    NVIC_setInterruptPriority(EXTI2_IRQn, 4);
-    NVIC_setInterruptPriority(EXTI9_5_IRQn, 3);
-
-    __enable_irq();
-
     GPIO_resetPin(&LED);
 
-    // while (true)
-    // {
-    //     GPIO_resetPin(&LED);
-    //     delay_us(1000);
-    //     print("boop\n");
-    //     GPIO_setPin(&LED);
-    //     delay_us(1000);
-    // }
+    __enable_irq();
 }
 
 void snesCon_IRQHandler()

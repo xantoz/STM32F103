@@ -6,6 +6,7 @@
 /* **** Settings for the SNES client **** */
 
 #define snesCon_IRQHandler EXTI9_5_IRQHandler
+#define snesCon_IRQn       EXTI9_5_IRQn
 #define snesCon_PINS \
     ((struct snesCon_pins){ .clock = {&GPIOB, 7}, .latch = {&GPIOB, 8}, .data  = {&GPIOB, 9} })
 
@@ -26,6 +27,7 @@ static const struct SPI_Options spi_opts = {
 
 #define nRF24L01_IRQ_PortPin ((struct GPIO_PortPin){&GPIOA, 2})
 #define nRF24L01_IRQHandler  EXTI2_IRQHandler
+#define nRF24L01_IRQn  EXTI2_IRQn
 static uint8_t spi_sendrecv(const uint8_t data);
 static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
 static const struct nRF24L01_Options rfDev_opts = {

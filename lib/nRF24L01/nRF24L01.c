@@ -46,6 +46,16 @@ static void nRF24L01_NOP(struct nRF24L01 *dev)
     nRF24L01_writeOp(dev, NOP, NULL, 0);
 }
 
+static void nRF24L01_flushTx(struct nRF24L01 *dev)
+{
+    nRF24L01_writeOp(dev, FLUSH_TX, NULL, 0);
+}
+
+static void nRF24L01_flushRx(struct nRF24L01 *dev)
+{
+    nRF24L01_writeOp(dev, FLUSH_RX, NULL, 0);
+}
+
 static void nRF24L01_writeTxPayload(struct nRF24L01 *dev, const uint8_t *data, size_t len)
 {
     assert(len <= 32);
@@ -157,13 +167,15 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     {
         nRF24L01_setRegister8(dev, CONFIG_Reg, (config | CONFIG_MASK_RX_DR) & ~CONFIG_PRIM_RX);
         delay_us(1500);                  // 1.5 ms to power up
-        delay_us(130);                   // 130 us to enter TX mode
-        GPIO_resetPin(&dev->conf->CE);
     }
     else
     {
         die("nRF24L01: Bad mode!");
     }
+
+    // Flush FIFOs here (actually before setting CE)
+    nRF24L01_flushTx(dev);
+    nRF24L01_flushRx(dev);
 
     return true;
 }

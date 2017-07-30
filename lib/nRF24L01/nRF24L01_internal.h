@@ -31,7 +31,7 @@ enum nRF24L01_Command
     //! 1 to 32 data bytes, LSByte first. A write operation always starts at byte 0.
     W_TX_PAYLOAD = 0b10100000,
     //! Flush TX FIFO, 0 data bytes
-    FLUSH_TX     = 0b11100010,
+    FLUSH_TX     = 0b11100001,
     //! Flush RX FIFO, 0 data bytes
     FLUSH_RX     = 0b11100010,
     //! Used for a PTX device. Repeatedly transmit last package as long as CE is high

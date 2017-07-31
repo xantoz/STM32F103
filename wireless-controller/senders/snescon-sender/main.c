@@ -29,6 +29,9 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+    GPIO_setPin(&LED);
+
     snesCon_read_init(&snesCon_def);
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     nRF24L01_init(&rfDev_opts, &rfDev);
@@ -43,4 +46,32 @@ void Systick_Handler()
 {
     const snesCon_btn_t buttonState = snesCon_read_tick(&snesCon_def);
     nRF24L01_send(&rfDev, &buttonState);
+
+    // if (buttonState & snesCon_BUTTON_Start)
+    //     GPIO_resetPin(&LED);
+    // else
+    //     GPIO_setPin(&LED);
+
+    static bool state = true;
+    if (buttonState & snesCon_BUTTON_A)
+        state = !state;
+    GPIO_setBit(&LED, state);
+
+    // static volatile bool hasAnyButton = false;
+    // static volatile bool hasStart = false;
+    // static volatile bool hasB = false;
+    // static volatile bool hasA = false;
+
+    // if (buttonState)
+    //     hasAnyButton = true;
+    // if (buttonState & snesCon_BUTTON_B)
+    //     hasB = true;
+    // if (buttonState & snesCon_BUTTON_A)
+    // {
+    //     // if (hasA == false)
+    //     //     print("A!!");
+    //     hasA = true;
+    // }
+    // if (buttonState & snesCon_BUTTON_Start)
+    //     hasStart = true;
 }

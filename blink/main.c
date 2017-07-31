@@ -46,25 +46,35 @@ void main(void)
 
     uint8_t cnt = 0;
     while (1) {
-        if (cnt % 16 == 0)
+        if (cnt % 24 == 0)
         {
             print("HSI\n");
             clock_setSysClockHSI();
         }
-        if (cnt % 16 == 3)
+        if (cnt % 24 == 3)
+        {
+            print("HSI_48Mhz\n");
+            clock_setSysClockHSI_48MHz();
+        }
+        if (cnt % 24 == 7)
         {
             print("HSI_24MHz\n");
             clock_setSysClockHSI_24MHz();
         }
-        if (cnt % 16 == 7)
+        if (cnt % 24 == 11)
         {
             print("HSE\n");
             clock_setSysClockHSE();
         }
-        if (cnt % 16 == 11)
+        if (cnt % 24 == 15)
         {
             print("HSE_24Mhz\n");
             clock_setSysClockHSE_24MHz();
+        }
+        if (cnt % 24 == 19)
+        {
+            print("HSE_48Mhz\n");
+            clock_setSysClockHSE_48MHz();
         }
         ++cnt;
 

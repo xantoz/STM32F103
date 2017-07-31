@@ -98,6 +98,16 @@ static void nRF24L01_modifyRegister8(struct nRF24L01 *dev, enum nRF24L01_Registe
     nRF24L01_setRegister8(dev, reg, value);
 }
 
+/**
+ * Helper function for nRF24L01_init
+ */
+static uint8_t nRF24L01_init_getRetransmitFlags(struct nRF24L01_Options const * const conf)
+{
+    const uint8_t count = conf->retransmit.count & 0x0f;
+    const uint8_t delay = conf->retransmit.delay & 0x0f;
+    return (delay << SETUP_RETR_ARD_Pos) | (count << SETUP_RETR_ARC_Pos);
+}
+
 // TODO: * add options for active selecting pipes and their addresses
 //       * add option to select TX addr
 //       * special mode where we keep spraying the same number until the next send operation, or we
@@ -109,6 +119,9 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
 
     assert(dev->conf->channel <= 127);
     assert(0 < dev->conf->payloadWidth && dev->conf->payloadWidth <= 32);
+    assert(dev->conf->retransmit.count <= 15);
+    assert(nRF24L01_Retransmit_Delay_250us <= dev->conf->retransmit.delay &&
+           dev->conf->retransmit.delay <= nRF24L01_Retransmit_Delay_4000us);
     assert(dev->conf->spi_sendrecv != NULL);
 
     // TODO: toggle the power line here to ensure it is truly reset? (will eat more GPIO... +
@@ -132,7 +145,8 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     // defaults) + We would like to be able to change the address settings on the fly, so needs to
     // be copied to the RW part of the struct
 
-    // TODO: apply retransmission setting from conf
+    uint8_t retransmit_flags = nRF24L01_init_getRetransmitFlags(dev->conf);
+    nRF24L01_setRegister8(dev, SETUP_RETR_Reg, retransmit_flags);
 
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->conf->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;

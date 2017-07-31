@@ -34,17 +34,17 @@ static const struct nRF24L01_Options rfDev_opts = {
     .CSN = {&GPIOA, 4},
     .CE  = {&GPIOA, 3},
 
-    .airDataRate    = nRF24L01_2Mbps,
-    .useACK         = nRF24L01_NoACK,
-    .useCRC         = nRF24L01_CRC,
-    .retransmission = nRF24L01_NoRetransmission,
-    .mode           = nRF24L01_RX,
+    .airDataRate      = nRF24L01_2Mbps,
+    .useACK           = nRF24L01_NoACK,
+    .useCRC           = nRF24L01_CRC,
+    .retransmit.count = 0,
+    .mode             = nRF24L01_RX,
 
-    .payloadWidth   = sizeof(snesCon_btn_t),
-    .channel        = 33,
+    .payloadWidth     = sizeof(snesCon_btn_t),
+    .channel          = 33,
 
-    .spi_sendrecv   = &spi_sendrecv,
-    .rx_cb          = &recv_message,
+    .spi_sendrecv     = &spi_sendrecv,
+    .rx_cb            = &recv_message,
 };
 
 #endif

@@ -176,6 +176,7 @@ enum nRF24L01_SETUP_AW_Flg
 enum nRF24L01_SETUP_RETR_Flg
 {
     SETUP_RETR_ARD        = 0b1111 << 4, //!< [rst: 0b0000] Auto retransmit delay
+    SETUP_RETR_ARD_Pos    = 4,
     SETUP_RETR_ARD_250us  = 0 << 4,
     SETUP_RETR_ARD_500us  = 1 << 4,
     SETUP_RETR_ARD_750us  = 2 << 4,
@@ -194,6 +195,7 @@ enum nRF24L01_SETUP_RETR_Flg
     SETUP_RETR_ARD_4000us = 15 << 4,
 
     SETUP_RETR_ARC                    = 0b1111 << 0, //!< [rst: 0b0011] Auto retransmit count
+    SETUP_RETR_ARC_Pos                = 0,
     SETUP_RETR_ARC_Retransmit_Disable = 0 << 0,
     SETUP_RETR_ARC_Retransmit_1       = 1 << 0,
     SETUP_RETR_ARC_Retransmit_2       = 2 << 0,

@@ -36,10 +36,24 @@ enum nRF24L01_UseCRC
     nRF24L01_NoCRC,
 };
 
-enum nRF24L01_Retransmission
+enum nRF24L01_Retransmit_Delay
 {
-    nRF24L01_Retransmission = 0,
-    nRF24L01_NoRetransmission,
+    nRF24L01_Retransmit_Delay_250us = 0,
+    nRF24L01_Retransmit_Delay_500us,
+    nRF24L01_Retransmit_Delay_750us,
+    nRF24L01_Retransmit_Delay_1000us,
+    nRF24L01_Retransmit_Delay_1250us,
+    nRF24L01_Retransmit_Delay_1500us,
+    nRF24L01_Retransmit_Delay_1750us,
+    nRF24L01_Retransmit_Delay_2000us,
+    nRF24L01_Retransmit_Delay_2250us,
+    nRF24L01_Retransmit_Delay_2500us,
+    nRF24L01_Retransmit_Delay_2750us,
+    nRF24L01_Retransmit_Delay_3000us,
+    nRF24L01_Retransmit_Delay_3250us,
+    nRF24L01_Retransmit_Delay_3500us,
+    nRF24L01_Retransmit_Delay_3750us,
+    nRF24L01_Retransmit_Delay_4000us,
 };
 
 enum nRF24L01_Mode
@@ -71,7 +85,11 @@ struct nRF24L01_Options
     enum nRF24L01_TXPower        power;
     enum nRF24L01_UseACK         useACK;
     enum nRF24L01_UseCRC         useCRC;
-    enum nRF24L01_Retransmission retransmission;
+    struct
+    {
+        uint8_t count; //!< 0 to 15. How many times to attempt retransmission. Use 0 to disable.
+        enum nRF24L01_Retransmit_Delay delay; //!< Retransmit delay. Only meaningful if retransmit.count > 0
+    } retransmit;
     enum nRF24L01_Mode           mode;                    //!< Mode of operation
 
     // TODO: change to 1 < payloadWidth <= 32

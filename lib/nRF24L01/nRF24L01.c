@@ -212,19 +212,6 @@ void nRF24L01_send(struct nRF24L01 *dev, const void *payload)
     UNLOCK_IRQ(lock);
 }
 
-static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
-{
-    assert(dev->conf->mode == nRF24L01_TX, "Got unexpected TX_DS interrupt (not in TX mode)");
-
-    // TODO: atomically set flag in device struct to notify that we are now free to send more?
-
-    if (dev->conf->tx_ds_cb != NULL)
-        dev->conf->tx_ds_cb(dev);
-
-    // Clear TX_DS flag
-    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_TX_DS);
-}
-
 void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev)
 {
     assert(dev->conf->mode == nRF24L01_RX, "RX mode only function");
@@ -250,8 +237,24 @@ static void nRF24L01_RX_DR_handler(struct nRF24L01 *dev)
     nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR);
 }
 
+static void nRF24L01_TX_DS_handler(struct nRF24L01 *dev)
+{
+    assert(dev->conf->mode == nRF24L01_TX, "Got unexpected TX_DS interrupt (not in TX mode)");
+
+    // TODO: atomically set flag in device struct to notify that we are now free to send more?
+
+    if (dev->conf->tx_ds_cb != NULL)
+        dev->conf->tx_ds_cb(dev);
+
+    // Clear TX_DS flag
+    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_TX_DS);
+}
+
 static void nRF24L01_MAX_RT_handler(struct nRF24L01 *dev)
 {
+    assert(dev->conf->mode == nRF24L01_TX, "Got unexpected MAX_RT interrupt (not in TX mode)");
+    assert(dev->conf->retransmit.count == 0, "Got unexpected MAX_RT interrupt (retransmit disabled)");
+
     // Call callback if any
     if (dev->conf->max_rt_cb != NULL)
         dev->conf->max_rt_cb(dev);

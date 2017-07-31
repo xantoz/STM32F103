@@ -148,6 +148,10 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     uint8_t retransmit_flags = nRF24L01_init_getRetransmitFlags(dev->conf);
     nRF24L01_setRegister8(dev, SETUP_RETR_Reg, retransmit_flags);
 
+    // Flush FIFOs here
+    nRF24L01_flushTx(dev);
+    nRF24L01_flushRx(dev);
+
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->conf->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;
     switch (dev->conf->power)
@@ -186,10 +190,6 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     {
         die("nRF24L01: Bad mode!");
     }
-
-    // Flush FIFOs here (actually before setting CE)
-    nRF24L01_flushTx(dev);
-    nRF24L01_flushRx(dev);
 
     return true;
 }

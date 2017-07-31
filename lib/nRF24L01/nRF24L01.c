@@ -136,7 +136,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
 
     delay_us(10300); // 10.3 ms for Power on reset (when powering on for the first time) (TODO: move out of this fn)
 
-    nRF24L01_setRegister8(dev, CONFIG_REG, 0);              // Ensure nRF24L01 is in power down state
+    nRF24L01_setRegister8(dev, CONFIG_Reg, 0);              // Ensure nRF24L01 is in power down state
 
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
     nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : EN_AA_ENAA_None);

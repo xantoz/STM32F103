@@ -99,15 +99,16 @@ static INLINE void __set_FAULTMASK(uint32_t faultMask)
     asm ("msr FAULTMASK, %0" : : "r" (faultMask) );
 }
 #else
+// Use the fallbacks implemented in ASM
 extern uint32_t __get_BASEPRI();
-extern void  __set_BASEPRI(uint32_t primask);
+extern void     __set_BASEPRI(uint32_t);
 extern uint32_t __get_PRIMASK();
-extern void  __set_PRIMASK(uint32_t primask);
+extern void     __set_PRIMASK(uint32_t);
 extern uint32_t __get_FAULTMASK();
-extern void  __set_FAULTMASK(uint32_t primask);
+extern void     __set_FAULTMASK(uint32_t);
 #endif
 extern uint32_t __get_MSP();
-extern void __set_MSP(uint32_t topOfMainStack);
+extern void     __set_MSP(uint32_t topOfMainStack);
 
 /**
  * @defgroup Re-entrant IRQ lock functions

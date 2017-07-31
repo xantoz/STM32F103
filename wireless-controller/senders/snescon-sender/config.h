@@ -2,11 +2,7 @@
 #define _SNESCON_SENDER_CONFIG_
 
 /* **** Settings for the SNES controller **** */
-
-// We need to poll the controller at at least double the frequency the console usually polls it
-// (NTSC SNES/SFC usually polls at 60 Hz), as there is no synchronization between sender and
-// receiver.
-#define POLLFREQ 120
+#define POLLFREQ 1200
 
 static const struct snesCon_pins snesCon_def = {
     .clock = {&GPIOB, 7},

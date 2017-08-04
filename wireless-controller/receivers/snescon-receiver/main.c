@@ -21,12 +21,6 @@ struct snesCon_client controller = {
     .pinDef = snesCon_PINS
 };
 
-static uint8_t spi_sendrecv(const uint8_t data)
-{
-    SPI_send(&nRF24L01_SPI, data);
-    return SPI_recv(&nRF24L01_SPI);
-}
-
 void main()
 {
     clock_setSysClockHSE_24MHz();
@@ -49,7 +43,7 @@ void main()
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
     GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    nRF24L01_init(&rfDev_opts, &rfDev);
+    nRF24L01_init(&rfDev_opts_rx, &rfDev);
     nRF24L01_interrupt(&rfDev);
 
     snesCon_client_init(&controller);
@@ -82,8 +76,8 @@ void nRF24L01_IRQHandler(void)
     EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
 }
 
-static void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
-                         const void *data, size_t len)
+void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
+                  const void *data, size_t len)
 {
     assert(len == sizeof(snesCon_btn_t));
     const snesCon_btn_t msg = *((snesCon_btn_t*)data);

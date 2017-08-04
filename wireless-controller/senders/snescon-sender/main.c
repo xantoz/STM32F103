@@ -13,12 +13,6 @@
 
 struct nRF24L01 rfDev;
 
-static uint8_t spi_sendrecv(const uint8_t data)
-{
-    SPI_send(&nRF24L01_SPI, data);
-    return SPI_recv(&nRF24L01_SPI);
-}
-
 void main()
 {
     clock_setSysClockHSE_24MHz();
@@ -31,7 +25,7 @@ void main()
 
     snesCon_read_init(&snesCon_def);
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
-    nRF24L01_init(&rfDev_opts, &rfDev);
+    nRF24L01_init(&rfDev_opts_tx, &rfDev);
 
     if (!systick_startSysTick_us(DIV_ROUND_CLOSEST(1000000u, POLLFREQ)))
         die("Could not set up systick");

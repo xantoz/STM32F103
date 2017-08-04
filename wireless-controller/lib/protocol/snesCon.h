@@ -10,6 +10,8 @@
 #include "types.h"
 #include "gpio.h"
 
+#include "common.h"
+
 /**
  * @brief SNES Controller GPIO pin definition structure.
  */
@@ -23,7 +25,7 @@ struct snesCon_pins
 /**
  * @brief An unsigned integer large enough to store the state of all buttons on an SNES controller.
  */
-typedef uint16_t snesCon_btn_t;
+typedef btn_t snesCon_btn_t;
 
 /**
  * @brief Button definitions for SNES controller.

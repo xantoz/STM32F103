@@ -10,11 +10,13 @@
 #include "types.h"
 #include "gpio.h"
 
+#include "common.h"
+
 /**
  * @brief An unsigned integer large enough to store the state of all buttons on a PCE controller
  *        (6-button pads included)
  */
-typedef uint16_t pceCon_btn_t;
+typedef btn_t pceCon_btn_t;
 
 /**
  * @brief Button definitions for PCE controller.

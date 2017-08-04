@@ -15,10 +15,11 @@ CC       = arm-none-eabi-gcc
 LD       = arm-none-eabi-ld
 OC       = arm-none-eabi-objcopy
 CPUFLAGS = -mcpu=cortex-m3 -march=armv7-m -mthumb
-CPPFLAGS = $(addprefix -I,$(SOURCE_DIRS))
+INCLUDES = $(addprefix -I,$(SOURCE_DIRS))
+CPPFLAGS = $(INCLUDES) -DSTM32F10X_MD
 DEBUG    ?= -g
-ASFLAGS  = $(DEBUG) $(CPUFLAGS) $(CPPFLAGS)
-CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -DSTM32F10X_MD -nostdinc -fshort-enums -fno-hosted -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits
+ASFLAGS  = $(DEBUG) $(CPUFLAGS) $(INCLUDES)
+CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -nostdinc -fshort-enums -fno-hosted -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits
 LDFLAGS  = '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  = -Obinary --strip-unneeded
 

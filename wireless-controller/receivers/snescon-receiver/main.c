@@ -44,7 +44,6 @@ void main()
     EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
     GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     nRF24L01_init(&rfDev_opts_rx, &rfDev);
-    nRF24L01_interrupt(&rfDev);
 
     snesCon_client_init(&controller);
 

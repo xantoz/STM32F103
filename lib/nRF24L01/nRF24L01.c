@@ -150,10 +150,6 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     uint8_t retransmit_flags = nRF24L01_init_getRetransmitFlags(dev->conf);
     nRF24L01_setRegister8(dev, SETUP_RETR_Reg, retransmit_flags);
 
-    // Flush FIFOs here
-    nRF24L01_flushTx(dev);
-    nRF24L01_flushRx(dev);
-
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->conf->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;
     switch (dev->conf->power)
@@ -172,6 +168,11 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
             break;
     }
     nRF24L01_setRegister8(dev, RF_SETUP_Reg, rf_setup);
+
+    // Flush FIFOs here and reset any pending interrupts
+    nRF24L01_flushTx(dev);
+    nRF24L01_flushRx(dev);
+    nRF24L01_setRegister8(dev, STATUS_Reg, STATUS_RX_DR | STATUS_TX_DS | STATUS_MAX_RT);
 
     uint8_t config = CONFIG_PWR_UP;
     if (dev->conf->useCRC == nRF24L01_CRC)

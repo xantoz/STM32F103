@@ -45,9 +45,20 @@ bool pceCon_client_init(struct pceCon_client *client)
     return true;
 }
 
-void pceCon_client_update(struct pceCon_client *client, pceCon_btn_t btn)
+void pceCon_client_update(struct pceCon_client *client, const pceCon_btn_t btn)
 {
-    client->btn = ~btn; // Invert since controller buttons are active low
+    // Since the order of buttons in enum pceCon_buttons is laid out in an order that is meant to
+    // map conveniently to enum snesCon_button, the bit order of the D-pad buttons (UDLR) in btn
+    // does not correspond to the order that we shall be using when outputting them to 1Y,2Y,3Y,4Y
+    // (URDL). We remap the D-PAD buttons here. That way, the more time-sensitive code that needs to
+    // respond to interrupts can be written more effectively.
+    pceCon_btn_t remapBtn = btn & 0xff0f;
+    remapBtn |= (((!!(btn & pceCon_BUTTON_Up))    << 4) |
+                 ((!!(btn & pceCon_BUTTON_Right)) << 5) |
+                 ((!!(btn & pceCon_BUTTON_Down))  << 6) |
+                 ((!!(btn & pceCon_BUTTON_Left))  << 7));
+
+    client->btn = ~remapBtn; // Invert since controller buttons are active low
 }
 
 /**
@@ -75,17 +86,17 @@ static INLINE void pceCon_client_setOutputs(struct pceCon_client *client, uint8_
     GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
 }
 
-static INLINE void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
+static void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
 {
     if (GPIO_read(&client->pin.select))
     {
         // select pin high == I II Start Select
-        pceCon_client_setOutputs(client, (client->btn >> 4) & 0x0f);
+        pceCon_client_setOutputs(client, client->btn & 0x0f);
     }
     else
     {
         // select pin low == DPAD
-        pceCon_client_setOutputs(client, client->btn & 0x0f);
+        pceCon_client_setOutputs(client, (client->btn >> 4) & 0x0f);
     }
 }
 

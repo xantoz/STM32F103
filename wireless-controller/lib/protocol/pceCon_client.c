@@ -10,7 +10,7 @@ bool pceCon_client_init(struct pceCon_client *client)
 
     // remember to set pins up to work in 5V tolerant mode! (no pull-ups)
 
-    struct GPIO_PortPin *outputs[] = {
+    struct GPIO_PortPin const * const outputs[] = {
         &client->pin.output1Y,
         &client->pin.output2Y,
         &client->pin.output3Y,
@@ -53,7 +53,7 @@ void pceCon_client_update(struct pceCon_client *client, pceCon_btn_t btn)
 /**
  * @brief Helper that sets all output pins to low
  */
-static void pceCon_client_resetOutputs(struct pceCon_client *client)
+static inline void pceCon_client_resetOutputs(struct pceCon_client *client)
 {
     GPIO_resetPin(&client->pin.output1Y);
     GPIO_resetPin(&client->pin.output2Y);
@@ -67,7 +67,7 @@ static void pceCon_client_resetOutputs(struct pceCon_client *client)
  * @param client   [in] pceCon client object
  * @param settings [in] Reflect 4 LSB on output pins
  */
-static void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t settings)
+static INLINE void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t settings)
 {
     GPIO_setBit(&client->pin.output1Y, settings & (1 << 0));
     GPIO_setBit(&client->pin.output2Y, settings & (1 << 1));
@@ -75,7 +75,7 @@ static void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t setti
     GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
 }
 
-static void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
+static INLINE void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
 {
     if (GPIO_read(&client->pin.select))
     {
@@ -89,7 +89,7 @@ static void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
     }
 }
 
-static void pceCon_client_driveOutputs_6btnpad(struct pceCon_client *client)
+static inline void pceCon_client_driveOutputs_6btnpad(struct pceCon_client *client)
 {
     if (client->pollCtr & 1)
     {
@@ -131,7 +131,7 @@ void pceCon_client_enable(struct pceCon_client *client)
     irq_lock_t lock;
 
     LOCK_IRQ(lock);
-    if (!GPIO_read(&client->pin.enable))
+    if (!GPIO_read(&client->pin.enable))                    // Active low
     {
         ++client->pollCtr;
         client->enabled = true;

@@ -23,7 +23,7 @@ bool pceCon_client_init(struct pceCon_client *client)
         GPIO_setMODE_setCNF(outputs[i], GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPOpenDrain);
     }
 
-    client->btn = 0xbeef;
+    client->btn = 0;
     client->enabled = false;
     client->pollCtr = 0;
 

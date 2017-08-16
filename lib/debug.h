@@ -125,7 +125,7 @@ void die(const char *s);
 #define build_assert(...)
 #endif /* __GNUC__ */
 
-#ifdef __GNUC__
+#if 0
 __attribute__((error("ASSERTION ALWAYS FALSE")))
 void __compiletime_assert_error(void);
 

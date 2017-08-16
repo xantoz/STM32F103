@@ -59,13 +59,13 @@ static const uint32_t MHz = 1000000; // Convert from Hz to MHz
 // TODO: define similar macro GET_PCLK1 to go from HCLK freq to PPRE1 divisor flag
 
 // Returns the frequency of PLLCLK in Hz (by reading back register settings)
-static uint32_t getPLLFreq(uint32_t cfgr)
+static uint32_t getPLLFreq(const uint32_t cfgr)
 {
-    uint32_t pllsrc = cfgr & RCC_CFGR_PLLSRC;
+    const uint32_t pllsrc = cfgr & RCC_CFGR_PLLSRC;
     uint32_t pllsrc_freq;
     if (pllsrc == RCC_CFGR_PLLSRC_HSE)
     {
-        uint32_t pllxtpre = cfgr & RCC_CFGR_PLLXTPRE;
+        const uint32_t pllxtpre = cfgr & RCC_CFGR_PLLXTPRE;
         pllsrc_freq = (pllxtpre == RCC_CFGR_PLLXTPRE_HSE_Div2) ? CLOCK_HSE_Hz/2 : CLOCK_HSE_Hz;
     }
     else /* (pllsrc == RCC_CFGR_PLLSRC_HSI_Div2) */
@@ -75,8 +75,8 @@ static uint32_t getPLLFreq(uint32_t cfgr)
 
     // Use the property that the multiplication is the integer value of the PLLMUL field + 2 (with
     // the exception of 0b1111, which is an extra way to PLLMUL16)
-    uint32_t pllmul = cfgr & RCC_CFGR_PLLMUL_Msk;
-    uint32_t pllmul_multiplicand = (pllmul == RCC_CFGR_PLLMUL16_ALT) ? 16 : (pllmul >> RCC_CFGR_PLLMUL_Pos) + 2;
+    const uint32_t pllmul = cfgr & RCC_CFGR_PLLMUL_Msk;
+    const uint32_t pllmul_multiplicand = (pllmul == RCC_CFGR_PLLMUL16_ALT) ? 16 : (pllmul >> RCC_CFGR_PLLMUL_Pos) + 2;
 
     return pllsrc_freq * pllmul_multiplicand;
 }
@@ -84,10 +84,10 @@ static uint32_t getPLLFreq(uint32_t cfgr)
 // Updates the values in g_clock by reading back register settings
 static void updateClockFreqs()
 {
-    uint32_t cfgr = RCC.CFGR; // Take a snapshot of the register, get rid of volatile accesses
+    const uint32_t cfgr = RCC.CFGR; // Take a snapshot of the register, get rid of volatile accesses
 
     // Get SYSCLK frequency
-    uint32_t sws = cfgr & RCC_CFGR_SWS;
+    const uint32_t sws = cfgr & RCC_CFGR_SWS;
     g_clock.sysclkFreq =
         (sws == RCC_CFGR_SWS_HSI) ? CLOCK_HSI_Hz :
         (sws == RCC_CFGR_SWS_HSE) ? CLOCK_HSE_Hz :
@@ -95,8 +95,8 @@ static void updateClockFreqs()
     assert_always(g_clock.sysclkFreq != 0, "read undefined value for RCC_CFGR SWS");
 
     // Get HCLK (AHB) frequency
-    uint32_t hpre = cfgr & RCC_CFGR_HPRE;
-    uint32_t hpre_div =
+    const uint32_t hpre = cfgr & RCC_CFGR_HPRE;
+    const uint32_t hpre_div =
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div1)   ? 1 :
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div2)   ? 2 :
         (hpre == RCC_CFGR_HPRE_SYSCLK_Div4)   ? 4 :
@@ -110,8 +110,8 @@ static void updateClockFreqs()
     g_clock.hclkFreq = g_clock.sysclkFreq/hpre_div;
 
     // Get PCLK2 (APB2) frequency
-    uint32_t ppre2 = cfgr & RCC_CFGR_PPRE2;
-    uint32_t ppre2_div =
+    const uint32_t ppre2 = cfgr & RCC_CFGR_PPRE2;
+    const uint32_t ppre2_div =
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div1)  ? 1 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div2)  ? 2 :
         (ppre2 == RCC_CFGR_PPRE2_HCLK_Div4)  ? 4 :
@@ -124,8 +124,8 @@ static void updateClockFreqs()
     g_clock.timerFreq = (ppre2_div == 1) ? g_clock.pclk2Freq : g_clock.pclk2Freq*2;
 
     // Get PCLK1 (APB1) frequency
-    uint32_t ppre1 = cfgr & RCC_CFGR_PPRE1;
-    uint32_t ppre1_div =
+    const uint32_t ppre1 = cfgr & RCC_CFGR_PPRE1;
+    const uint32_t ppre1_div =
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div1)  ? 1 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div2)  ? 2 :
         (ppre1 == RCC_CFGR_PPRE1_HCLK_Div4)  ? 4 :
@@ -135,8 +135,8 @@ static void updateClockFreqs()
     g_clock.pclk1Freq = g_clock.hclkFreq/ppre1_div;
 
     // Get ADCCLK frequency
-    uint32_t adcpre = cfgr & RCC_CFGR_ADCPRE;
-    uint32_t adcClk_div =  // The ADCPRE bits are exhaustive, so no need to check for PCLK2_Div2
+    const uint32_t adcpre = cfgr & RCC_CFGR_ADCPRE;
+    const uint32_t adcClk_div =  // The ADCPRE bits are exhaustive, so no need to check for PCLK2_Div2
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div8) ? 8 :
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div6) ? 6 :
         (adcpre == RCC_CFGR_ADCPRE_PCLK2_Div4) ? 4 : 2;
@@ -144,7 +144,7 @@ static void updateClockFreqs()
     assert_always(g_clock.adcClkFreq <= ADCCLK_MAX, "ERROR: ADCCLK > 14 MHz");
 
     // Get SysTick frequency
-    uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;
+    const uint32_t systick_clksource = SysTick.CTRL & SysTick_CTRL_CLKSOURCE;
     g_clock.sysTickFreq = g_clock.hclkFreq;
     if (systick_clksource == SysTick_CTRL_CLKSOURCE_HCLK_Div8)
         g_clock.sysTickFreq /= 8;

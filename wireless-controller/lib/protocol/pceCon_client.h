@@ -3,6 +3,9 @@
  *
  * @brief Routines to implement the client side (the controller) of the PCE controller protocol.
  *        It is pretty much an implementation of 74HC157 in software.
+ *
+ * @note To achieve 5V levels, with our 3.3V MCU, the ports (need to be 5V tolerant!) are set up in
+ *       open drain mode and then used with external pull-ups to 5V.
  */
 
 #ifndef _PCECON_CLIENT_
@@ -27,10 +30,10 @@ struct pceCon_client
     {
         struct GPIO_PortPin enable;   //!< Enable (active low)
         struct GPIO_PortPin select;   //!< Select
-        struct GPIO_PortPin output1Y; //!< up or I (regular 2-button pad)
-        struct GPIO_PortPin output2Y; //!< right or II (regular 2-button pad)
-        struct GPIO_PortPin output3Y; //!< down or select (regular 2-button pad)
-        struct GPIO_PortPin output4Y; //!< left or start (regular 2-button pad)
+        struct GPIO_PortPin output1Y; //!< up or I (regular 2-button pad)        (needs external pull-up)
+        struct GPIO_PortPin output2Y; //!< right or II (regular 2-button pad)    (needs external pull-up)
+        struct GPIO_PortPin output3Y; //!< down or select (regular 2-button pad) (needs external pull-up)
+        struct GPIO_PortPin output4Y; //!< left or start (regular 2-button pad)  (needs external pull-up)
     } pin;
 };
 

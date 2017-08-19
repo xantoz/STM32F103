@@ -88,14 +88,14 @@ static INLINE void pceCon_client_setOutputs(struct pceCon_client *client, uint8_
 
 static void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
 {
-    if (GPIO_read(&client->pin.select))
+    if (!GPIO_read(&client->pin.select))
     {
-        // select pin high == I II Start Select
+        // select pin low == I II Start Select
         pceCon_client_setOutputs(client, client->btn & 0x0f);
     }
     else
     {
-        // select pin low == DPAD
+        // select pin high == DPAD
         pceCon_client_setOutputs(client, (client->btn >> 4) & 0x0f);
     }
 }

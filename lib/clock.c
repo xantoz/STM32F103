@@ -433,6 +433,51 @@ void clock_setSysClockHSI_48MHz()
     UNLOCK_IRQ(lock);
 }
 
+void clock_setSysClockHSE_72MHz()
+{
+    CASSERT_SYSCLKFREQ(CLOCK_HSE_Hz*9);
+
+    irq_lock_t lock;
+    LOCK_IRQ(lock);
+
+    startHSE();
+
+    FLASH.ACR |= FLASH_ACR_PRFTBE;    // Enable prefetch buffer
+    FLASH.ACR &= ~FLASH_ACR_LATENCY;
+    FLASH.ACR |= GET_FLASH_ACR_LATENCY(CLOCK_HSE_Hz*9);
+
+    RCC.CFGR &= ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE2 | RCC_CFGR_PPRE1);
+    RCC.CFGR |= RCC_CFGR_HPRE_SYSCLK_Div1;     // HCLK = SYSCLK
+    RCC.CFGR |= RCC_CFGR_PPRE2_HCLK_Div1;      // PCLK2 = HCLK
+    RCC.CFGR |= RCC_CFGR_PPRE1_HCLK_Div2;      // PCLK1 = HCLK/2 = 36 MHz (should not be more than 36 MHz)
+
+    // Set ADCPRE to suitable setting, so that it is not more than 14 MHz
+    RCC.CFGR &= ~(RCC_CFGR_ADCPRE);
+    RCC.CFGR |= GET_ADCPRE((CLOCK_HSE_Hz*9)/1/1); // Get by PCLK2 frequency
+
+    // PLL configuration: HSE * 9 = 72 MHz
+    RCC.CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
+    RCC.CFGR |= (RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLXTPRE_HSE_Div1 | RCC_CFGR_PLLMUL9);
+
+    // Enable PLL
+    RCC.CR |= RCC_CR_PLLON;
+
+    // Wait till PLL is ready
+    while ((RCC.CR & RCC_CR_PLLRDY) == 0);
+
+    // Select PLL as system clock source
+    RCC.CFGR &= ~(RCC_CFGR_SW);
+    RCC.CFGR |= RCC_CFGR_SW_PLL;
+
+    // Wait till PLL is used as system clock source
+    while ((RCC.CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+
+    // Update the clock global variables to reflect changes
+    updateClockFreqs();
+
+    UNLOCK_IRQ(lock);
+}
+
 void clock_setSysTick_HCLK()
 {
     irq_lock_t lock;

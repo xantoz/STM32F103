@@ -88,6 +88,16 @@ void clock_setSysClockHSE_48MHz();
 void clock_setSysClockHSI_48MHz();
 
 /**
+ * @brief   Set SYSCLK to 48 MHz via PLLCLK and HSE.
+ *
+ * @details Sets SYSCLK = HSE*9, HCLK = SYSCLK/1, PCLK1 = HCLK/2, PCLK2 = HCLK/1, ADCPRE, and
+ *          adjusts FLASH parameters.
+ *
+ * @note    Updates g_clock
+ */
+void clock_setSysClockHSE_72MHz();
+
+/**
  * @brief   Set SYSCLK to HSI
  *
  * @details Sets HCLK = SYSCLK/1, PCLK2 = HCLK/1, PCLK1 = HCLK/1, ADCPRE, and adjusts

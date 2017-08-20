@@ -103,8 +103,8 @@ void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
               ((!!(msg & pceCon_BUTTON_Right))  << 6) |
               ((!!(msg & pceCon_BUTTON_Down))   << 5) |
               ((!!(msg & pceCon_BUTTON_Left))   << 4) |
-              ((!!(msg & pceCon_BUTTON_I))      << 3) |
-              ((!!(msg & pceCon_BUTTON_II))     << 2) |
+              ((!!(msg & pceCon_BUTTON_II))     << 3) |
+              ((!!(msg & pceCon_BUTTON_I))      << 2) |
               ((!!(msg & pceCon_BUTTON_Select)) << 1) |
               ((!!(msg & pceCon_BUTTON_Run))    << 0));
 

@@ -13,7 +13,7 @@
 /* **** Settings for the nRF24L01 **** */
 
 #define nRF24L01_SPI         SPI1
-#define nRF24L01_SPI_MAXFREQ 8000000
+#define nRF24L01_SPI_MAXFREQ 9000000
 static uint8_t spi_sendrecv(const uint8_t data)
 {
     SPI_send(&nRF24L01_SPI, data);

@@ -20,7 +20,7 @@ bool pceCon_client_init(struct pceCon_client *client)
     for (unsigned i = 0; i < ARRAYLEN(outputs); ++i)
     {
         GPIO_resetPin(outputs[i]);
-        GPIO_setMODE_setCNF(outputs[i], GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPOpenDrain);
+        GPIO_setMODE_setCNF(outputs[i], GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     }
 
     client->btn = 0;

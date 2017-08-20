@@ -53,7 +53,7 @@ void main()
         GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
                             GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
     GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_BOTH);
+    EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_RISING);
     GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     EXTI_enableInterrupt(&SELECT_PortPin, EXTI_BOTH);
 
@@ -82,12 +82,11 @@ void pceCon_IRQHandler()
     const uint32_t odr = GPIOB.ODR;
     GPIOB.ODR = (odr & OUTPUT_Msk) | (out << OUTPUT_Pos);
 
-    const uint32_t pr = EXTI.PR;
-    if (pr & SELECT_Msk)
+    if (EXTI.PR & SELECT_Msk)
     {
         EXTI.PR = SELECT_Msk;
     }
-    if (pr & ENABLE_Msk)
+    if (EXTI.PR & ENABLE_Msk)
     {
         ++cntr;
         EXTI.PR = ENABLE_Msk;

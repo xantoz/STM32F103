@@ -8,12 +8,14 @@
 
 /* These variables are used to pass memory locations from the linker script to our code. */
 extern uint8_t _estack[];
-extern uint8_t _etext[];
 extern uint8_t _sidata[];
 extern uint8_t _sdata[];
 extern uint8_t _edata[];
 extern uint8_t _sbss[];
 extern uint8_t _ebss[];
+extern uint8_t _sifastcode[];
+extern uint8_t _sfastcode[];
+extern uint8_t _efastcode[];
 
 void deadend(void);                                         // neverending handler
 void Reset_Handler(void);
@@ -193,9 +195,16 @@ void Reset_Handler(void)
 {
     __disable_irq();
 
+    uint8_t *mirror;
+    uint8_t *ram;
+
+    mirror = _sifastcode;
+    ram = _sfastcode;
+    while (ram < _efastcode) *(ram++) = *(mirror++);
+
     // copy initial values of variables (non-const globals and static variables) from FLASH to RAM
-    uint8_t *mirror = _sidata;                             //copy from here
-    uint8_t *ram = _sdata;                                 //copy to here
+    mirror = _sidata;
+    ram = _sdata;
     while (ram < _edata) *(ram++) = *(mirror++);
 
     // set uninitialized globals (and globals initialized to zero) to zero

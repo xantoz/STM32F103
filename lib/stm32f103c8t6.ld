@@ -75,7 +75,7 @@ SECTIONS {
 
     /* .text section contains code and readonly (const) globals */
     .text : {
-         . = ALIGN(4);
+        . = ALIGN(4);
         *(.text)
         *(.text.*)
         *(.rodata)                 /* read-only data (constants) */
@@ -83,9 +83,17 @@ SECTIONS {
         *(.glue_7)
         *(.glue_7t)
         . = ALIGN(4);
-        _etext = .;
-        _sidata = _etext; /* Start of initial values of .data stored in flash*/
     } >flash
+
+    /* Sections for functions that should reside in RAM */
+    .fastcode : {
+        . = ALIGN(4);
+        _sifastcode = LOADADDR(.fastcode);
+        _sfastcode = .;
+        /* Functions places in section .text.fastcode */
+        *(.text.fastcode)
+        _efastcode = .;
+    } >ram AT >flash
 
     /* data section contains read-write (non-const) globals and static variables
      * initialized to a value other than zero. The addresses are mapped to RAM
@@ -93,14 +101,15 @@ SECTIONS {
      * in FLASH (because we need to have the values at startup). Bootstrap code
      * will copy the values from FLASH to RAM. Note that bootstrap code wants this
      * section to follow the text section directly. */
-    .data : AT(_sidata) {
-         . = ALIGN(4);
+    .data : {
+        . = ALIGN(4);
+        _sidata = LOADADDR(.data);
         _sdata = .;     /* Remember position (=start of initialized RAM) */
         KEEP(*(.data))
         KEEP(*(.data.*))
         . = ALIGN(4);
         _edata = .;     /* Remember position (=end of initialized RAM) */
-    } >ram
+    } >ram AT >flash
 
     /* bss section contains globals and static variables either initialized to zero
      * or not initialized at all. These are not mirrored in FLASH. Their memory

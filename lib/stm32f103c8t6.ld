@@ -73,6 +73,16 @@ SECTIONS {
         . = ALIGN(4);
     } >flash
 
+    /* Sections for functions that should reside in RAM */
+    .fastcode : {
+        . = ALIGN(4);
+        _sifastcode = LOADADDR(.fastcode);
+        _sfastcode = .;
+        /* Functions places in section .text.fastcode */
+        *(.text.fastcode)
+        _efastcode = .;
+    } >ram AT >flash
+
     /* .text section contains code and readonly (const) globals */
     .text : {
         . = ALIGN(4);
@@ -84,16 +94,6 @@ SECTIONS {
         *(.glue_7t)
         . = ALIGN(4);
     } >flash
-
-    /* Sections for functions that should reside in RAM */
-    .fastcode : {
-        . = ALIGN(4);
-        _sifastcode = LOADADDR(.fastcode);
-        _sfastcode = .;
-        /* Functions places in section .text.fastcode */
-        *(.text.fastcode)
-        _efastcode = .;
-    } >ram AT >flash
 
     /* data section contains read-write (non-const) globals and static variables
      * initialized to a value other than zero. The addresses are mapped to RAM

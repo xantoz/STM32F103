@@ -1,0 +1,116 @@
+/**
+ * @file main.c
+ *
+ * @brief A PCE controller receiver with a faster, hard-coded, implementation of the protocol,
+ *        for lower interrupt latency.
+ */
+
+#include "gpio.h"
+#include "rcc.h"
+#include "clock.h"
+#include "utils.h"
+#include "debug.h"
+#include "exti.h"
+#include "IRQn.h"
+#include "nvic.h"
+
+#include "spi.h"
+#include "nRF24L01/nRF24L01.h"
+
+#include "protocol/pceCon.h"
+#include "common/debugLeds.h"
+
+#include "config.h"
+
+struct nRF24L01 rfDev;
+
+void main()
+{
+    clock_setSysClockHSE_72MHz();
+
+    __disable_irq();
+
+    delay_us(1000000);
+
+    // Enable clock to GPIOA & GPIOB & GPIOC
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
+    RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
+
+    // Disable JTAG (but keep SWD) to free PB3 and PB4 for GPIO use
+    AFIO.MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
+
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+
+    NVIC_setInterruptPriority(nRF24L01_IRQn, nRF24L01_IRQ_Priority);
+    NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
+
+    SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
+    EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
+    GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    nRF24L01_init(&rfDev_opts_rx, &rfDev);
+
+    for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
+        GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
+                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);
+    GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_BOTH);
+    GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI_enableInterrupt(&SELECT_PortPin, EXTI_BOTH);
+
+    debugLeds_init();
+
+    GPIO_resetPin(&LED);
+
+    __enable_irq();
+}
+
+void nRF24L01_IRQHandler(void)
+{
+    nRF24L01_interrupt(&rfDev);
+    EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
+}
+
+static uint16_t g_btn = 0;
+void pceCon_IRQHandler()
+{
+    const uint32_t ENABLE_Msk = (0x1 << ENABLE_PortPin.pin);
+    const uint32_t SELECT_Msk = (0x1 << SELECT_PortPin.pin);
+    static uint32_t cntr = 0;
+
+    const uint32_t shift = (GPIO_read(&GPIOB, 8)) ? 4 : 0;
+    const uint32_t out = (g_btn >> shift) & 0x0f;
+    const uint32_t odr = GPIOB.ODR;
+    GPIOB.ODR = (odr & OUTPUT_Msk) | (out << OUTPUT_Pos);
+
+    const uint32_t pr = EXTI.PR;
+    if (pr & SELECT_Msk)
+    {
+        EXTI.PR = SELECT_Msk;
+    }
+    if (pr & ENABLE_Msk)
+    {
+        ++cntr;
+        EXTI.PR = ENABLE_Msk;
+    }
+}
+
+void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
+                         const void *data, size_t len)
+{
+    assert(len == sizeof(pceCon_btn_t));
+    const pceCon_btn_t msg = *((pceCon_btn_t*)data);
+    g_btn = ~(((!!(msg & pceCon_BUTTON_Up))     << 7) |
+              ((!!(msg & pceCon_BUTTON_Right))  << 6) |
+              ((!!(msg & pceCon_BUTTON_Down))   << 5) |
+              ((!!(msg & pceCon_BUTTON_Left))   << 4) |
+              ((!!(msg & pceCon_BUTTON_I))      << 3) |
+              ((!!(msg & pceCon_BUTTON_II))     << 2) |
+              ((!!(msg & pceCon_BUTTON_Select)) << 1) |
+              ((!!(msg & pceCon_BUTTON_Run))    << 0));
+
+    debugLeds_update(msg);
+
+    static bool state = true;
+    GPIO_setBit(&LED, state);
+    state = !state;
+}

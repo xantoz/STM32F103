@@ -19,7 +19,8 @@ struct nRF24L01 rfDev;
 
 void main()
 {
-    clock_setSysClockHSE_24MHz();
+    // clock_setSysClockHSE_24MHz();
+    clock_setSysClockHSE_72MHz();
 
     __disable_irq();
 
@@ -35,7 +36,7 @@ void main()
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
     NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
-    NVIC_setInterruptPriority(pceCon_IRQn, 3);
+    NVIC_setInterruptPriority(pceCon_IRQn, 0);
 
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
@@ -51,53 +52,28 @@ void main()
     __enable_irq();
 }
 
+void nRF24L01_IRQHandler(void)
+{
+    nRF24L01_interrupt(&rfDev);
+    EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
+}
+
+IN_SECTION(".text.fastcode")
 void pceCon_IRQHandler()
 {
     const uint32_t ENABLE_Msk = (0x1 << controller.pin.enable.pin);
     const uint32_t SELECT_Msk = (0x1 << controller.pin.select.pin);
 
-    if (EXTI.PR & ENABLE_Msk)
-    {
-        pceCon_client_enable(&controller);
-        EXTI.PR = ENABLE_Msk;
-    }
     if (EXTI.PR & SELECT_Msk)
     {
         pceCon_client_select(&controller);
         EXTI.PR = SELECT_Msk;
     }
-}
-
-#if 0
-// Very hard-coded edition
-void pceCon_IRQHandler()
-{
-    const uint32_t ENABLE_Msk = (0x1 << 9);
-    const uint32_t SELECT_Msk = (0x1 << 8);
-    static uint32_t cntr = 0;
-
-    const uint32_t shift = (GPIO_read(&GPIOB, 8)) ? 4 : 0;
-    const uint32_t out = (controller.btn >> shift) & 0x0f;
-    const uint32_t odr = GPIOB.ODR;
-    GPIOB.ODR = (odr & 0xff0f) | (out << 4);
-
-    const uint32_t pr = EXTI.PR;
-    if (pr & SELECT_Msk)
+    if (EXTI.PR & ENABLE_Msk)
     {
-        EXTI.PR = SELECT_Msk;
-    }
-    if (pr & ENABLE_Msk)
-    {
-        ++cntr;
+        pceCon_client_enable(&controller);
         EXTI.PR = ENABLE_Msk;
     }
-}
-#endif
-
-void nRF24L01_IRQHandler(void)
-{
-    nRF24L01_interrupt(&rfDev);
-    EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
 }
 
 void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,

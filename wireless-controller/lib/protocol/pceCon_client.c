@@ -66,10 +66,10 @@ void pceCon_client_update(struct pceCon_client *client, const pceCon_btn_t btn)
  */
 static inline void pceCon_client_resetOutputs(struct pceCon_client *client)
 {
-    GPIO_resetPin(&client->pin.output1Y);
-    GPIO_resetPin(&client->pin.output2Y);
-    GPIO_resetPin(&client->pin.output3Y);
     GPIO_resetPin(&client->pin.output4Y);
+    GPIO_resetPin(&client->pin.output3Y);
+    GPIO_resetPin(&client->pin.output2Y);
+    GPIO_resetPin(&client->pin.output1Y);
 }
 
 /**
@@ -80,13 +80,13 @@ static inline void pceCon_client_resetOutputs(struct pceCon_client *client)
  */
 static INLINE void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t settings)
 {
+    GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
     GPIO_setBit(&client->pin.output1Y, settings & (1 << 0));
     GPIO_setBit(&client->pin.output2Y, settings & (1 << 1));
     GPIO_setBit(&client->pin.output3Y, settings & (1 << 2));
-    GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
 }
 
-static void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
+static INLINE void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
 {
     if (!GPIO_read(&client->pin.select))
     {

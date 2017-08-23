@@ -86,7 +86,7 @@ void pceCon_IRQHandler()
     if (EXTI.PR & ENABLE_Msk)
         ++cntr;
 
-    uint32_t shift = (GPIO_read(&GPIOB, 8)) ? 4 : 0;
+    uint32_t shift = (GPIO_read(&SELECT_PortPin)) ? 4 : 0;
     if (cntr & 1)
         shift += 8;
 

@@ -51,7 +51,7 @@ void main()
 
     for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
         GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
-                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
+                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);
     GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_FALLING);
     GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
@@ -66,8 +66,10 @@ void main()
 
 void nRF24L01_IRQHandler(void)
 {
+    GPIO_resetPin(&LED);
     nRF24L01_interrupt(&rfDev);
     EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
+    GPIO_setPin(&LED);
 }
 
 static uint16_t g_btn = 0;
@@ -108,8 +110,4 @@ void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
               ((!!(msg & pceCon_BUTTON_Run))    << 0));
 
     debugLeds_update(msg);
-
-    static bool state = true;
-    GPIO_setBit(&LED, state);
-    state = !state;
 }

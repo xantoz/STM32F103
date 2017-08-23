@@ -69,8 +69,10 @@ void main()
 
 void nRF24L01_IRQHandler(void)
 {
+    GPIO_resetPin(&LED);
     nRF24L01_interrupt(&rfDev);
     EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
+    GPIO_setPin(&LED);
 }
 
 static uint16_t g_btn = 0;
@@ -192,8 +194,4 @@ void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
               ((!!(msg & pceCon_BUTTON_Run))    << 0));
 
     debugLeds_update(msg);
-
-    static bool state = true;
-    GPIO_setBit(&LED, state);
-    state = !state;
 }

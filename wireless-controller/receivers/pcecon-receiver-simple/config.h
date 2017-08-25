@@ -24,4 +24,9 @@
 #define OUTPUT_Pos   4
 static const uint8_t c_outputPins[] = {OUTPUT1Y_Pin, OUTPUT2Y_Pin, OUTPUT3Y_Pin, OUTPUT4Y_Pin};
 
+#define SIXBUTTON 1
+
+#define DEBUG_ENABLE_INTERRUPT 0
+#define DEBUG_PortPin ((struct GPIO_PortPin){&GPIOA, 8})
+
 #endif

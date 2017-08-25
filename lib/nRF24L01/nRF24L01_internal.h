@@ -99,12 +99,12 @@ enum nRF24L01_Register
        ShockBurst(TM) enabled */
     TX_ADDR_Reg = 0x10, //!< [rst: 0xE7E7E7E7E7]
 
-    RX_PW_P0_Reg = 0x11, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 0 (1 to 32 bytes)
-    RX_PW_P1_Reg = 0x12, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 1 (1 to 32 bytes)
-    RX_PW_P2_Reg = 0x13, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 2 (1 to 32 bytes)
-    RX_PW_P3_Reg = 0x14, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 3 (1 to 32 bytes)
-    RX_PW_P4_Reg = 0x15, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 4 (1 to 32 bytes)
-    RX_PW_P5_Reg = 0x16, //!< bits [5:0]: Number of bytes in RX payloid in data pipe 5 (1 to 32 bytes)
+    RX_PW_P0_Reg = 0x11, //!< bits [5:0]: Number of bytes in RX payload in data pipe 0 (1 to 32 bytes)
+    RX_PW_P1_Reg = 0x12, //!< bits [5:0]: Number of bytes in RX payload in data pipe 1 (1 to 32 bytes)
+    RX_PW_P2_Reg = 0x13, //!< bits [5:0]: Number of bytes in RX payload in data pipe 2 (1 to 32 bytes)
+    RX_PW_P3_Reg = 0x14, //!< bits [5:0]: Number of bytes in RX payload in data pipe 3 (1 to 32 bytes)
+    RX_PW_P4_Reg = 0x15, //!< bits [5:0]: Number of bytes in RX payload in data pipe 4 (1 to 32 bytes)
+    RX_PW_P5_Reg = 0x16, //!< bits [5:0]: Number of bytes in RX payload in data pipe 5 (1 to 32 bytes)
 
     FIFO_STATUS_Reg = 0x17, //!< FIFO status register. READ ONLY
 

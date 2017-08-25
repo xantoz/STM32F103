@@ -68,12 +68,22 @@ static void nRF24L01_getRxPayload(struct nRF24L01 *dev, uint8_t *data, size_t le
     nRF24L01_readOp(dev, R_RX_PAYLOAD, data, len);
 }
 
+
+/**
+ * @brief Helper function to write to longer-than-8-bit registers on the nRF24L01
+ */
+static void nRF24L01_setRegister(struct nRF24L01 *dev, enum nRF24L01_Register reg,
+                                 uint8_t *buf, size_t len)
+{
+    nRF24L01_writeOp(dev, W_REGISTER | (reg & REGISTER_MASK), buf, len);
+}
+
 /**
  * @brief Helper function to write to 8 bit registers on the nRF24L01
  */
 static void nRF24L01_setRegister8(struct nRF24L01 *dev, enum nRF24L01_Register reg, uint8_t val)
 {
-    nRF24L01_writeOp(dev, W_REGISTER | (reg & REGISTER_MASK), &val, sizeof(val));
+    nRF24L01_setRegister(dev, reg, &val, sizeof(val));
 }
 
 /**
@@ -96,6 +106,51 @@ static void nRF24L01_modifyRegister8(struct nRF24L01 *dev, enum nRF24L01_Registe
     uint8_t value = nRF24L01_getRegister8(dev, reg);
     value = (value & mask) | flags;
     nRF24L01_setRegister8(dev, reg, value);
+}
+
+static void nRF24L01_setLongAddress_impl(struct nRF24L01 *dev,
+                                         enum nRF24L01_Register reg, uint8_t *addr)
+{
+    size_t len =
+        (dev->conf->addressWidth == nRF24L01_AddressWidth_3bytes) ? 3 :
+        (dev->conf->addressWidth == nRF24L01_AddressWidth_4bytes) ? 4 : 5;
+    nRF24L01_setRegister(dev, reg, addr, len);
+}
+
+void nRF24L01_setTxAddress(struct nRF24L01 *dev, uint8_t *addr)
+{
+    // TODO: Automatically set RX_P0 addr to the same value when in Enhanced Shockburst mode?
+    nRF24L01_setLongAddress_impl(dev, TX_ADDR_Reg, addr);
+}
+
+void nRF24L01_setRxP0Address(struct nRF24L01 *dev, uint8_t *addr)
+{
+    nRF24L01_setLongAddress_impl(dev, RX_PW_P0_Reg, addr);
+}
+
+void nRF24L01_setRxP1Address(struct nRF24L01 *dev, uint8_t *addr)
+{
+    nRF24L01_setLongAddress_impl(dev, RX_PW_P1_Reg, addr);
+}
+
+void nRF24L01_setRxP2Address(struct nRF24L01 *dev, uint8_t addr)
+{
+    nRF24L01_setRegister8(dev, RX_PW_P2_Reg, addr);
+}
+
+void nRF24L01_setRxP3Address(struct nRF24L01 *dev, uint8_t addr)
+{
+    nRF24L01_setRegister8(dev, RX_PW_P3_Reg, addr);
+}
+
+void nRF24L01_setRxP4Address(struct nRF24L01 *dev, uint8_t addr)
+{
+    nRF24L01_setRegister8(dev, RX_PW_P4_Reg, addr);
+}
+
+void nRF24L01_setRxP5Address(struct nRF24L01 *dev, uint8_t addr)
+{
+    nRF24L01_setRegister8(dev, RX_PW_P5_Reg, addr);
 }
 
 /**
@@ -143,9 +198,22 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P0);
     nRF24L01_setRegister8(dev, RX_PW_P0_Reg, dev->conf->payloadWidth & 0x1f);
 
-    // TODO: RX/TX addr settings (need changes in the struct. Currently we just use the reset
-    // defaults) + We would like to be able to change the address settings on the fly, so needs to
-    // be copied to the RW part of the struct
+    // Set address width
+    const uint8_t addressWidth_flg =
+        (dev->conf->addressWidth == nRF24L01_AddressWidth_3bytes) ? SETUP_AW_AW_3bytes :
+        (dev->conf->addressWidth == nRF24L01_AddressWidth_4bytes) ? SETUP_AW_AW_4bytes : SETUP_AW_AW_5bytes;
+    nRF24L01_setRegister8(dev, SETUP_AW_Reg, addressWidth_flg);
+
+    // Explicitly set RX & TX addresses to defaults (useful in reset situations, or with clone chips
+    // with different default values). For anything but the default addresses the user will have to
+    // call nRF24L01_setTxAddress, nRF24L01_setRxP0Address, etc. themselves (for now)
+    nRF24L01_setTxAddress(dev, (uint8_t[]){0xE7, 0xE7, 0xE7, 0xE7, 0xE7});
+    nRF24L01_setRxP0Address(dev, (uint8_t[]){0xE7, 0xE7, 0xE7, 0xE7, 0xE7});
+    nRF24L01_setRxP1Address(dev, (uint8_t[]){0xC2, 0xC2, 0xC2, 0xC2, 0xC2});
+    nRF24L01_setRxP2Address(dev, 0xC3);
+    nRF24L01_setRxP3Address(dev, 0xC4);
+    nRF24L01_setRxP4Address(dev, 0xC5);
+    nRF24L01_setRxP5Address(dev, 0xC6);
 
     uint8_t retransmit_flags = nRF24L01_init_getRetransmitFlags(dev->conf);
     nRF24L01_setRegister8(dev, SETUP_RETR_Reg, retransmit_flags);

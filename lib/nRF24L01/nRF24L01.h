@@ -62,6 +62,13 @@ enum nRF24L01_Mode
     nRF24L01_TX,
 };
 
+enum nRF24L01_AddressWidth
+{
+    nRF24L01_AddressWidth_5bytes = 0,  // 5 bytes by default
+    nRF24L01_AddressWidth_3bytes,
+    nRF24L01_AddressWidth_4bytes,
+};
+
 /**
  * @brief Struct for an initialized nRF24L01
  */
@@ -85,6 +92,7 @@ struct nRF24L01_Options
     enum nRF24L01_TXPower        power;
     enum nRF24L01_UseACK         useACK;
     enum nRF24L01_UseCRC         useCRC;
+    enum nRF24L01_AddressWidth   addressWidth;
     struct
     {
         uint8_t count; //!< 0 to 15. How many times to attempt retransmission. Use 0 to disable.
@@ -173,5 +181,31 @@ void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev);
  * @note  When in RX mode calls rx_cb
  */
 void nRF24L01_interrupt(struct nRF24L01 *dev);
+
+/**
+ * @brief Set TX address
+ *
+ * @note addr needs to be as long as specified in address width when
+ *       the nRF24L01 object was created.
+ */
+void nRF24L01_setTxAddress(struct nRF24L01 *dev, uint8_t *addr);
+/**
+ * @brief Set RX P0 address
+ *
+ * @note addr needs to be as long as specified in address width when
+ *       the nRF24L01 object was created.
+ */
+void nRF24L01_setRxP0Address(struct nRF24L01 *dev, uint8_t *addr);
+/**
+ * @brief Set RX P1 address
+ *
+ * @note addr needs to be as long as specified in address width when
+ *       the nRF24L01 object was created.
+ */
+void nRF24L01_setRxP1Address(struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setRxP2Address(struct nRF24L01 *dev, uint8_t addr);
+void nRF24L01_setRxP3Address(struct nRF24L01 *dev, uint8_t addr);
+void nRF24L01_setRxP4Address(struct nRF24L01 *dev, uint8_t addr);
+void nRF24L01_setRxP5Address(struct nRF24L01 *dev, uint8_t addr);
 
 #endif  /* _NRF24L01_ */

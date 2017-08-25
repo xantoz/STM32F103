@@ -16,14 +16,13 @@ static const struct nRF24L01_Options rfDev_opts = {
     .CSN = CSN_PortPin,
     .CE  = CE_PortPin,
 
-    .airDataRate      = nRF24L01_2Mbps,
-    .power            = nRF24L01_TXPower_Minus0dBm,
-    .useACK           = nRF24L01_NoACK,
-    .useCRC           = nRF24L01_NoCRC,
-    .retransmit.count = 0,
     .mode             = nRF24L01_TX,
 
-    .payloadWidth   = 2,
+    .airDataRate      = nRF24L01_2Mbps,
+    .power            = nRF24L01_TXPower_Minus0dBm,
+    .useCRC           = nRF24L01_NoCRC,
+    .retransmit.count = 0,
+
     .channel        = 33,
 
     .spi_sendrecv   = &spi_sendrecv,
@@ -61,7 +60,7 @@ void main()
         GPIO_resetPin(&LED);
         delay_us(DELAY);
 
-        nRF24L01_send(&rfDev, &msg);
+        nRF24L01_send(&rfDev, &msg, sizeof(msg));
         println_u32_dec(msg);
         println_u32_hex(rfDev.status);
         // spi_send(msg % 256);

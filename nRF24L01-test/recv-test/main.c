@@ -26,13 +26,17 @@ static const struct nRF24L01_Options rfDev_opts = {
     .CSN = CSN_PortPin,
     .CE  = CE_PortPin,
 
-    .airDataRate      = nRF24L01_2Mbps,
-    .useACK           = nRF24L01_NoACK,
-    .useCRC           = nRF24L01_NoCRC,
-    .retransmit.count = 0,
     .mode             = nRF24L01_RX,
 
-    .payloadWidth     = 2,
+    .airDataRate      = nRF24L01_2Mbps,
+    .pipe[0]          = {
+        .enable = true,
+        .autoAck = false,
+        .payloadWidth = 2,
+    },
+    .useCRC           = nRF24L01_NoCRC,
+    .retransmit.count = 0,
+
     .channel          = 33,
 
     .spi_sendrecv     = &spi_sendrecv,

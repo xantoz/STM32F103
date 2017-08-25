@@ -41,5 +41,5 @@ void main()
 void Systick_Handler()
 {
     const uint16_t buttonState = GPIOA.IDR;
-    nRF24L01_send(&rfDev, &buttonState);
+    nRF24L01_send(&rfDev, &buttonState, sizeof(buttonState));
 }

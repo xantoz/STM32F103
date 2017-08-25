@@ -36,5 +36,5 @@ void main()
 void Systick_Handler()
 {
     const snesCon_btn_t buttonState = snesCon_read_tick(&snesCon_def);
-    nRF24L01_send(&rfDev, &buttonState);
+    nRF24L01_send(&rfDev, &buttonState, sizeof(buttonState));
 }

@@ -112,6 +112,8 @@ enum nRF24L01_Register
     FEATURE_Reg = 0x1D, //!< Feature register
 };
 
+#define RX_PW_Px_Reg(x) (RX_PW_P0_Reg + (x))
+
 /**
  * @brief CONFIG register bit definition
  */
@@ -143,6 +145,8 @@ enum EN_AA_Reg
                       EN_AA_ENAA_P3 | EN_AA_ENAA_P4 | EN_AA_ENAA_P5),
 };
 
+#define EN_AA_ENAA_Px(x) (1 << (x))
+
 /**
  * @brief EN_RXADDR register bit definition
  */
@@ -158,6 +162,9 @@ enum EN_RXADDR_Flg
     EN_RXADDR_ERX_All = (EN_RXADDR_ERX_P0 | EN_RXADDR_ERX_P1 | EN_RXADDR_ERX_P2 |
                          EN_RXADDR_ERX_P3 | EN_RXADDR_ERX_P4 | EN_RXADDR_ERX_P5),
 };
+
+#define EN_RXADDR_ERX_Px(x) (1 << (x))
+
 
 /**
  * @brief SETUP_AW register bit definition

@@ -173,7 +173,7 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     dev->conf = options;
 
     assert(dev->conf->channel <= 127);
-    assert(0 < dev->conf->payloadWidth && dev->conf->payloadWidth <= 32);
+
     assert(dev->conf->retransmit.count <= 15);
     assert(nRF24L01_Retransmit_Delay_250us <= dev->conf->retransmit.delay &&
            dev->conf->retransmit.delay <= nRF24L01_Retransmit_Delay_4000us);
@@ -193,10 +193,8 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
 
     nRF24L01_setRegister8(dev, CONFIG_Reg, 0);              // Ensure nRF24L01 is in power down state
 
+    // Set channel
     nRF24L01_setRegister8(dev, RF_CH_Reg, dev->conf->channel & 0x7f);
-    nRF24L01_setRegister8(dev, EN_AA_Reg, (dev->conf->useACK == nRF24L01_ACK) ? EN_AA_ENAA_All : EN_AA_ENAA_None);
-    nRF24L01_setRegister8(dev, EN_RXADDR_Reg, EN_RXADDR_ERX_P0);
-    nRF24L01_setRegister8(dev, RX_PW_P0_Reg, dev->conf->payloadWidth & 0x1f);
 
     // Set address width
     const uint8_t addressWidth_flg =
@@ -215,9 +213,34 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     nRF24L01_setRxP4Address(dev, 0xC5);
     nRF24L01_setRxP5Address(dev, 0xC6);
 
+    // Set up RX pipes
+    uint8_t pipeEnable = 0;
+    uint8_t pipeAutoAck = 0;
+    static_assert(ARRAYLEN(dev->conf->pipe) <= 5, "Too many pipes in nRF24L01_Options");
+    for (unsigned i = 0; i < ARRAYLEN(dev->conf->pipe); ++i)
+    {
+        assert(0 <= dev->conf->pipe[i].payloadWidth && dev->conf->pipe[i].payloadWidth <= 32);
+        // Set payloadWidth for pipe i
+        uint8_t width = 0;
+        if (dev->conf->pipe[i].enable == true)
+        {
+            width = dev->conf->pipe[i].payloadWidth & 0x1f;
+            width = (width == 0) ? 1 : width; // If not specified (0) set to 1 byte
+            pipeEnable |= EN_RXADDR_ERX_Px(i);
+        }
+        nRF24L01_setRegister8(dev, RX_PW_Px_Reg(i), width);
+
+        if (dev->conf->pipe[i].autoAck == true)
+            pipeAutoAck |= EN_AA_ENAA_Px(i);
+    }
+    nRF24L01_setRegister8(dev, EN_RXADDR_Reg, pipeEnable);
+    nRF24L01_setRegister8(dev, EN_AA_Reg, pipeAutoAck);
+
+    // Set retransmit flags
     uint8_t retransmit_flags = nRF24L01_init_getRetransmitFlags(dev->conf);
     nRF24L01_setRegister8(dev, SETUP_RETR_Reg, retransmit_flags);
 
+    // RF setup (transmit power and data rate)
     uint8_t rf_setup = RF_SETUP_LNA_HCURR;
     rf_setup |= (dev->conf->airDataRate == nRF24L01_2Mbps) ? RF_SETUP_RF_DR : 0;
     switch (dev->conf->power)
@@ -265,15 +288,16 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     return true;
 }
 
-void nRF24L01_send(struct nRF24L01 *dev, const void *payload)
+void nRF24L01_send(struct nRF24L01 *dev, const void *payload, size_t len)
 {
     assert(dev->conf->mode == nRF24L01_TX);
+    assert(1 <= len && len <= 32);
 
     // TODO: check if TX FIFO full, and fail/block in this case
     irq_lock_t lock;
     LOCK_IRQ(lock);
 
-    nRF24L01_writeTxPayload(dev, payload, dev->conf->payloadWidth);
+    nRF24L01_writeTxPayload(dev, payload, len);
 
     // Toggle CE pin to send TX FIFO
     GPIO_setPin(&dev->conf->CE);
@@ -289,10 +313,11 @@ void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev)
 
     while (!(nRF24L01_getRegister8(dev, FIFO_STATUS_Reg) & FIFO_STATUS_RX_EMPTY))
     { // Until RX FIFO is empty
-        uint8_t recv[dev->conf->payloadWidth];
-        nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
         // get the pipe number and send it on to rx_cb
         const uint8_t pipeNo = (dev->status & STATUS_RX_P_NO) >> STATUS_RX_P_NO_Pos;
+        assert(pipeNo <= 5, "recv from bad pipe?");
+        uint8_t recv[dev->conf->pipe[pipeNo].payloadWidth];
+        nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));
         if (dev->conf->rx_cb != NULL)
             dev->conf->rx_cb(dev, pipeNo, &recv, sizeof(recv));
     }

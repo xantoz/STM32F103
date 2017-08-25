@@ -24,12 +24,6 @@ enum nRF24L01_TXPower
     nRF24L01_TXPower_Minus0dBm,
 };
 
-enum nRF24L01_UseACK
-{
-    nRF24L01_ACK = 0,
-    nRF24L01_NoACK,
-};
-
 enum nRF24L01_UseCRC
 {
     nRF24L01_CRC = 0,
@@ -88,9 +82,9 @@ struct nRF24L01_Options
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
 
+    enum nRF24L01_Mode           mode;                    //!< Mode of operation
     enum nRF24L01_AirDataRate    airDataRate;
     enum nRF24L01_TXPower        power;
-    enum nRF24L01_UseACK         useACK;
     enum nRF24L01_UseCRC         useCRC;
     enum nRF24L01_AddressWidth   addressWidth;
     struct
@@ -98,15 +92,19 @@ struct nRF24L01_Options
         uint8_t count; //!< 0 to 15. How many times to attempt retransmission. Use 0 to disable.
         enum nRF24L01_Retransmit_Delay delay; //!< Retransmit delay. Only meaningful if retransmit.count > 0
     } retransmit;
-    enum nRF24L01_Mode           mode;                    //!< Mode of operation
 
-    // TODO: change to 1 < payloadWidth <= 32
-    uint8_t payloadWidth; //!< How many bytes in one payload. This driver only
-                          //! supports a static payload size. 0 < payloadWidth <= 32
+    //! Setup for each pipe. Some pipe[0] options also apply in TX mode
+    struct
+    {
+        //! How many bytes in one payload. This driver only supports a static
+        //! payload size per pipe. 1 < payloadWidth <= 32
+        uint8_t payloadWidth;
+        bool enable;  //!< Enable pipe (for RX) if true
+        bool autoAck; //!< Enable auto-ack on pipe if true
+    } pipe[5];
 
     uint8_t channel; //!< Value from 0 to 127. Take care that channels are
                      //! spaced 2 apart when running in 2mbps mode
-
 
     //! Pointer to function that sends 8 bits and then reads 8 bits back, with
     //! the least significant bit first. This function should not toggle the
@@ -155,11 +153,12 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
  *
  * @param dev     [in/out] nRF24L01 device object
  * @param payload [in]     Pointer to buffer containing payload to send. This buffer needs to be
- *                         payloadWidth bytes large.
+ *                         len bytes large.
+ * @param len     [in]     Length of payload in bytes
  *
  * @note  Must be in TX mode
  */
-void nRF24L01_send(struct nRF24L01 *dev, const void *payload);
+void nRF24L01_send(struct nRF24L01 *dev, const void *payload, size_t len);
 
 /**
  * @brief Reads all words in the input FIFO and dispatches them to rx_cb.

@@ -147,5 +147,16 @@ static INLINE void __GPIO_setBit2(const struct GPIO_PortPin * const portpin,
     __GPIO_setBit3(portpin->port, portpin->pin, value);
 }
 
+#define GPIO_togglePin(...) VFUNC(__GPIO_togglePin, __VA_ARGS__)
+static INLINE void __GPIO_togglePin2(volatile struct GPIO_Port * const port, const uint8_t pin) {
+    build_assert(IS_GPIO(*port), "First argument is not GPIO port");
+    build_assert(pin <= 15, "Pin number too high");
+
+    port->ODR ^= (1 << pin);
+}
+static INLINE void __GPIO_togglePin1(const struct GPIO_PortPin * const portpin) {
+    __GPIO_togglePin2(portpin->port, portpin->pin);
+}
+
 
 #endif /* _GPIO_ */

@@ -87,7 +87,14 @@ void pceCon_IRQHandler()
     static uint32_t cntr = 0;
 
     if (EXTI.PR & ENABLE_Msk)
+    {
         ++cntr;
+        if (DEBUG_ENABLE_INTERRUPT)
+        {
+            GPIO_togglePin(&DEBUG_PortPin);
+        }
+        EXTI.PR = ENABLE_Msk;
+    }
 
     uint32_t shift = (GPIO_read(&SELECT_PortPin)) ? 4 : 0;
     if (cntr & 1)
@@ -98,19 +105,7 @@ void pceCon_IRQHandler()
     GPIOB.ODR = (odr & OUTPUT_Msk) | (out << OUTPUT_Pos);
 
     if (EXTI.PR & SELECT_Msk)
-    {
         EXTI.PR = SELECT_Msk;
-    }
-    if (EXTI.PR & ENABLE_Msk)
-    {
-        if (DEBUG_ENABLE_INTERRUPT)
-        {
-            GPIO_setPin(&DEBUG_PortPin);
-            delay_us(1);
-            GPIO_resetPin(&DEBUG_PortPin);
-        }
-        EXTI.PR = ENABLE_Msk;
-    }
 }
 #else
 void pceCon_IRQHandler()

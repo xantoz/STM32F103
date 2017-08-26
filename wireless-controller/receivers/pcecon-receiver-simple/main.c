@@ -51,7 +51,7 @@ void main()
 
     for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
         GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
-                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
+                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);
     GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
     EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_RISING);
     GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);

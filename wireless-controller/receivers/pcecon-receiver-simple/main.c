@@ -85,6 +85,7 @@ void pceCon_IRQHandler()
     const uint32_t ENABLE_Msk = (0x1 << ENABLE_PortPin.pin);
     const uint32_t SELECT_Msk = (0x1 << SELECT_PortPin.pin);
     static uint32_t cntr = 0;
+    irq_lock_t lock;
 
     if (EXTI.PR & ENABLE_Msk)
     {
@@ -101,8 +102,9 @@ void pceCon_IRQHandler()
         shift += 8;
 
     const uint32_t out = (g_btn >> shift) & 0x0f;
-    const uint32_t odr = GPIOB.ODR;
-    GPIOB.ODR = (odr & OUTPUT_Msk) | (out << OUTPUT_Pos);
+    LOCK_IRQ(lock);
+    GPIOB.ODR = (GPIOB.ODR & OUTPUT_Msk) | (out << OUTPUT_Pos);
+    UNLOCK_IRQ(lock);
 
     if (EXTI.PR & SELECT_Msk)
         EXTI.PR = SELECT_Msk;

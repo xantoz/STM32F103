@@ -5,6 +5,7 @@
 #include <IRQn.h>
 #include <spi.h>
 #include <nvic.h>
+#include <debug.h>
 
 #include <protocol/common.h>
 
@@ -24,8 +25,15 @@ static uint8_t spi_sendrecv(const uint8_t data)
     return SPI_recv(&nRF24L01_SPI);
 }
 
+static void __recv_message_unimpl()
+{
+    die("recv message not implemented!");
+}
+
 // This function needs to be defined in another module somewhere to receive payloads from nRF24L01
-void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
+void recv_message(const struct nRF24L01 *dev,
+                  uint8_t pipeNo,
+                  const void *data, size_t len) DEFAULTS_TO(__recv_message_unimpl);
 
 static const struct nRF24L01_Options rfDev_opts_tx =
     nRF24L01_Options(

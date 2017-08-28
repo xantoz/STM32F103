@@ -28,12 +28,14 @@
 /** @brief All-uppercase INLINE forces inlining of the function */
 #define INLINE __attribute__((always_inline)) inline
 #define PURE __attribute__((pure))
+#define DEFAULTS_TO(func) __attribute__((weak, alias (#func)))
 #define NORETURN __attribute__((noreturn))
 #else
 #warning "INLINE not guaranteed to always inline"
 #define INLINE inline
 #define PURE
 #define NORETURN
+#error "no implementation for DEFAULTS_TO"
 #endif
 
 #if defined(HAVE_GCC_STYLE_ATTRIBUTES)

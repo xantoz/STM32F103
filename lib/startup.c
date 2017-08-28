@@ -24,8 +24,6 @@ void Reset_Handler(void);
 // changed by implementing a real function with that name. So if they are triggered but
 // undefined, we'll just stop.
 
-#define DEFAULTS_TO(func) __attribute__ ((weak, alias (#func)))
-
 void main(void) DEFAULTS_TO(deadend);
 
 // Core interrupt handlers

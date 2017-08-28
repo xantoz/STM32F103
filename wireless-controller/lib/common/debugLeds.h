@@ -7,7 +7,7 @@
 #ifndef _WIRELESS_CONTROLLER_DEBUGLEDS_
 #define _WIRELESS_CONTROLLER_DEBUGLEDS_
 
-#include "../protocol/snesCon.h"
+#include <protocol/snesCon.h>
 
 void debugLeds_init();
 void debugLeds_update(snesCon_btn_t btn);

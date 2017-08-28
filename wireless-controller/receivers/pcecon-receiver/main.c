@@ -1,17 +1,15 @@
-#include "gpio.h"
-#include "rcc.h"
-#include "clock.h"
-#include "utils.h"
-#include "debug.h"
-#include "exti.h"
-#include "IRQn.h"
-#include "nvic.h"
+#include <gpio.h>
+#include <rcc.h>
+#include <clock.h>
+#include <utils.h>
+#include <debug.h>
+#include <exti.h>
+#include <IRQn.h>
+#include <nvic.h>
+#include <afio.h>
 
-#include "spi.h"
-#include "nRF24L01/nRF24L01.h"
-
-#include "protocol/pceCon_client.h"
-#include "common/debugLeds.h"
+#include <protocol/pceCon_client.h>
+#include <common/debugLeds.h>
 #include <common/rf.h>
 
 #include "config.h"

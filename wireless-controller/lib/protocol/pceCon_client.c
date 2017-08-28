@@ -1,7 +1,7 @@
 #include "pceCon_client.h"
 
-#include "utils.h"
-#include "exti.h"
+#include <utils.h>
+#include <exti.h>
 
 bool pceCon_client_init(struct pceCon_client *client)
 {

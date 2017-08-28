@@ -7,8 +7,8 @@
 #ifndef _SNESCON_
 #define _SNESCON_
 
-#include "types.h"
-#include "gpio.h"
+#include <types.h>
+#include <gpio.h>
 
 #include "common.h"
 

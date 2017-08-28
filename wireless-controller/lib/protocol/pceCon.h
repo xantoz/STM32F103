@@ -7,8 +7,8 @@
 #ifndef _PCECON_
 #define _PCECON_
 
-#include "types.h"
-#include "gpio.h"
+#include <types.h>
+#include <gpio.h>
 
 #include "common.h"
 

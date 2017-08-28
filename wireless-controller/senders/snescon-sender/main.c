@@ -1,13 +1,14 @@
-#include "gpio.h"
-#include "rcc.h"
-#include "clock.h"
-#include "systick.h"
-#include "utils.h"
-#include "debug.h"
+#include <gpio.h>
+#include <rcc.h>
+#include <clock.h>
+#include <systick.h>
+#include <utils.h>
+#include <debug.h>
 
-#include "spi.h"
-#include "nRF24L01/nRF24L01.h"
-#include "protocol/snesCon_read.h"
+#include <nRF24L01/nRF24L01.h>
+#include <protocol/snesCon_read.h>
+
+#include <common/rf.h>
 
 #include "config.h"
 

@@ -1,14 +1,12 @@
 #include "rf.h"
 #include "config.h"
 
-#include <protocol/common.h>
-
 #include <exti.h>
 #include <IRQn.h>
 #include <spi.h>
 #include <nvic.h>
 
-#include <nRF24L01/nRF24L01.h>
+#include <protocol/common.h>
 
 static const struct SPI_Options spi_opts = {
     .maxFreq = nRF24L01_SPI_MAXFREQ,

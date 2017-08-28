@@ -1,6 +1,8 @@
 #ifndef _COMMON_RF_
 #define _COMMON_RF_
 
+#include <nRF24L01/nRF24L01.h>
+
 struct nRF24L01 g_rfDev;
 
 enum rf_TxRx

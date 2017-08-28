@@ -8,8 +8,8 @@
 #ifndef _SNESCON_CLIENT_
 #define _SNESCON_CLIENT_
 
-#include "types.h"
-#include "gpio.h"
+#include <types.h>
+#include <gpio.h>
 
 #include "snesCon.h"
 

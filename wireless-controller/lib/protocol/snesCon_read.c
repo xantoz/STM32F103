@@ -1,7 +1,7 @@
 #include "snesCon_read.h"
 
-#include "utils.h"
-#include "gpio.h"
+#include <utils.h>
+#include <gpio.h>
 
 bool snesCon_read_init(const struct snesCon_pins * const def)
 {

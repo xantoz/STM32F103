@@ -1,6 +1,6 @@
 #include "debugLeds.h"
 
-#include "utils.h"
+#include <utils.h>
 
 static const struct GPIO_PortPin debugLeds[] = {
     {&GPIOB, 12},

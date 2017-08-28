@@ -163,8 +163,7 @@ static uint8_t nRF24L01_init_getRetransmitFlags(struct nRF24L01_Options const * 
     return (delay << SETUP_RETR_ARD_Pos) | (count << SETUP_RETR_ARC_Pos);
 }
 
-// TODO: * add options for active selecting pipes and their addresses
-//       * add option to select TX addr
+// TODO: * add option to select TX addr
 //       * special mode where we keep spraying the same number until the next send operation, or we
 //         request to turn it off
 bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev)
@@ -178,9 +177,6 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     assert(nRF24L01_Retransmit_Delay_250us <= dev->conf->retransmit.delay &&
            dev->conf->retransmit.delay <= nRF24L01_Retransmit_Delay_4000us);
     assert(dev->conf->spi_sendrecv != NULL);
-
-    // TODO: toggle the power line here to ensure it is truly reset? (will eat more GPIO... +
-    // require a transistor)
 
     // Setup the GPIO outputs
     GPIO_setMODE_setCNF(&dev->conf->CE,  GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);

@@ -81,6 +81,7 @@ struct nRF24L01_Options
 {
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
+    struct GPIO_PortPin IRQ; //!< IRQ pin. Active LOW
 
     enum nRF24L01_Mode           mode;                    //!< Mode of operation
     enum nRF24L01_AirDataRate    airDataRate;

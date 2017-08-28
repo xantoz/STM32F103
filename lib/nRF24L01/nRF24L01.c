@@ -1,8 +1,9 @@
 #include "nRF24L01.h"
 #include "nRF24L01_internal.h"
 
-#include "../debug.h"
-#include "../utils.h"
+#include <debug.h>
+#include <utils.h>
+#include <exti.h>
 
 /**
  * @brief nRF24L01 write operation help function
@@ -184,6 +185,9 @@ bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L0
     GPIO_resetPin(&dev->conf->CE); // Active high
     delay_us(4);
     GPIO_setPin(&dev->conf->CSN);  // Active low
+
+    EXTI_enableInterrupt(&dev->conf->IRQ, EXTI_FALLING);
+    GPIO_setMODE_setCNF(&dev->conf->IRQ, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
 
     delay_us(10300); // 10.3 ms for Power on reset (when powering on for the first time) (TODO: move out of this fn)
 

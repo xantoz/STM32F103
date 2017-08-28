@@ -24,8 +24,7 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
     snesCon_read_init(&snesCon_def);
-    SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
-    nRF24L01_init(&rfDev_opts_tx, &rfDev);
+    rf_init(rf_Tx);
 
     if (!systick_startSysTick_us(DIV_ROUND_CLOSEST(1000000u, POLLFREQ)))
         die("Could not set up systick");

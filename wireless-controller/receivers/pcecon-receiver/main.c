@@ -12,6 +12,7 @@
 
 #include "protocol/pceCon_client.h"
 #include "common/debugLeds.h"
+#include <common/rf.h>
 
 #include "config.h"
 
@@ -35,27 +36,16 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
-    NVIC_setInterruptPriority(pceCon_IRQn, 0);
-
-    SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
-    EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
-    GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    nRF24L01_init(&rfDev_opts_rx, &rfDev);
-
     debugLeds_init();
 
+    rf_init(rf_Tx);
+
+    NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
     pceCon_client_init(&controller);
 
     GPIO_resetPin(&LED);
 
     __enable_irq();
-}
-
-void nRF24L01_IRQHandler(void)
-{
-    nRF24L01_interrupt(&rfDev);
-    EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
 }
 
 IN_SECTION(".text.fastcode")

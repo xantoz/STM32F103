@@ -3,10 +3,6 @@
 
 #include "common/config.h"
 
-// Interrupt priorities
-#define pceCon_IRQ_Priority 0
-#define nRF24L01_IRQ_Priority 4
-
 /* **** Settings for the PCE client **** */
 
 #define pceCon_IRQHandler EXTI9_5_IRQHandler

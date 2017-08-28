@@ -12,10 +12,9 @@
 
 #include "protocol/snesCon_client.h"
 #include "common/debugLeds.h"
+#include <common/rf.h>
 
 #include "config.h"
-
-struct nRF24L01 rfDev;
 
 struct snesCon_client controller = {
     .pinDef = snesCon_PINS
@@ -35,16 +34,11 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
-    NVIC_setInterruptPriority(snesCon_IRQn, 3);
-
     debugLeds_init();
 
-    SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
-    EXTI_enableInterrupt(&nRF24L01_IRQ_PortPin, EXTI_FALLING);
-    GPIO_setMODE_setCNF(&nRF24L01_IRQ_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    nRF24L01_init(&rfDev_opts_rx, &rfDev);
+    rf_init(rf_Rx);
 
+    NVIC_setInterruptPriority(snesCon_IRQn, snesCon_IRQ_Priority);
     snesCon_client_init(&controller);
 
     GPIO_resetPin(&LED);
@@ -67,12 +61,6 @@ void snesCon_IRQHandler()
         snesCon_client_latch(&controller);
         EXTI.PR = LATCH_Msk;
     }
-}
-
-void nRF24L01_IRQHandler(void)
-{
-    nRF24L01_interrupt(&rfDev);
-    EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
 }
 
 void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,

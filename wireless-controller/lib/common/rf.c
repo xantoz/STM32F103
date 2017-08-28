@@ -29,40 +29,16 @@ static uint8_t spi_sendrecv(const uint8_t data)
 // This function needs to be defined in another module somewhere to receive payloads from nRF24L01
 void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void *data, size_t len);
 
-static const struct nRF24L01_Options rfDev_opts_tx = {
-        .CSN = nRF24L01_CSN_PortPin,
-        .CE  = nRF24L01_CE_PortPin,
-        .IRQ = nRF24L01_IRQ_PortPin,
-
-        .airDataRate      = nRF24L01_2Mbps,
-        .power            = nRF24L01_TXPower_Minus0dBm,
-        .useCRC           = nRF24L01_CRC,
-        .retransmit.count = 0,
-
-        .pipe[0] = { .enable = true, .payloadWidth = sizeof(btn_t) },
-        .channel = 33,
-
+static const struct nRF24L01_Options rfDev_opts_tx =
+    nRF24L01_Options(
         .mode             = nRF24L01_TX,
-        .spi_sendrecv     = &spi_sendrecv
-};
+        .spi_sendrecv     = &spi_sendrecv);
 
-static const struct nRF24L01_Options rfDev_opts_rx = {
-        .CSN = nRF24L01_CSN_PortPin,
-        .CE  = nRF24L01_CE_PortPin,
-        .IRQ = nRF24L01_IRQ_PortPin,
-
-        .airDataRate      = nRF24L01_2Mbps,
-        .power            = nRF24L01_TXPower_Minus0dBm,
-        .useCRC           = nRF24L01_CRC,
-        .retransmit.count = 0,
-
-        .pipe[0] = { .enable = true, .payloadWidth = sizeof(btn_t) },
-        .channel = 33,
-
+static const struct nRF24L01_Options rfDev_opts_rx =
+    nRF24L01_Options(
         .mode             = nRF24L01_RX,
-        .spi_sendrecv     = &spi_sendrecv
-        .rx_cv            = &recv_message,
-};
+        .spi_sendrecv     = &spi_sendrecv,
+        .rx_cb            = &recv_message);
 
 void rf_init(enum rf_TxRx txrx)
 {

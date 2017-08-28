@@ -69,7 +69,7 @@ struct GPIO_PortPin
 
 /** @brief Returns pointer to CRL or CRH of GPIOx, depending on the pin */
 static INLINE PURE HW_RW *GPIO_getCR(volatile struct GPIO_Port * const GPIOx,
-                                const uint8_t pin)
+                                     const uint8_t pin)
 {
     return (pin >= 8) ? &GPIOx->CRH : &GPIOx->CRL;
 }

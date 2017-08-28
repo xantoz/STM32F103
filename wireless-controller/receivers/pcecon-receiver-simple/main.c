@@ -133,7 +133,7 @@ void pceCon_IRQHandler()
 }
 #endif
 void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
-                         const void *data, size_t len)
+                  const void *data, size_t len)
 {
     assert(len == sizeof(pceCon_btn_t));
     const pceCon_btn_t msg = *((pceCon_btn_t*)data);

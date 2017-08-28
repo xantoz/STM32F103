@@ -158,16 +158,16 @@ bool SPI_getBaudRateDivisorFromMaxFreq(volatile struct SPI_Regs const * const sp
 
 enum SPI_NSSManagement
 {
-    // The slave select information is driven internally by the value of the SSI bit in the
-    // SPI_CR1 register. The external NSS pin remains free for other application uses.
+    //! The slave select information is driven internally by the value of the SSI bit in the
+    //! SPI_CR1 register. The external NSS pin remains free for other application uses.
     SPI_SoftwareNSS,       // SSM = 1
-    // This configuration is used only when the device operates in master mode. The
-    // NSS signal is driven low when the master starts the communication and is kept
-    // low until the SPI is disabled.
+    //! This configuration is used only when the device operates in master mode. The
+    //! NSS signal is driven low when the master starts the communication and is kept
+    //! low until the SPI is disabled.
     SPI_HardwareNSSOutput, // SSM = 0, SSOE = 1
-    // This configuration allows multimaster capability for devices operating in master
-    // mode. For devices set as slave, the NSS pin acts as a classical NSS input: the
-    // slave is selected when NSS is low and deselected when NSS high.
+    //! This configuration allows multimaster capability for devices operating in master
+    //! mode. For devices set as slave, the NSS pin acts as a classical NSS input: the
+    //! slave is selected when NSS is low and deselected when NSS high.
     SPI_HardwareNSSInput,  // SSM = 0, SSOE = 0 (master mode == become slave if NSS pulled low)
 };
 
@@ -218,21 +218,6 @@ extern const struct SPI_Pins SPI1_Alternate_Pins;
  * .MOSI = {&GPIOB, 15}
  */
 extern const struct SPI_Pins SPI2_Pins;
-
-/**
- * @brief Write me
- */
-void SPI1_setupGPIO(enum AF_Mapping mapping,
-                    enum SPI_OutputMode outputMode,
-                    enum SPI_InputMode inputMode,
-                    bool hardwareNSS);
-
-/**
- * @brief Write me
- */
-void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
-                    enum SPI_InputMode inputMode,
-                    bool hardwareNSS);
 
 /**
  * @brief Used to send options to SPI_initAsMaster

@@ -83,12 +83,10 @@ static void SPI_setupGPIOHelper(enum SPI_OutputMode outputMode,
         GPIO_resetPin(&pins->MISO);
 }
 
-// TODO: mold this into a more fully encompassing SPI init function (handle freq, clock phase &c.,
-// and do not set up port bits for NSS when not applicable)
-void SPI1_setupGPIO(enum AF_Mapping mapping,
-                    enum SPI_OutputMode outputMode,
-                    enum SPI_InputMode inputMode,
-                    bool hardwareNSS)
+static void SPI1_setupGPIO(enum AF_Mapping mapping,
+                           enum SPI_OutputMode outputMode,
+                           enum SPI_InputMode inputMode,
+                           bool hardwareNSS)
 {
     irq_lock_t lock;
     LOCK_IRQ(lock);
@@ -104,9 +102,9 @@ void SPI1_setupGPIO(enum AF_Mapping mapping,
     UNLOCK_IRQ(lock);
 }
 
-void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
-                    enum SPI_InputMode inputMode,
-                    bool hardwareNSS)
+static void SPI2_setupGPIO(enum SPI_OutputMode outputMode,
+                           enum SPI_InputMode inputMode,
+                           bool hardwareNSS)
 {
     irq_lock_t lock;
     LOCK_IRQ(lock);

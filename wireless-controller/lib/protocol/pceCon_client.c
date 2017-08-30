@@ -35,9 +35,12 @@ bool pceCon_client_init(struct pceCon_client *client)
 
     client->pollCtr = 0; // Reset pollCtr (we do not wish to count the manual call to pceCon_client_enable)
 
-    // init EXTI for enable and select. Update on both flanks (74HC157 behavior is defined for
-    // states of the pin, not just a single flank)
-    EXTI_enableInterrupt(&client->pin.enable, EXTI_BOTH);
+    // init EXTI for enable and select. The select pin interrupt is triggered on both flanks,
+    // however because of latency concerns the enable pin is not properly emulated (pulling it
+    // high will not block output), and is instead simply treated as a clock signal, positive
+    // flank (negative flank would be more correct, but triggering on the positive flank gives
+    // us more time to react)
+    EXTI_enableInterrupt(&client->pin.enable, EXTI_RISING);
     EXTI_enableInterrupt(&client->pin.select, EXTI_BOTH);
 
     UNLOCK_IRQ(lock);
@@ -57,19 +60,11 @@ void pceCon_client_update(struct pceCon_client *client, const pceCon_btn_t btn)
                  ((!!(btn & pceCon_BUTTON_Right)) << 5) |
                  ((!!(btn & pceCon_BUTTON_Down))  << 6) |
                  ((!!(btn & pceCon_BUTTON_Left))  << 7));
+    // Set the upper 4 DPAD-bits in the high byte, since all DPAD buttons pressed is what
+    // signifies the second (III IV V VI) poll of a 6 button pad.
+    remapBtn |= 0xf000;
 
-    client->btn = ~remapBtn; // Invert since controller buttons are active low
-}
-
-/**
- * @brief Helper that sets all output pins to low
- */
-static inline void pceCon_client_resetOutputs(struct pceCon_client *client)
-{
-    GPIO_resetPin(&client->pin.output4Y);
-    GPIO_resetPin(&client->pin.output3Y);
-    GPIO_resetPin(&client->pin.output2Y);
-    GPIO_resetPin(&client->pin.output1Y);
+    client->btn = ~remapBtn; // Invert since controller buttons are active low.
 }
 
 /**
@@ -78,85 +73,35 @@ static inline void pceCon_client_resetOutputs(struct pceCon_client *client)
  * @param client   [in] pceCon client object
  * @param settings [in] Reflect 4 LSB on output pins
  */
-static INLINE void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t settings)
+static inline void pceCon_client_setOutputs(struct pceCon_client *client, uint8_t settings)
 {
-    GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
     GPIO_setBit(&client->pin.output1Y, settings & (1 << 0));
     GPIO_setBit(&client->pin.output2Y, settings & (1 << 1));
     GPIO_setBit(&client->pin.output3Y, settings & (1 << 2));
+    GPIO_setBit(&client->pin.output4Y, settings & (1 << 3));
 }
 
-static INLINE void pceCon_client_driveOutputs_2btnpad(struct pceCon_client *client)
+static void pceCon_client_driveOutputs(struct pceCon_client *client, uint32_t cntr)
 {
-    if (!GPIO_read(&client->pin.select))
-    {
-        // select pin low == I II Start Select
-        pceCon_client_setOutputs(client, client->btn & 0x0f);
-    }
-    else
-    {
-        // select pin high == DPAD
-        pceCon_client_setOutputs(client, (client->btn >> 4) & 0x0f);
-    }
-}
+    uint32_t shift = (GPIO_read(&client->pin.select)) ? 4 : 0;
+    if ((pceCon_6BTN == client->mode) && (cntr & 1))
+        shift += 8;
 
-static inline void pceCon_client_driveOutputs_6btnpad(struct pceCon_client *client)
-{
-    if (client->pollCtr & 1)
-    {
-        // Output D-pad all down + 4 extra buttons every odd poll
-        if (GPIO_read(&client->pin.select))
-        {
-            // select pin high == III IV V VI
-            pceCon_client_setOutputs(client, (client->btn >> 8) & 0x0f);
-        }
-        else
-        {
-            // select pin low == DPAD all pushed down (how the console tells this extra poll from the rest)
-            pceCon_client_setOutputs(client, 0x00);
-        }
-    }
-    else
-    {
-        // Output regular buttons on even polls
-        pceCon_client_driveOutputs_2btnpad(client);
-    }
-}
-
-static void pceCon_client_driveOutputs(struct pceCon_client *client)
-{
-    if (!client->enabled)
-    {
-        pceCon_client_resetOutputs(client);
-        return;
-    }
-
-    if (pceCon_2BTN == client->mode)
-        pceCon_client_driveOutputs_2btnpad(client);
-    else /* if (pceCon_6BTN == client->mode) */
-        pceCon_client_driveOutputs_6btnpad(client);
+    pceCon_client_setOutputs(client, client->btn >> shift);
 }
 
 void pceCon_client_enable(struct pceCon_client *client)
 {
     irq_lock_t lock;
-
     LOCK_IRQ(lock);
-    if (!GPIO_read(&client->pin.enable))                    // Active low
-    {
-        ++client->pollCtr;
-        client->enabled = true;
-    }
-    else
-    {
-        client->enabled = false;
-    }
-    UNLOCK_IRQ(lock);
 
-    pceCon_client_driveOutputs(client);
+    pceCon_client_driveOutputs(client, client->pollCtr + 1);
+    ++client->pollCtr;
+
+    UNLOCK_IRQ(lock);
 }
 
 void pceCon_client_select(struct pceCon_client *client)
 {
-    pceCon_client_driveOutputs(client);
+    pceCon_client_driveOutputs(client, client->pollCtr);
 }

@@ -60,7 +60,7 @@ void pceCon_client_update(struct pceCon_client *client, pceCon_btn_t btn);
 /**
  * @brief Enable pin interrupt routine
  *
- * @note  Call this on IRQ of enable pin rising & falling flank
+ * @note  Call this on IRQ of enable pin rising flank
  * @note  Should be higher priority than select pin IRQ
  *
  * @param client [in/out] Pointer to the pceCon_client object

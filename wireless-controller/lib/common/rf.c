@@ -9,6 +9,8 @@
 
 #include <protocol/common.h>
 
+struct nRF24L01 g_rfDev;
+
 static const struct SPI_Options spi_opts = {
     .maxFreq = nRF24L01_SPI_MAXFREQ,
     .mapping = AFIO_DEFAULT,

@@ -12,8 +12,6 @@
 
 #include "config.h"
 
-struct nRF24L01 rfDev;
-
 void main()
 {
     clock_setSysClockHSE_24MHz();
@@ -36,5 +34,5 @@ void main()
 void Systick_Handler()
 {
     const snesCon_btn_t buttonState = snesCon_read_tick(&snesCon_def);
-    nRF24L01_send(&rfDev, &buttonState, sizeof(buttonState));
+    nRF24L01_send(&g_rfDev, &buttonState, sizeof(buttonState));
 }

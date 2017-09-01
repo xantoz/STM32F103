@@ -21,8 +21,6 @@
 
 #include "config.h"
 
-struct nRF24L01 rfDev;
-
 void main()
 {
     clock_setSysClockHSE_72MHz();

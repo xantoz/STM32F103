@@ -63,14 +63,18 @@ static inline bool NVIC_isInterruptActive     (const enum IRQn interrupt) { retu
 
 static inline void NVIC_setInterruptPriority(const enum IRQn interrupt, const uint8_t prio)
 {
-    assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
-    NVIC.IP[interrupt] = (prio << (8 - __NVIC_PRIO_BITS));
+    if (IRQn_IS_CORE_PERIPHERAL(interrupt))
+        SCB.SHP[(((uint32_t)interrupt) & 0xf) - 4] = (prio << (8 - __NVIC_PRIO_BITS));
+    else
+        NVIC.IP[interrupt] = (prio << (8 - __NVIC_PRIO_BITS));
 }
 
 static inline uint8_t NVIC_getInterruptPriority(const enum IRQn interrupt)
 {
-    assert(!IRQn_IS_CORE_PERIPHERAL(interrupt));
-    return NVIC.IP[interrupt] >> (8 - __NVIC_PRIO_BITS);
+    if (IRQn_IS_CORE_PERIPHERAL(interrupt))
+        return SCB.SHP[((uint32_t)interrupt) & 0xf) - 4] >> (8 - __NVIC_PRIO_BITS);
+    else
+        return NVIC.IP[interrupt] >> (8 - __NVIC_PRIO_BITS);
 }
 
 static inline void NVIC_triggerInterrupt(const enum IRQn interrupt)
@@ -79,7 +83,6 @@ static inline void NVIC_triggerInterrupt(const enum IRQn interrupt)
     NVIC.STIR = interrupt;
 }
 
-#if 0
 static inline uint8_t NVIC_getInterruptGroupPriorityBits()
 {
     return 7 - ((SCB.AIRCR & AIRCR_PRIGROUP_MASK) >> 8);
@@ -94,6 +97,5 @@ static inline void NVIC_resetSystem()
 {
     SCB.AIRCR = AIRCR_VECTKEY | AIRCR_SYSRESETREQ;
 }
-#endif /* 0 */
 
 #endif /* _NVIC_ */

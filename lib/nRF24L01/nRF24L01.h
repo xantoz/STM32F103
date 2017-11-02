@@ -64,20 +64,11 @@ enum nRF24L01_AddressWidth
 };
 
 /**
- * @brief Struct for an initialized nRF24L01
- */
-struct nRF24L01
-{
-    uint8_t status;                         //!< Holds STATUS from last command to nRF24L01
-    struct nRF24L01_Options const * conf;   //!< Device options
-};
-
-/**
- * @brief Struct to hold options for setting up nRF24L01
+ * @brief Struct for nRF24L01 settings. Used for initialization and as pin map and vtable.
  *
  * @note  Possible to use as static const, so that it is completely stored in Flash
  */
-struct nRF24L01_Options
+struct nRF24L01
 {
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
@@ -131,81 +122,124 @@ struct nRF24L01_Options
  * @brief Initialize nRF24L01
  *
  * @param options [in]  Struct with device options and callbacks
- * @param dev     [out] nRF24L01 device object
  *
  * Example usage:
  * @code
- * static const struct nRF24L01_Options rfDev_opts = {
+ * static const struct nRF24L01 rfDev = {
  *     .spi_sendrecv = &SPI1_SendAndReceive,
  *     .airDataRate = nRF24L01_2Mbps,
  *     .power = nRF24L01_TXPower_Minus12dBm,
  *     ...
  * };
- * struct nRF24L01 rfDev;
- * nRF24L01_init(&rfDev_opts, &rfDev);
+ * nRF24L01_init(&rfDev);
  * @endcode
  */
-bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev);
+bool nRF24L01_init(const struct nRF24L01 *dev);
 
 // TODO: deinit function (follow recommended shutdown procedure)?
 
 /**
  * @brief Send data.
  *
- * @param dev     [in/out] nRF24L01 device object
- * @param payload [in]     Pointer to buffer containing payload to send. This buffer needs to be
- *                         len bytes large.
- * @param len     [in]     Length of payload in bytes
+ * @param dev     [in] nRF24L01 device object
+ * @param payload [in] Pointer to buffer containing payload to send. This buffer needs to be
+ *                     len bytes large.
+ * @param len     [in] Length of payload in bytes
  *
  * @note  Must be in TX mode
  */
-void nRF24L01_send(struct nRF24L01 *dev, const void *payload, size_t len);
+void nRF24L01_send(const struct nRF24L01 *dev, const void *payload, size_t len);
 
 /**
  * @brief Reads all words in the input FIFO and dispatches them to rx_cb.
  *
- * @param dev [in/out] nRF24L01 device object
+ * @param dev [in] nRF24L01 device object
  *
  * @note  RX mode only. calls rx_cb
  * @note  If using interrupts you do not need to use this directly. nRF24L01_interrupt will call
  *        this function when it receives a TX_DR interrupt.
  */
-void nRF24L01_rxDispatchFIFO(struct nRF24L01 *dev);
+void nRF24L01_rxDispatchFIFO(const struct nRF24L01 *dev);
 
 /**
  * @brief This should be called by the interrupt routine connected to the
  *        IRQ pin coming from the nRF24L01
  *
- * @param dev [in/out] nRF24L01 device object
+ * @param dev [in] nRF24L01 device object
  *
  * @note  When in RX mode calls rx_cb
  */
-void nRF24L01_interrupt(struct nRF24L01 *dev);
+void nRF24L01_interrupt(const struct nRF24L01 *dev);
 
 /**
  * @brief Set TX address
  *
- * @note addr needs to be as long as specified in address width when
- *       the nRF24L01 object was created.
+ * @param dev  [in] nRF24L01 device object
+ * @param addr [in] Pointer to memory buffer with addr (3-5 bytes long, depending on
+ *                  addressWidth of dev)
+ *
+ * @note The buffer in addr needs to be as long as specified in address width when the nRF24L01 object
+ *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
+ *       the safe side.
  */
-void nRF24L01_setTxAddress(struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setTxAddress(const struct nRF24L01 *dev, uint8_t *addr);
+
 /**
  * @brief Set RX P0 address
  *
- * @note addr needs to be as long as specified in address width when
- *       the nRF24L01 object was created.
+ * @param dev  [in] nRF24L01 device object
+ * @param addr [in] Pointer to memory buffer with addr (3-5 bytes long, depending on
+ *                  addressWidth of dev)
+ *
+ * @note The buffer in addr needs to be as long as specified in address width when the nRF24L01 object
+ *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
+ *       the safe side.
  */
-void nRF24L01_setRxP0Address(struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, uint8_t *addr);
+
 /**
  * @brief Set RX P1 address
  *
- * @note addr needs to be as long as specified in address width when
- *       the nRF24L01 object was created.
+ * @param dev  [in] nRF24L01 device object
+ * @param addr [in] Pointer to memory buffer with addr (3-5 bytes long, depending on
+ *                  addressWidth of dev)
+ *
+ * @note The buffer in addr needs to be as long as specified in address width when the nRF24L01 object
+ *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
+ *       the safe side.
  */
-void nRF24L01_setRxP1Address(struct nRF24L01 *dev, uint8_t *addr);
-void nRF24L01_setRxP2Address(struct nRF24L01 *dev, uint8_t addr);
-void nRF24L01_setRxP3Address(struct nRF24L01 *dev, uint8_t addr);
-void nRF24L01_setRxP4Address(struct nRF24L01 *dev, uint8_t addr);
-void nRF24L01_setRxP5Address(struct nRF24L01 *dev, uint8_t addr);
+void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, uint8_t *addr);
+
+/**
+ * @brief Set RX P2 address
+ *
+ * @note This address is just 1 byte long. The trailing 2-4 bytes of the address is taken
+ *       from the RX P1 address.
+ */
+void nRF24L01_setRxP2Address(const struct nRF24L01 *dev, uint8_t addr);
+
+/**
+ * @brief Set RX P3 address
+ *
+ * @note This address is just 1 byte long. The trailing 2-4 bytes of the address is taken
+ *       from the RX P1 address.
+ */
+void nRF24L01_setRxP3Address(const struct nRF24L01 *dev, uint8_t addr);
+
+/**
+ * @brief Set RX P4 address
+ *
+ * @note This address is just 1 byte long. The trailing 2-4 bytes of the address is taken
+ *       from the RX P1 address.
+ */
+void nRF24L01_setRxP4Address(const struct nRF24L01 *dev, uint8_t addr);
+
+/**
+ * @brief Set RX P5 address
+ *
+ * @note This address is just 1 byte long. The trailing 2-4 bytes of the address is taken
+ *       from the RX P1 address.
+ */
+void nRF24L01_setRxP5Address(const struct nRF24L01 *dev, uint8_t addr);
 
 #endif  /* _NRF24L01_ */

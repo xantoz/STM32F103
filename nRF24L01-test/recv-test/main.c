@@ -22,7 +22,7 @@ static void recv_message(const struct nRF24L01 *dev, uint8_t pipeNo, const void 
 // there are no sensible default values). This is because C99 says that values
 // not mentioned will be initialized to 0, and the init routine is built so that
 // a numerical 0 means the default value for that option.
-static const struct nRF24L01_Options rfDev_opts = {
+static const struct nRF24L01 rfDev = {
     .CSN = CSN_PortPin,
     .CE  = CE_PortPin,
 
@@ -42,8 +42,6 @@ static const struct nRF24L01_Options rfDev_opts = {
     .spi_sendrecv     = &spi_sendrecv,
     .rx_cb            = &recv_message
 };
-
-struct nRF24L01 rfDev;
 
 void main()
 {
@@ -75,7 +73,7 @@ void main()
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
     GPIO_setPin(&DEBUG_INIT_PIN);
-    nRF24L01_init(&rfDev_opts, &rfDev);
+    nRF24L01_init(&rfDev);
     print("nRF24L01 initted\n");
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
@@ -91,7 +89,6 @@ void main()
     {
         delay_us(1000000);
         print("boop\n");
-        println_u32_hex(rfDev.status);
     };
 }
 
@@ -109,8 +106,8 @@ static void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeN
         GPIO_resetPin(&LED);
 
     print("Got message: ");
-    // print_u32_dec(pipeNo);
-    // print(", ");
+    print_u32_dec(pipeNo);
+    print(", ");
     println_u32_dec(msg);
 
     // Set port B

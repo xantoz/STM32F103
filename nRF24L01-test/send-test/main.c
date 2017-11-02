@@ -12,7 +12,7 @@
 #define DELAY 200000
 
 // Settings for the nRF24L01
-static const struct nRF24L01_Options rfDev_opts = {
+static const struct nRF24L01 rfDev = {
     .CSN = CSN_PortPin,
     .CE  = CE_PortPin,
 
@@ -28,8 +28,6 @@ static const struct nRF24L01_Options rfDev_opts = {
     .spi_sendrecv   = &spi_sendrecv,
     .rx_cb          = NULL
 };
-
-struct nRF24L01 rfDev;
 
 void main()
 {
@@ -50,7 +48,7 @@ void main()
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
     GPIO_setPin(&DEBUG_INIT_PIN);
-    nRF24L01_init(&rfDev_opts, &rfDev);
+    nRF24L01_init(&rfDev);
     GPIO_resetPin(&DEBUG_INIT_PIN);
 
     uint16_t msg = 110;
@@ -61,8 +59,6 @@ void main()
 
         nRF24L01_send(&rfDev, &msg, sizeof(msg));
         println_u32_dec(msg);
-        println_u32_hex(rfDev.status);
-        // spi_send(msg % 256);
 
         GPIO_setPin(&LED);
         delay_us(DELAY);

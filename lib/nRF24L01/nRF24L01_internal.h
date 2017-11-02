@@ -245,7 +245,7 @@ enum nRF24L01_STATUS
 {
     //! Data Ready RX FIFO interrupt. Asserted when new data arrives on RX FIFO. Write 1 to clear bit.
     STATUS_RX_DR = 0x1 << 6,    //!< [rst: 0]
-    //! Data Sent TX FIFO interrupt. Asserted when packed transmitted on TX. if AUTO_ACK is
+    //! Data Sent TX FIFO interrupt. Asserted when package transmitted on TX. If AUTO_ACK is
     //! activated, this bit is set high only when ACK is recieved. Write 1 to clear bit.
     STATUS_TX_DS = 0x1 << 5,    //!< [rst: 0]
     //! Maximum number of TX retransmits interrupt. Write 1 to clear bit. If MAX_RT is asserted it

@@ -64,20 +64,11 @@ enum nRF24L01_AddressWidth
 };
 
 /**
- * @brief Struct for an initialized nRF24L01
- */
-struct nRF24L01
-{
-    uint8_t status;                         //!< Holds STATUS from last command to nRF24L01
-    struct nRF24L01_Options const * conf;   //!< Device options
-};
-
-/**
- * @brief Struct to hold options for setting up nRF24L01
+ * @brief Struct for nRF24L01 settings. Used for initialization and as pin map and vtable.
  *
  * @note  Possible to use as static const, so that it is completely stored in Flash
  */
-struct nRF24L01_Options
+struct nRF24L01
 {
     struct GPIO_PortPin CSN; //!< Chip Select Not pin. Active LOW
     struct GPIO_PortPin CE;  //!< Chip Enable pin. Active HIGH
@@ -131,7 +122,6 @@ struct nRF24L01_Options
  * @brief Initialize nRF24L01
  *
  * @param options [in]  Struct with device options and callbacks
- * @param dev     [out] nRF24L01 device object
  *
  * Example usage:
  * @code
@@ -145,7 +135,7 @@ struct nRF24L01_Options
  * nRF24L01_init(&rfDev_opts, &rfDev);
  * @endcode
  */
-bool nRF24L01_init(struct nRF24L01_Options const * const options, struct nRF24L01 *dev);
+bool nRF24L01_init(struct nRF24L01 const * const dev);
 
 // TODO: deinit function (follow recommended shutdown procedure)?
 

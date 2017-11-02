@@ -37,6 +37,7 @@ void recv_message(const struct nRF24L01 *dev,
                   uint8_t pipeNo,
                   const void *data, size_t len) DEFAULTS_TO(__recv_message_unimpl);
 
+//TODO: have just one definition of this in RAM instead, and simply change the relevant fields in rf_init. rf_init should take a function pointer for recv_message as well. This makes for a cleaner API at the expense of RAM usage
 static const struct nRF24L01_Options rfDev_opts_tx =
     nRF24L01_Options(
         .mode             = nRF24L01_TX,

@@ -142,9 +142,9 @@ bool nRF24L01_init(const struct nRF24L01 *dev);
  * @brief Send data.
  *
  * @param dev     [in] nRF24L01 device object
- * @param payload [in]     Pointer to buffer containing payload to send. This buffer needs to be
- *                         len bytes large.
- * @param len     [in]     Length of payload in bytes
+ * @param payload [in] Pointer to buffer containing payload to send. This buffer needs to be
+ *                     len bytes large.
+ * @param len     [in] Length of payload in bytes
  *
  * @note  Must be in TX mode
  */

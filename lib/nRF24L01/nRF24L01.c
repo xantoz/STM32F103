@@ -75,7 +75,6 @@ static uint8_t nRF24L01_getRxPayload(const struct nRF24L01 *dev, uint8_t *data, 
     nRF24L01_readOp(dev, R_RX_PAYLOAD, data, len);
 }
 
-
 /**
  * @brief Helper function to write to longer-than-8-bit registers on the nRF24L01
  *
@@ -325,7 +324,7 @@ void nRF24L01_rxDispatchFIFO(const struct nRF24L01 *dev)
     {
         // Until RX FIFO is empty
         uint8_t fifo_status;
-        uint8_t status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg, &fifo_status);
+        const uint8_t status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg, &fifo_status);
         if (fifo_status & FIFO_STATUS_RX_EMPTY)
             break;
         

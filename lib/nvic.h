@@ -7,6 +7,7 @@
 #ifndef _NVIC_
 #define _NVIC_
 
+#include "scb.h"
 #include "types.h"
 #include "IRQn.h"
 #include "debug.h"
@@ -72,7 +73,7 @@ static inline void NVIC_setInterruptPriority(const enum IRQn interrupt, const ui
 static inline uint8_t NVIC_getInterruptPriority(const enum IRQn interrupt)
 {
     if (IRQn_IS_CORE_PERIPHERAL(interrupt))
-        return SCB.SHP[((uint32_t)interrupt) & 0xf) - 4] >> (8 - __NVIC_PRIO_BITS);
+        return SCB.SHP[(((uint32_t)interrupt) & 0xf) - 4] >> (8 - __NVIC_PRIO_BITS);
     else
         return NVIC.IP[interrupt] >> (8 - __NVIC_PRIO_BITS);
 }
@@ -85,17 +86,17 @@ static inline void NVIC_triggerInterrupt(const enum IRQn interrupt)
 
 static inline uint8_t NVIC_getInterruptGroupPriorityBits()
 {
-    return 7 - ((SCB.AIRCR & AIRCR_PRIGROUP_MASK) >> 8);
+    return 7 - ((SCB.AIRCR & SCB_AIRCR_PRIGROUP_Msk) >> 8);
 }
 
 static inline void NVIC_setInterruptGroupPriorityBits(const uint8_t groupLength)
 {
-    SCB.AIRCR = AIRCR_VECTKEY | ((7-groupLength) << 8);
+    SCB.AIRCR = SCB_AIRCR_VECTKEY_Msk | ((7-groupLength) << 8);
 }
 
 static inline void NVIC_resetSystem()
 {
-    SCB.AIRCR = AIRCR_VECTKEY | AIRCR_SYSRESETREQ;
+    SCB.AIRCR = SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_SYSRESETREQ_Msk;
 }
 
 #endif /* _NVIC_ */

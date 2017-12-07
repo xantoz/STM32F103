@@ -19,7 +19,7 @@ INCLUDES = $(addprefix -I,$(SOURCE_DIRS))
 CPPFLAGS = $(INCLUDES) -DSTM32F10X_MD
 DEBUG    ?= -g
 ASFLAGS  = $(DEBUG) $(CPUFLAGS) $(INCLUDES)
-CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -nostdinc -fshort-enums -fno-hosted -fno-common -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits
+CCFLAGS  = $(DEBUG) -Os -std=c11 $(CPUFLAGS) $(CPPFLAGS) -nostdinc -fshort-enums -fno-hosted -fno-common -fdiagnostics-show-option -Wall -Wextra -Winline -Wvariadic-macros -Wno-main -Wno-type-limits -Wmissing-declarations -Wmissing-field-initializers
 LDFLAGS  = '-T$(LINKER_SCRIPT)' -nostartfiles -nostdlib -nodefaultlibs --gc-sections -Map=$(NAME).map
 OCFLAGS  = -Obinary --strip-unneeded
 

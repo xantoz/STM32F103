@@ -113,7 +113,7 @@ static uint8_t nRF24L01_getRegister8(const struct nRF24L01 *dev, enum nRF24L01_R
  */
 __attribute__((unused))
 static uint8_t nRF24L01_modifyRegister8(const struct nRF24L01 *dev, enum nRF24L01_Register reg,
-                                     uint8_t mask, uint8_t flags)
+                                        uint8_t mask, uint8_t flags)
 {
     uint8_t value;
     nRF24L01_getRegister8(dev, reg, &value);
@@ -327,7 +327,7 @@ void nRF24L01_rxDispatchFIFO(const struct nRF24L01 *dev)
         const uint8_t status = nRF24L01_getRegister8(dev, FIFO_STATUS_Reg, &fifo_status);
         if (fifo_status & FIFO_STATUS_RX_EMPTY)
             break;
-        
+
         // get the pipe number and send it on to rx_cb
         const uint8_t pipeNo = ((status & STATUS_RX_P_NO) >> STATUS_RX_P_NO_Pos) - 1; // RX_P_NO field is off-by-1 by definition
         assert(pipeNo <= 5, "recv from bad pipe?");

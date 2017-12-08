@@ -26,20 +26,4 @@
 #define nRF24L01_CSN_PortPin ((struct GPIO_PortPin){&GPIOA, 4})
 #define nRF24L01_CE_PortPin  ((struct GPIO_PortPin){&GPIOA, 3})
 
-#define nRF24L01_Options(...)                                           \
-    {                                                                   \
-        .CSN = nRF24L01_CSN_PortPin,                                    \
-        .CE  = nRF24L01_CE_PortPin,                                     \
-        .IRQ = nRF24L01_IRQ_PortPin,                                    \
-                                                                        \
-        .airDataRate      = nRF24L01_2Mbps,                             \
-        .power            = nRF24L01_TXPower_Minus0dBm,                 \
-        .useCRC           = nRF24L01_CRC,                               \
-        .retransmit.count = 0,                                          \
-                                                                        \
-        .pipe[0] = { .enable = true, .payloadWidth = sizeof(btn_t) },   \
-        .channel = 33,                                                  \
-        __VA_ARGS__                                                     \
-    }
-
 #endif

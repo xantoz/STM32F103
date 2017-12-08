@@ -23,7 +23,7 @@ void main()
     RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
 
     snesCon_read_init(&snesCon_def);
-    rf_init(rf_Tx);
+    rf_init(rf_Tx, NULL);
 
     if (!systick_startSysTick_us(DIV_ROUND_CLOSEST(1000000u, POLLFREQ)))
         die("Could not set up systick");
@@ -34,5 +34,5 @@ void main()
 void Systick_Handler()
 {
     const snesCon_btn_t buttonState = snesCon_read_tick(&snesCon_def);
-    nRF24L01_send(&g_rfDev, &buttonState, sizeof(buttonState));
+    rf_send(&buttonState);
 }

@@ -14,6 +14,38 @@
 
 #include "config.h"
 
+IN_SECTION(".text.fastcode")
+void pceCon_IRQHandler()
+{
+    const uint32_t ENABLE_Msk = (0x1 << controller.pin.enable.pin);
+    const uint32_t SELECT_Msk = (0x1 << controller.pin.select.pin);
+
+    if (EXTI.PR & SELECT_Msk)
+    {
+        pceCon_client_select(&controller);
+        EXTI.PR = SELECT_Msk;
+    }
+    if (EXTI.PR & ENABLE_Msk)
+    {
+        pceCon_client_enable(&controller);
+        EXTI.PR = ENABLE_Msk;
+    }
+}
+
+static void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
+                         const void *data, size_t len)
+{
+    assert(len == sizeof(pceCon_btn_t));
+    const pceCon_btn_t msg = *((pceCon_btn_t*)data);
+    pceCon_client_update(&controller, msg);
+
+    debugLeds_update(msg);
+
+    static bool state = true;
+    GPIO_setBit(&LED, state);
+    state = !state;
+}
+
 void main()
 {
     // clock_setSysClockHSE_24MHz();
@@ -34,7 +66,7 @@ void main()
 
     debugLeds_init();
 
-    rf_init(rf_Tx);
+    rf_init(rf_Rx, &recv_message);
 
     NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
     pceCon_client_init(&controller);
@@ -42,36 +74,4 @@ void main()
     GPIO_resetPin(&LED);
 
     __enable_irq();
-}
-
-IN_SECTION(".text.fastcode")
-void pceCon_IRQHandler()
-{
-    const uint32_t ENABLE_Msk = (0x1 << controller.pin.enable.pin);
-    const uint32_t SELECT_Msk = (0x1 << controller.pin.select.pin);
-
-    if (EXTI.PR & SELECT_Msk)
-    {
-        pceCon_client_select(&controller);
-        EXTI.PR = SELECT_Msk;
-    }
-    if (EXTI.PR & ENABLE_Msk)
-    {
-        pceCon_client_enable(&controller);
-        EXTI.PR = ENABLE_Msk;
-    }
-}
-
-void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
-                         const void *data, size_t len)
-{
-    assert(len == sizeof(pceCon_btn_t));
-    const pceCon_btn_t msg = *((pceCon_btn_t*)data);
-    pceCon_client_update(&controller, msg);
-
-    debugLeds_update(msg);
-
-    static bool state = true;
-    GPIO_setBit(&LED, state);
-    state = !state;
 }

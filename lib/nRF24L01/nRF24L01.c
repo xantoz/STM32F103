@@ -72,7 +72,7 @@ static uint8_t nRF24L01_writeTxPayload(const struct nRF24L01 *dev, const uint8_t
 static uint8_t nRF24L01_getRxPayload(const struct nRF24L01 *dev, uint8_t *data, size_t len)
 {
     assert(len <= 32);
-    nRF24L01_readOp(dev, R_RX_PAYLOAD, data, len);
+    return nRF24L01_readOp(dev, R_RX_PAYLOAD, data, len);
 }
 
 /**
@@ -169,7 +169,7 @@ void nRF24L01_setRxP5Address(const struct nRF24L01 *dev, uint8_t addr)
 /**
  * Helper function for nRF24L01_init
  */
-static uint8_t nRF24L01_init_getRetransmitFlags(const struct nRF24L01_Options const * const conf)
+static uint8_t nRF24L01_init_getRetransmitFlags(struct nRF24L01 const * const conf)
 {
     const uint8_t count = conf->retransmit.count & 0x0f;
     const uint8_t delay = conf->retransmit.delay & 0x0f;
@@ -179,7 +179,7 @@ static uint8_t nRF24L01_init_getRetransmitFlags(const struct nRF24L01_Options co
 // TODO: * add option to select TX addr
 //       * special mode where we keep spraying the same number until the next send operation, or we
 //         request to turn it off
-bool nRF24L01_init(const struct nRF24L01_Options *dev)
+bool nRF24L01_init(const struct nRF24L01 *dev)
 {
     assert(dev->channel <= 127);
 
@@ -225,7 +225,7 @@ bool nRF24L01_init(const struct nRF24L01_Options *dev)
     // Set up RX pipes
     uint8_t pipeEnable = 0;
     uint8_t pipeAutoAck = 0;
-    static_assert(ARRAYLEN(dev->pipe) <= 5, "Too many pipes in nRF24L01_Options");
+    static_assert(ARRAYLEN(dev->pipe) <= 5, "Too many pipes in nRF24L01 settings");
     for (unsigned i = 0; i < ARRAYLEN(dev->pipe); ++i)
     {
         assert(0 <= dev->pipe[i].payloadWidth && dev->pipe[i].payloadWidth <= 32);

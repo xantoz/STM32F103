@@ -21,47 +21,6 @@
 
 #include "config.h"
 
-void main()
-{
-    clock_setSysClockHSE_72MHz();
-
-    __disable_irq();
-
-    // delay_us(1000000);
-
-    // Enable clock to GPIOA & GPIOB & GPIOC
-    RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
-    RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
-
-    // Disable JTAG (but keep SWD) to free PB3 and PB4 for GPIO use
-    AFIO.MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
-
-    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
-
-    rf_init(rf_Rx);
-
-    NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
-    for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
-        GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
-                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);
-    GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_RISING);
-    GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
-    EXTI_enableInterrupt(&SELECT_PortPin, EXTI_BOTH);
-
-    debugLeds_init();
-
-    if (DEBUG_ENABLE_INTERRUPT)
-    {
-        GPIO_setMODE_setCNF(&DEBUG_PortPin, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
-        GPIO_resetPin(&DEBUG_PortPin);
-    }
-
-    GPIO_resetPin(&LED);
-
-    __enable_irq();
-}
-
 static uint16_t g_btn = 0;
 #if SIXBUTTON == 1
 void pceCon_IRQHandler()
@@ -116,8 +75,10 @@ void pceCon_IRQHandler()
     }
 }
 #endif
-void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
-                  const void *data, size_t len)
+
+static void recv_message(UNUSED const struct nRF24L01 *dev,
+                         UNUSED uint8_t pipeNo,
+                         const void *data, size_t len)
 {
     assert(len == sizeof(pceCon_btn_t));
     const pceCon_btn_t msg = *((pceCon_btn_t*)data);
@@ -137,4 +98,45 @@ void recv_message(UNUSED const struct nRF24L01 *dev, UNUSED uint8_t pipeNo,
               ((!!(msg & pceCon_BUTTON_Run))    << 0));
 
     debugLeds_update(msg);
+}
+
+void main()
+{
+    clock_setSysClockHSE_72MHz();
+
+    __disable_irq();
+
+    // delay_us(1000000);
+
+    // Enable clock to GPIOA & GPIOB & GPIOC
+    RCC.APB2ENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC;
+    RCC.APB2ENR |= RCC_APB2Periph_SPI1;    // Enable clock to SPI1
+
+    // Disable JTAG (but keep SWD) to free PB3 and PB4 for GPIO use
+    AFIO.MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
+
+    GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
+
+    rf_init(rf_Rx, &recv_message);
+
+    NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
+    for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
+        GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
+                            GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);
+    GPIO_setMODE_setCNF(&ENABLE_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI_enableInterrupt(&ENABLE_PortPin, EXTI_RISING);
+    GPIO_setMODE_setCNF(&SELECT_PortPin, GPIO_MODE_Input, GPIO_Input_CNF_Floating);
+    EXTI_enableInterrupt(&SELECT_PortPin, EXTI_BOTH);
+
+    debugLeds_init();
+
+    if (DEBUG_ENABLE_INTERRUPT)
+    {
+        GPIO_setMODE_setCNF(&DEBUG_PortPin, GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPPushPull);
+        GPIO_resetPin(&DEBUG_PortPin);
+    }
+
+    GPIO_resetPin(&LED);
+
+    __enable_irq();
 }

@@ -7,10 +7,6 @@
 #include <nvic.h>
 #include <debug.h>
 
-#include <protocol/common.h>
-
-struct nRF24L01 g_rfDev;
-
 static const struct SPI_Options spi_opts = {
     .maxFreq = nRF24L01_SPI_MAXFREQ,
     .mapping = AFIO_DEFAULT,
@@ -27,40 +23,42 @@ static uint8_t spi_sendrecv(const uint8_t data)
     return SPI_recv(&nRF24L01_SPI);
 }
 
-static void __recv_message_unimpl()
-{
-    die("recv message not implemented!");
-}
+static struct nRF24L01 rfDev = {
+    .CSN = nRF24L01_CSN_PortPin,
+    .CE  = nRF24L01_CE_PortPin,
+    .IRQ = nRF24L01_IRQ_PortPin,
 
-// This function needs to be defined in another module somewhere to receive payloads from nRF24L01
-void recv_message(const struct nRF24L01 *dev,
-                  uint8_t pipeNo,
-                  const void *data, size_t len) DEFAULTS_TO(__recv_message_unimpl);
+    .airDataRate      = nRF24L01_2Mbps,
+    .power            = nRF24L01_TXPower_Minus0dBm,
+    .useCRC           = nRF24L01_CRC,
+    .retransmit.count = 0,
 
-//TODO: have just one definition of this in RAM instead, and simply change the relevant fields in rf_init. rf_init should take a function pointer for recv_message as well. This makes for a cleaner API at the expense of RAM usage
-static const struct nRF24L01 rfDev_opts_tx =
-    nRF24L01_Options(
-        .mode             = nRF24L01_TX,
-        .spi_sendrecv     = &spi_sendrecv);
+    .pipe[0] = { .enable = true, .payloadWidth = sizeof(btn_t) },
+    .channel = 33,
 
-static const struct nRF24L01 rfDev_opts_rx =
-    nRF24L01_Options(
-        .mode             = nRF24L01_RX,
-        .spi_sendrecv     = &spi_sendrecv,
-        .rx_cb            = &recv_message);
+    .spi_sendrecv = &spi_sendrecv,
+};
 
-void rf_init(enum rf_TxRx txrx)
+void rf_init(enum rf_TxRx txrx,
+             void (*recv_message)(const struct nRF24L01*, uint8_t pipeNo,
+                                  const void *data, size_t len))
 {
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
-    g_rfDev = (txrx == rf_Tx) ? rfDev_opts_tx : rfDev_opts_rx;
-    nRF24L01_init(&g_rfDev);
+    rfDev.rx_cb = recv_message;
+    rfDev.mode = (txrx == rf_Tx) ? nRF24L01_TX : nRF24L01_RX;
+    nRF24L01_init(&rfDev);
+}
+
+void rf_send(const btn_t *btn)
+{
+    nRF24L01_send(&rfDev, btn, sizeof(*btn));
 }
 
 void nRF24L01_IRQHandler(void)
 {
     GPIO_resetPin(&LED);
-    nRF24L01_interrupt(&g_rfDev);
+    nRF24L01_interrupt(&rfDev);
     EXTI.PR = 0x1 << nRF24L01_IRQ_PortPin.pin;
     GPIO_setPin(&LED);
 }

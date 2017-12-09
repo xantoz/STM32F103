@@ -44,7 +44,7 @@ void rf_init(enum rf_TxRx txrx,
                                   const void *data, size_t len))
 {
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
-    NVIC_setInterruptPriority(nRF24L01_IRQn, 4);
+    NVIC_setInterruptPriority(nRF24L01_IRQn, nRF24L01_IRQ_Priority);
     rfDev.rx_cb = recv_message;
     rfDev.mode = (txrx == rf_Tx) ? nRF24L01_TX : nRF24L01_RX;
     nRF24L01_init(&rfDev);

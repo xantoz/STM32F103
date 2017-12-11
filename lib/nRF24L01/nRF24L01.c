@@ -394,3 +394,45 @@ void nRF24L01_interrupt(const struct nRF24L01 *dev)
     if (status & STATUS_TX_DS)  nRF24L01_TX_DS_handler(dev);
     if (status & STATUS_MAX_RT) nRF24L01_MAX_RT_handler(dev);
 }
+
+void nRF24L01_printAddresses(const struct nRF24L01 *dev)
+{
+    const size_t len =
+        (dev->addressWidth == nRF24L01_AddressWidth_3bytes) ? 3 :
+        (dev->addressWidth == nRF24L01_AddressWidth_4bytes) ? 4 : 5;
+    uint8_t tmp[5] = {};
+    print("TX_ADDR: ");
+    nRF24L01_getRegister(dev, TX_ADDR_Reg, &tmp[0], len);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P0: ");
+    nRF24L01_getRegister(dev, RX_ADDR_P0_Reg, &tmp[0], len);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P1: ");
+    nRF24L01_getRegister(dev, RX_ADDR_P1_Reg, &tmp[0], len);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P2: ");
+    nRF24L01_getRegister8(dev, RX_ADDR_P2_Reg, &tmp[0]);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P3: ");
+    nRF24L01_getRegister8(dev, RX_ADDR_P3_Reg, &tmp[0]);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P4: ");
+    nRF24L01_getRegister8(dev, RX_ADDR_P4_Reg, &tmp[0]);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+
+    print("RX ADDR P5: ");
+    nRF24L01_getRegister8(dev, RX_ADDR_P5_Reg, &tmp[0]);
+    for (unsigned i = 0; i < len; ++i)
+        println_u32_hex(tmp[i]);
+}

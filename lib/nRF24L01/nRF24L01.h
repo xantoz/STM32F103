@@ -242,4 +242,9 @@ void nRF24L01_setRxP4Address(const struct nRF24L01 *dev, uint8_t addr);
  */
 void nRF24L01_setRxP5Address(const struct nRF24L01 *dev, uint8_t addr);
 
+/**
+ * @brief Print out all address settings (debug use)
+ */
+void nRF24L01_printAddresses(const struct nRF24L01 *dev);
+
 #endif  /* _NRF24L01_ */

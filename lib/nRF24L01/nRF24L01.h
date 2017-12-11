@@ -93,7 +93,7 @@ struct nRF24L01
         uint8_t payloadWidth;
         bool enable;  //!< Enable pipe (for RX) if true
         bool autoAck; //!< Enable auto-ack on pipe if true
-    } pipe[5];
+    } pipe[6];
 
     uint8_t channel; //!< Value from 0 to 127. Take care that channels are
                      //! spaced 2 apart when running in 2mbps mode

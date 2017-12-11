@@ -225,7 +225,7 @@ bool nRF24L01_init(const struct nRF24L01 *dev)
     // Set up RX pipes
     uint8_t pipeEnable = 0;
     uint8_t pipeAutoAck = 0;
-    static_assert(ARRAYLEN(dev->pipe) <= 5, "Too many pipes in nRF24L01 settings");
+    static_assert(ARRAYLEN(dev->pipe) <= 6, "Too many pipes in nRF24L01 settings");
     for (unsigned i = 0; i < ARRAYLEN(dev->pipe); ++i)
     {
         assert(0 <= dev->pipe[i].payloadWidth && dev->pipe[i].payloadWidth <= 32);

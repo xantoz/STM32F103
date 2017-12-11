@@ -87,6 +87,17 @@ static uint8_t nRF24L01_setRegister(const struct nRF24L01 *dev, enum nRF24L01_Re
 }
 
 /**
+ * @brief Helper function to read from longer-than-8-bit registers on the nRF24L01
+ *
+ * @return STATUS reg contents (as returned on SPI MISO)
+ */
+static uint8_t nRF24L01_getRegister(const struct nRF24L01 *dev, enum nRF24L01_Register reg,
+                                    const uint8_t *buf, size_t len)
+{
+    return nRF24L01_readOp(dev, R_REGISTER | (reg & REGISTER_MASK), buf, len);
+}
+
+/**
  * @brief Helper function to write to 8 bit registers on the nRF24L01
  *
  * @return STATUS reg contents (as returned on SPI MISO)
@@ -103,7 +114,7 @@ static uint8_t nRF24L01_setRegister8(const struct nRF24L01 *dev, enum nRF24L01_R
  */
 static uint8_t nRF24L01_getRegister8(const struct nRF24L01 *dev, enum nRF24L01_Register reg, uint8_t *result)
 {
-    return nRF24L01_readOp(dev, R_REGISTER | (reg & REGISTER_MASK), result, sizeof(result));
+    return nRF24L01_getRegister(dev, reg, result, sizeof(*result));
 }
 
 /**

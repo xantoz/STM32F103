@@ -9,7 +9,8 @@ MEMORY {
 
 /* Start of stack (TODO: how much SRAM do we have, actually?) */
 /* TODO: consider having stack below data */
-_estack = 0x20005000;
+/* Must be 8-byte aligned */
+_estack = 0x20005000 & 0xFFFFFFF8;
 
 /*
 ** Peripherals

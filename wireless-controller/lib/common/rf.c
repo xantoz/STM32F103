@@ -103,7 +103,7 @@ void rf_init(enum rf_TxRx txrx,
              size_t payloadWidth,
              size_t nrRxPipes)
 {
-    assert(nrRxPipes < 6);
+    assert(nrRxPipes <= 6);
 
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     NVIC_setInterruptPriority(nRF24L01_IRQn, nRF24L01_IRQ_Priority);
@@ -114,6 +114,7 @@ void rf_init(enum rf_TxRx txrx,
     {
         rfDev.pipe[i].enable = true;
         rfDev.pipe[i].payloadWidth = payloadWidth;
+        rfDev.pipe[i].autoAck = false;
     }
 
     nRF24L01_init(&rfDev);

@@ -25,4 +25,19 @@ void rf_init(enum rf_TxRx txrx,
  */
 void rf_send(const btn_t *btn);
 
+/**
+ * Set TX address from one of 16 presets (defined in the rf module).
+ *
+ * @param addr [in] A number between 0 and 15
+ */
+void rf_setTxAddress(uint8_t addr);
+
+/**
+ * Set RX address for a particular pipe from one of 16 presets (defined in the rf module).
+ *
+ * @param addr [in] A number between 0 and 15
+ * @param pipe [in] Which pipe number to affect. From 0 to 5
+ */
+void rf_setRxAddress(uint8_t addr, uint8_t pipe);
+
 #endif

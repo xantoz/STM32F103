@@ -39,6 +39,65 @@ static struct nRF24L01 rfDev = {
     .spi_sendrecv = &spi_sendrecv,
 };
 
+// List of 16 addresses which we can choose between. One for each DIP setting.
+// The suffix (last 4 bytes) must be the same for all addresses, due to how the
+// nRF24L01 handles addresses for pipes 2-5 (You can only set the first byte,
+// while the last 4 bytes are taken directly from the address for P1)
+#define ADDRESS_SUFFIX 0xAA, 0xBB, 0xCC, 0xDD
+#define DEFAULT_ADDRESS 0
+static const uint8_t address[16][5] = {
+    {0xF0, ADDRESS_SUFFIX},
+    {0xE1, ADDRESS_SUFFIX},
+    {0xD2, ADDRESS_SUFFIX},
+    {0xC3, ADDRESS_SUFFIX},
+    {0xB4, ADDRESS_SUFFIX},
+    {0xA5, ADDRESS_SUFFIX},
+    {0x96, ADDRESS_SUFFIX},
+    {0x87, ADDRESS_SUFFIX},
+    {0x78, ADDRESS_SUFFIX},
+    {0x69, ADDRESS_SUFFIX},
+    {0x5A, ADDRESS_SUFFIX},
+    {0x4B, ADDRESS_SUFFIX},
+    {0x3C, ADDRESS_SUFFIX},
+    {0x2D, ADDRESS_SUFFIX},
+    {0x1E, ADDRESS_SUFFIX},
+    {0x0F, ADDRESS_SUFFIX},
+};
+
+void rf_setTxAddress(uint8_t addr)
+{
+    assert(addr < 16);
+    nRF24L01_setTxAddress(&rfDev, address[addr]);
+}
+
+void rf_setRxAddress(uint8_t addr, uint8_t pipe)
+{
+    assert(addr < 16);
+    assert(pipe < 6);
+
+    switch (pipe)
+    {
+        case 0:
+            nRF24L01_setRxP0Address(&rfDev, address[addr]);
+            break;
+        case 1:
+            nRF24L01_setRxP1Address(&rfDev, address[addr]);
+            break;
+        case 2:
+            nRF24L01_setRxP2Address(&rfDev, address[addr][0]);
+            break;
+        case 3:
+            nRF24L01_setRxP3Address(&rfDev, address[addr][0]);
+            break;
+        case 4:
+            nRF24L01_setRxP4Address(&rfDev, address[addr][0]);
+            break;
+        case 5:
+            nRF24L01_setRxP5Address(&rfDev, address[addr][0]);
+            break;
+    }
+}
+
 void rf_init(enum rf_TxRx txrx,
              void (*recv_message)(const struct nRF24L01*, uint8_t pipeNo,
                                   const void *data, size_t len))
@@ -48,6 +107,12 @@ void rf_init(enum rf_TxRx txrx,
     rfDev.rx_cb = recv_message;
     rfDev.mode = (txrx == rf_Tx) ? nRF24L01_TX : nRF24L01_RX;
     nRF24L01_init(&rfDev);
+
+    const uint32_t addr = 0; // TODO: read DIP here, already?
+    if (txrx == rf_Tx)
+        rf_setTxAddress(addr);
+    else
+        rf_setRxAddress(addr, 0);
 }
 
 void rf_send(const btn_t *btn)
@@ -55,6 +120,7 @@ void rf_send(const btn_t *btn)
     nRF24L01_send(&rfDev, btn, sizeof(*btn));
 }
 
+// Implement the IRQ handler
 void nRF24L01_IRQHandler(void)
 {
     GPIO_resetPin(&LED);

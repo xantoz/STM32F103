@@ -21,9 +21,9 @@ void rf_init(enum rf_TxRx txrx,
                                   const void *data, size_t len));
 
 /**
- * Send button state over RF
+ * Send data over RF
  */
-void rf_send(const btn_t *btn);
+void rf_send(const void *data, size_t len);
 
 /**
  * Set TX address from one of 16 presets (defined in the rf module).

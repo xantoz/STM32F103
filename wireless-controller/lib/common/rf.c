@@ -115,9 +115,9 @@ void rf_init(enum rf_TxRx txrx,
         rf_setRxAddress(addr, 0);
 }
 
-void rf_send(const btn_t *btn)
+void rf_send(const void *data, size_t len)
 {
-    nRF24L01_send(&rfDev, btn, sizeof(*btn));
+    nRF24L01_send(&rfDev, data, len);
 }
 
 // Implement the IRQ handler

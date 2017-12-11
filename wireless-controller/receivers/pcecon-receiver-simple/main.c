@@ -117,7 +117,7 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    rf_init(rf_Rx, &recv_message);
+    rf_init(rf_Rx, &recv_message, sizeof(pceCon_btn_t), 1);
 
     NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
     for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)

@@ -64,7 +64,7 @@ void main()
 
     debugLeds_init();
 
-    rf_init(rf_Rx, &recv_message);
+    rf_init(rf_Rx, &recv_message, sizeof(snesCon_btn_t), 1);
 
     NVIC_setInterruptPriority(snesCon_IRQn, snesCon_IRQ_Priority);
     snesCon_client_init(&controller);

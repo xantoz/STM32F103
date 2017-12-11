@@ -66,7 +66,7 @@ void main()
 
     debugLeds_init();
 
-    rf_init(rf_Rx, &recv_message);
+    rf_init(rf_Rx, &recv_message, sizeof(pceCon_btn_t), 1);
 
     NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
     pceCon_client_init(&controller);

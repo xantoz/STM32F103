@@ -33,7 +33,6 @@ static struct nRF24L01 rfDev = {
     .useCRC           = nRF24L01_CRC,
     .retransmit.count = 0,
 
-    .pipe[0] = { .enable = true, .payloadWidth = sizeof(btn_t) },
     .channel = 33,
 
     .spi_sendrecv = &spi_sendrecv,
@@ -100,19 +99,34 @@ void rf_setRxAddress(uint8_t addr, uint8_t pipe)
 
 void rf_init(enum rf_TxRx txrx,
              void (*recv_message)(const struct nRF24L01*, uint8_t pipeNo,
-                                  const void *data, size_t len))
+                                  const void *data, size_t len),
+             size_t payloadWidth,
+             size_t nrRxPipes)
 {
+    assert(nrRxPipes < 6);
+
     SPI_initAsMaster(&nRF24L01_SPI, &spi_opts);
     NVIC_setInterruptPriority(nRF24L01_IRQn, nRF24L01_IRQ_Priority);
+
     rfDev.rx_cb = recv_message;
     rfDev.mode = (txrx == rf_Tx) ? nRF24L01_TX : nRF24L01_RX;
+    for (size_t i = 0; i < nrRxPipes; ++i)
+    {
+        rfDev.pipe[i].enable = true;
+        rfDev.pipe[i].payloadWidth = payloadWidth;
+    }
+
     nRF24L01_init(&rfDev);
 
-    const uint32_t addr = 0; // TODO: read DIP here, already?
     if (txrx == rf_Tx)
-        rf_setTxAddress(addr);
+    {
+        rf_setTxAddress(0);
+    }
     else
-        rf_setRxAddress(addr, 0);
+    {
+        for (size_t i = 0; i < nrRxPipes; ++i)
+            rf_setRxAddress(i, i);
+    }
 }
 
 void rf_send(const void *data, size_t len)

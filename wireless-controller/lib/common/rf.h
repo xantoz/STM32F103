@@ -15,10 +15,14 @@ enum rf_TxRx
  *
  * @param txrx         [in] Whether to init in TX or RX mode
  * @param recv_message [in] Function pointer to RX callback (Not used in TX mode: Just pass NULL)
+ * @param payloadWidth [in] Size in bytes of messages we intend to send/receive (only matters in RX mode)
+ * @param nrRxPipes    [in] In RX mode: How many RX pipes to enable. Must be no larger than 6.
  */
 void rf_init(enum rf_TxRx txrx,
              void (*recv_message)(const struct nRF24L01*, uint8_t pipeNo,
-                                  const void *data, size_t len));
+                                  const void *data, size_t len),
+             size_t payloadWidth,
+             size_t nrRxPipes);
 
 /**
  * Send data over RF

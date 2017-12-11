@@ -4,8 +4,6 @@
 #include <nRF24L01/nRF24L01.h>
 #include <protocol/common.h>
 
-extern struct nRF24L01 g_rfDev;
-
 enum rf_TxRx
 {
     rf_Tx,

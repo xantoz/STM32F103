@@ -182,7 +182,7 @@ void nRF24L01_interrupt(const struct nRF24L01 *dev);
  *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
  *       the safe side.
  */
-void nRF24L01_setTxAddress(const struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setTxAddress(const struct nRF24L01 *dev, const uint8_t *addr);
 
 /**
  * @brief Set RX P0 address
@@ -195,7 +195,7 @@ void nRF24L01_setTxAddress(const struct nRF24L01 *dev, uint8_t *addr);
  *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
  *       the safe side.
  */
-void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, const uint8_t *addr);
 
 /**
  * @brief Set RX P1 address
@@ -208,7 +208,7 @@ void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, uint8_t *addr);
  *       was created. It is OK for it to be longer, so one can always use 5 bytes to be on
  *       the safe side.
  */
-void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, uint8_t *addr);
+void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, const uint8_t *addr);
 
 /**
  * @brief Set RX P2 address

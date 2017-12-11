@@ -81,7 +81,7 @@ static uint8_t nRF24L01_getRxPayload(const struct nRF24L01 *dev, uint8_t *data, 
  * @return STATUS reg contents (as returned on SPI MISO)
  */
 static uint8_t nRF24L01_setRegister(const struct nRF24L01 *dev, enum nRF24L01_Register reg,
-                                 uint8_t *buf, size_t len)
+                                    const uint8_t *buf, size_t len)
 {
     return nRF24L01_writeOp(dev, W_REGISTER | (reg & REGISTER_MASK), buf, len);
 }
@@ -122,7 +122,7 @@ static uint8_t nRF24L01_modifyRegister8(const struct nRF24L01 *dev, enum nRF24L0
 }
 
 static void nRF24L01_setLongAddress_impl(const struct nRF24L01 *dev,
-                                         enum nRF24L01_Register reg, uint8_t *addr)
+                                         enum nRF24L01_Register reg, const uint8_t *addr)
 {
     size_t len =
         (dev->addressWidth == nRF24L01_AddressWidth_3bytes) ? 3 :
@@ -130,18 +130,18 @@ static void nRF24L01_setLongAddress_impl(const struct nRF24L01 *dev,
     nRF24L01_setRegister(dev, reg, addr, len);
 }
 
-void nRF24L01_setTxAddress(const struct nRF24L01 *dev, uint8_t *addr)
+void nRF24L01_setTxAddress(const struct nRF24L01 *dev, const uint8_t *addr)
 {
     // TODO: Automatically set RX_P0 addr to the same value when in Enhanced Shockburst mode?
     nRF24L01_setLongAddress_impl(dev, TX_ADDR_Reg, addr);
 }
 
-void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, uint8_t *addr)
+void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, const uint8_t *addr)
 {
     nRF24L01_setLongAddress_impl(dev, RX_PW_P0_Reg, addr);
 }
 
-void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, uint8_t *addr)
+void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, const uint8_t *addr)
 {
     nRF24L01_setLongAddress_impl(dev, RX_PW_P1_Reg, addr);
 }

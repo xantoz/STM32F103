@@ -329,7 +329,7 @@ void nRF24L01_rxDispatchFIFO(const struct nRF24L01 *dev)
             break;
 
         // get the pipe number and send it on to rx_cb
-        const uint8_t pipeNo = ((status & STATUS_RX_P_NO) >> STATUS_RX_P_NO_Pos) - 1; // RX_P_NO field is off-by-1 by definition
+        const uint8_t pipeNo = ((status & STATUS_RX_P_NO) >> STATUS_RX_P_NO_Pos);
         assert(pipeNo <= 5, "recv from bad pipe?");
         uint8_t recv[dev->pipe[pipeNo].payloadWidth]; // TODO: read payload width from RX_PW register instead?
         nRF24L01_getRxPayload(dev, &recv[0], sizeof(recv));

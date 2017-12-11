@@ -253,15 +253,16 @@ enum nRF24L01_STATUS
     STATUS_MAX_RT  = 0x1 << 4,  //!< [rst: 0]
 
     //! Data pipe number for the payload available for reading from RX_FIFO
-    STATUS_RX_P_NO = 0b111 << 1,       //!< [rst: 0b111]
-    STATUS_RX_P_NO_Pos = 1,
-    STATUS_RX_P_NO_Pipe0 = 0b001 << 1,
-    STATUS_RX_P_NO_Pipe1 = 0b010 << 1,
-    STATUS_RX_P_NO_Pipe2 = 0b011 << 1,
-    STATUS_RX_P_NO_Pipe3 = 0b100 << 1,
-    STATUS_RX_P_NO_Pipe4 = 0b101 << 1,
-    STATUS_RX_P_NO_Pipe5 = 0b110 << 1,
-    STATUS_RX_P_NO_RX_FIFO_EMPTY = 0b111 << 1,
+    STATUS_RX_P_NO_Pos           = 1,
+    STATUS_RX_P_NO               = 0b111 << STATUS_RX_P_NO_Pos, //!< [rst: 0b111]
+    STATUS_RX_P_NO_Pipe0         = 0     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Pipe1         = 1     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Pipe2         = 2     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Pipe3         = 3     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Pipe4         = 4     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Pipe5         = 5     << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_Reserved      = 0b110 << STATUS_RX_P_NO_Pos,
+    STATUS_RX_P_NO_RX_FIFO_EMPTY = 0b111 << STATUS_RX_P_NO_Pos,
 
     STATUS_TX_FULL = 0x1 << 0, //!< [rst: 0] TX FIFO full flag. 1 == FIFO full, 0 == FIFO not full
 };

@@ -149,32 +149,32 @@ void nRF24L01_setTxAddress(const struct nRF24L01 *dev, const uint8_t *addr)
 
 void nRF24L01_setRxP0Address(const struct nRF24L01 *dev, const uint8_t *addr)
 {
-    nRF24L01_setLongAddress_impl(dev, RX_PW_P0_Reg, addr);
+    nRF24L01_setLongAddress_impl(dev, RX_ADDR_P0_Reg, addr);
 }
 
 void nRF24L01_setRxP1Address(const struct nRF24L01 *dev, const uint8_t *addr)
 {
-    nRF24L01_setLongAddress_impl(dev, RX_PW_P1_Reg, addr);
+    nRF24L01_setLongAddress_impl(dev, RX_ADDR_P1_Reg, addr);
 }
 
 void nRF24L01_setRxP2Address(const struct nRF24L01 *dev, uint8_t addr)
 {
-    nRF24L01_setRegister8(dev, RX_PW_P2_Reg, addr);
+    nRF24L01_setRegister8(dev, RX_ADDR_P2_Reg, addr);
 }
 
 void nRF24L01_setRxP3Address(const struct nRF24L01 *dev, uint8_t addr)
 {
-    nRF24L01_setRegister8(dev, RX_PW_P3_Reg, addr);
+    nRF24L01_setRegister8(dev, RX_ADDR_P3_Reg, addr);
 }
 
 void nRF24L01_setRxP4Address(const struct nRF24L01 *dev, uint8_t addr)
 {
-    nRF24L01_setRegister8(dev, RX_PW_P4_Reg, addr);
+    nRF24L01_setRegister8(dev, RX_ADDR_P4_Reg, addr);
 }
 
 void nRF24L01_setRxP5Address(const struct nRF24L01 *dev, uint8_t addr)
 {
-    nRF24L01_setRegister8(dev, RX_PW_P5_Reg, addr);
+    nRF24L01_setRegister8(dev, RX_ADDR_P5_Reg, addr);
 }
 
 /**

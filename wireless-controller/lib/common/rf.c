@@ -119,15 +119,10 @@ void rf_init(enum rf_TxRx txrx,
 
     nRF24L01_init(&rfDev);
 
-    if (txrx == rf_Tx)
-    {
-        rf_setTxAddress(0);
-    }
-    else
-    {
-        for (size_t i = 0; i < nrRxPipes; ++i)
-            rf_setRxAddress(i, i);
-    }
+    // Set addresses to their default values (differs from the nRF24L01 defaults)
+    rf_setTxAddress(0);
+    for (size_t i = 0; i < 6; ++i)
+        rf_setRxAddress(i, i);
 }
 
 void rf_send(const void *data, size_t len)

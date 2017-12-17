@@ -120,6 +120,12 @@ void main()
     rf_init(rf_Rx, &recv_message, sizeof(pceCon_btn_t), 1);
 
     NVIC_setInterruptPriority(pceCon_IRQn, pceCon_IRQ_Priority);
+
+    // Pin setup
+    // * All PCE IO pins require external pullups to 5V, with relatively low resistance: 1Kohm
+    //   or less. (5V-tolerant ports on the STM32F103 are used)
+    // * The enable pin is particularly sensitive and might require an appropriately sized
+    //   filter cap to remove spikes causing spurious interrupts. (Noticeable primarily in 6 button pad mode)
     for (unsigned i = 0; i < ARRAYLEN(c_outputPins); ++i)
         GPIO_setMODE_setCNF(&OUTPUT_Port, c_outputPins[i],
                             GPIO_MODE_Output_50MHz, GPIO_Output_CNF_GPOpenDrain);

@@ -26,4 +26,10 @@
 #define nRF24L01_CSN_PortPin ((struct GPIO_PortPin){&GPIOA, 4})
 #define nRF24L01_CE_PortPin  ((struct GPIO_PortPin){&GPIOA, 3})
 
+/* **** Settings for DIP switch **** */
+// DIP on pins B12, B13, B14, B15
+#define DIP_Msk 0x0fff
+#define DIP_Pos 12
+#define DIP_Port GPIOB
+
 #endif

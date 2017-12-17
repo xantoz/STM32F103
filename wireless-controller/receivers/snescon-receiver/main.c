@@ -8,14 +8,25 @@
 #include <nvic.h>
 
 #include <protocol/snesCon_client.h>
-#include <common/debugLeds.h>
 #include <common/rf.h>
+#include <common/dip.h>
 
 #include "config.h"
 
 struct snesCon_client controller = {
     .pinDef = snesCon_PINS
 };
+
+static void maybe_update_addr()
+{
+    static uint8_t last_addr = 0;
+    const uint8_t new_addr = dip_read();
+    if (new_addr != last_addr)
+    {
+        rf_setRxAddress(new_addr, 0);
+        last_addr = new_addr;
+    }
+}
 
 void snesCon_IRQHandler()
 {
@@ -32,6 +43,10 @@ void snesCon_IRQHandler()
         snesCon_client_latch(&controller);
         EXTI.PR = LATCH_Msk;
     }
+
+    static uint32_t cntr = 0;
+    if (++cntr % 16)
+        maybe_update_addr();
 }
 
 static void recv_message(UNUSED const struct nRF24L01 *dev,
@@ -41,7 +56,6 @@ static void recv_message(UNUSED const struct nRF24L01 *dev,
     assert(len == sizeof(snesCon_btn_t));
     const snesCon_btn_t msg = *((snesCon_btn_t*)data);
     snesCon_client_update(&controller, msg);
-    debugLeds_update(msg);
 
     static bool state = true;
     GPIO_setBit(&LED, state);
@@ -62,9 +76,9 @@ void main()
 
     GPIO_setMODE_setCNF(&LED, GPIO_MODE_Output_10MHz, GPIO_Output_CNF_GPPushPull);
 
-    debugLeds_init();
-
     rf_init(rf_Rx, &recv_message, sizeof(snesCon_btn_t), 1);
+
+    dip_init();
 
     NVIC_setInterruptPriority(snesCon_IRQn, snesCon_IRQ_Priority);
     snesCon_client_init(&controller);

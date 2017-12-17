@@ -9,6 +9,7 @@
 #include <protocol/snesCon_read.h>
 
 #include <common/rf.h>
+#include <common/dip.h>
 
 #include "config.h"
 
@@ -31,8 +32,23 @@ void main()
     __enable_irq();
 }
 
+static void maybe_update_addr()
+{
+    static uint8_t last_addr = 0;
+    const uint8_t new_addr = dip_read();
+    if (new_addr != last_addr)
+    {
+        rf_setTxAddress(new_addr);
+        last_addr = new_addr;
+    }
+}
+
 void Systick_Handler()
 {
     const snesCon_btn_t buttonState = snesCon_read_tick(&snesCon_def);
     rf_send(&buttonState, sizeof(buttonState));
+
+    static uint32_t cntr = 0;
+    if (++cntr % 16)
+        maybe_update_addr();
 }
